@@ -142,7 +142,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 571.5723270440252,
+    "_orthoHeight": 567.6433121019109,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -372,20 +372,21 @@
     "fileId": "e8a+bU/8dPDbbJguUzLdoF"
   },
   {
-    "__type__": "64aaeZnO6VOn6NCFZF3p+c1",
+    "__type__": "59990cbwSdCS7AucdeO2q9Z",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 2
     },
     "_enabled": true,
+    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",
         "__expectedType__": "cc.Prefab"
       }
     ],
-    "_id": "5dHk/6G8dKy4d5DDVqPaDg"
+    "_id": "84g3nFQNxC/4tlRY+vI7H7"
   },
   {
     "__type__": "cc.SceneGlobals",

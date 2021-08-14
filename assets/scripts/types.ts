@@ -1,3 +1,5 @@
+import { Tile } from "./tile";
+
 export type StringObj = {
   [key: string]: any;
 }
@@ -18,3 +20,10 @@ export type LevelSystemConfig = {
 }
 
 export type Color = 'blue' | 'green' | 'purple' | 'red' | 'yellow';
+
+export type TileSpawnCallback = (tileLogic: Tile) => void;
+
+export type GridCellCoordinates = {
+  row: number;
+  col: number;
+}

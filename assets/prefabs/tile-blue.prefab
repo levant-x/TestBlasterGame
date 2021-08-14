@@ -29,7 +29,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 7
+      "__id__": 8
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -139,8 +139,15 @@
       "__id__": 1
     },
     "_enabled": true,
+    "__prefab": {
+      "__id__": 7
+    },
     "color": "blue",
     "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "36v0Kd+ThAB7nIh2rE8LBP"
   },
   {
     "__type__": "cc.PrefabInfo",
