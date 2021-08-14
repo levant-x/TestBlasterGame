@@ -1,0 +1,22 @@
+{
+    "glossary": {
+        "fieldWidth": "N",
+        "fieldHeight": "M",
+        "tileColorsAvail": "C",
+        "tilesetVolToDstr": "K",
+        "tileShufflesAvail": "S",
+        "targetScore": "X",
+        "leadsAvail": "Y"
+    },
+    "levelConfigs": [
+        {
+            "N": "10",
+            "M": "10",
+            "C": "5",
+            "K": "2",
+            "X": "30",
+            "Y": "100",
+            "S": "3"
+        }
+    ]
+}
