@@ -142,7 +142,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 567.6433121019109,
+    "_orthoHeight": 571.5723270440252,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -383,6 +383,22 @@
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "5f043f7e-c3d6-45a5-9cc5-628632e9511c",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "fd360247-ce5e-4bf4-af37-b77baf18cb45",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "af716f43-7826-4259-a3f4-fc0ca89816d7",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "1e978cb0-5bd4-4715-9ea1-df895b3e3573",
         "__expectedType__": "cc.Prefab"
       }
     ],

@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Vec3, UITransform, Size } from 'cc';
+import { _decorator, Component, Vec3, UITransform, Size, Node } from 'cc';
 import { Config } from '../config';
 import { Color, GridCellCoordinates } from '../types';
 const { ccclass, property } = _decorator;
@@ -13,11 +13,20 @@ export class Tile extends Component {
   
   @property
   public color: Color = 'blue';
+  public static onClick: (sender: Tile) => void;
 
   onLoad() {
     if (Tile._size) return;   
-    this._computeSizeParams();
+    this._computeSizeParams();    
   } 
+
+  start() {
+    this.node.on(Node.EventType.MOUSE_UP, this.onClick);
+  }
+
+  onDestroy() {
+    this.node.off(Node.EventType.MOUSE_UP, this.onClick);
+  }
 
   public positionAtCell({ row, col }: GridCellCoordinates) {
     if (!Tile._size) throw 'Tile size not initialized';
@@ -30,6 +39,10 @@ export class Tile extends Component {
 
   public getCellCoordinates(): GridCellCoordinates {
     return this._cellCoords as GridCellCoordinates;
+  }
+
+  protected onClick = () => {
+    Tile.onClick?.(this);
   }
 
   private _computeSizeParams() {

@@ -33,7 +33,7 @@ export class TileSpawner {
   }
 
   protected spawnAtCell({ row, col }: GridCellCoordinates) {
-    const prefVariantIndex = Math.random() * (this.prefabs.length - 1);
+    const prefVariantIndex = Math.round(Math.random() * (this.prefabs.length - 1));
     const prefSelected = this.prefabs[prefVariantIndex];
     const newTileNode = instantiate(prefSelected);
 

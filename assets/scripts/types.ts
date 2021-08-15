@@ -1,4 +1,4 @@
-import { Tile } from "./tile";
+import { Tile } from "./controllers/tile";
 
 export type StringObj = {
   [key: string]: any;
