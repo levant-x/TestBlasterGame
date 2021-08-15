@@ -28,7 +28,9 @@ export class Gameplay extends Component {
     this._cnf = await this._toolsInitializer.loadLevelConfigAsync(this._curLevel);
     this._tileSpawner = this._toolsInitializer.createTileSpawner(
       this._cnf as LevelConfig, this.node, this.tilePrefabs);  
-    this._tileSpawner.spawnAtEntireField(this.onTileSpawn);
+    Tile.is1stSeeding = true;
+    this._tileSpawner.seedGamefield(this.onTileSpawn);
+    Tile.is1stSeeding = false;
     Tile.onClick = this.onTileClick;
   }
      
@@ -59,7 +61,7 @@ export class Gameplay extends Component {
 
     if (!this._areGridCellCoordsValid(tileGCC)) return;
     const tileAtPoint: Tile = this.fieldMap[tileGCC.col][tileGCC.row];
-    
+
     if (tileAtPoint.color !== trgColor || 
       tiles.find(tile => tile == tileAtPoint)) return; 
     tiles.push(tileAtPoint);

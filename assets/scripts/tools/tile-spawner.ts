@@ -23,7 +23,7 @@ export class TileSpawner {
     this.prefabs = args.prefabs;
   }
 
-  public spawnAtEntireField(onTileSpawn?: TileSpawnCallback) {
+  public seedGamefield(onTileSpawn?: TileSpawnCallback) {
     this.onTileSpawn = onTileSpawn;
     for (let row = 0; row < this.rows; row++) this.spawnAtRow(row);
   }

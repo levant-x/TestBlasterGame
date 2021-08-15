@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Vec3, UITransform, Size, Node } from 'cc';
+import { _decorator, Component, Vec3, UITransform, Size, Node, Animation } from 'cc';
 import { Config } from '../config';
 import { Color, GridCellCoordinates } from '../types';
 const { ccclass, property } = _decorator;
@@ -14,8 +14,10 @@ export class Tile extends Component {
   @property
   public color: Color = 'blue';
   public static onClick: (sender: Tile) => void;
+  public static is1stSeeding = true;
 
   onLoad() {
+    if (Tile.is1stSeeding) this.setGreetingAnimationToPlay();    
     if (Tile._size) return;   
     this._computeSizeParams();    
   } 
@@ -43,6 +45,11 @@ export class Tile extends Component {
 
   protected onClick = () => {
     Tile.onClick?.(this);
+  }
+
+  protected setGreetingAnimationToPlay() {
+    const anim = this.node.getComponent(Animation) as Animation;
+    anim.playOnLoad = true;
   }
 
   private _computeSizeParams() {

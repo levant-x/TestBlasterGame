@@ -1,0 +1,81 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "tile-pulsation",
+  "_objFlags": 0,
+  "_native": "",
+  "sample": 15,
+  "speed": 1,
+  "wrapMode": 1,
+  "events": [],
+  "enableTrsBlending": false,
+  "_duration": 1,
+  "_keys": [
+    [
+      0,
+      0.3333333333333333,
+      0.6666666666666666,
+      1
+    ],
+    [
+      0,
+      0.3333333333333333,
+      0.6666666666666666,
+      1
+    ],
+    []
+  ],
+  "_stepness": 0,
+  "_curves": [
+    {
+      "modifiers": [
+        "x"
+      ],
+      "data": {
+        "keys": 0,
+        "values": [
+          0.7,
+          1,
+          0.7,
+          1
+        ],
+        "easingMethods": {}
+      },
+      "commonTarget": 0
+    },
+    {
+      "modifiers": [
+        "y"
+      ],
+      "data": {
+        "keys": 1,
+        "values": [
+          0.7,
+          1,
+          0.7,
+          1
+        ],
+        "easingMethods": {}
+      },
+      "commonTarget": 0
+    },
+    {
+      "modifiers": [
+        "z"
+      ],
+      "data": {
+        "keys": 2,
+        "values": [],
+        "easingMethods": {}
+      },
+      "commonTarget": 0
+    }
+  ],
+  "_commonTargets": [
+    {
+      "modifiers": [
+        "scale"
+      ]
+    }
+  ],
+  "_hash": 943269517
+}
