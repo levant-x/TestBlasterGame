@@ -1,80 +1,64 @@
 
 import { _decorator, Component, Prefab } from 'cc';
+import { ItemGroupsAnalizer } from '../tools/item-groups-analizer';
 import { TileSpawner } from '../tools/tile-spawner';
 import { ToolsInitializer } from '../tools/tools-initializer';
-import { Color, GridCellCoordinates, LevelConfig } from '../types';
+import { GridCellCoordinates, IClassifyable, LevelConfig } from '../types';
 import { Tile } from './tile';
 const { ccclass, property } = _decorator;
 
 @ccclass('Gameplay')
 export class Gameplay extends Component {
-  private _curLevel = 0;
-  private _cnf: LevelConfig | null = null;
-  private _tileSpawner?: TileSpawner;
-  private _toolsInitializer = new ToolsInitializer();
-  private _tileCoordsSearchSwitchers = [
-    ({ row, col }: GridCellCoordinates) => ({ row, col: col + 1, }),
-    ({ row, col }: GridCellCoordinates) => ({ row, col: col - 1, }),
-    ({ row, col }: GridCellCoordinates) => ({ row: row + 1, col, }),
-    ({ row, col }: GridCellCoordinates) => ({ row: row - 1, col, }),
-  ]
-  
-  protected fieldMap: Tile[][] = []; // use as [col][row]
+    private _toolsInitializer = new ToolsInitializer();
 
-  @property({ type: [Prefab] })
-  private tilePrefabs: Prefab[] = [];
+    protected curLevel = 0;
+    protected cnf?: LevelConfig;
+    protected tileSpawner?: TileSpawner;
+    protected groupsAnalizer?: ItemGroupsAnalizer;
+    protected fieldMap: Tile[][] = []; // use as [col][row]
 
-  async start () {
-    this._cnf = await this._toolsInitializer.loadLevelConfigAsync(this._curLevel);
-    this._tileSpawner = this._toolsInitializer.createTileSpawner(
-      this._cnf as LevelConfig, this.node, this.tilePrefabs);  
-    Tile.is1stSeeding = true;
-    this._tileSpawner.seedGamefield(this.onTileSpawn);
-    Tile.is1stSeeding = false;
-    Tile.onClick = this.onTileClick;
-  }
-     
-  protected onTileSpawn = (tileLogic: Tile) => {
-    const { col } = tileLogic.getCellCoordinates();
-    if (this.fieldMap.length < col + 1) this.fieldMap.push([]);
-    this.fieldMap[col].push(tileLogic);
-  }
+    @property({ type: [Prefab] })
+    private tilePrefabs: Prefab[] = [];
 
-  protected onTileClick = (sender: Tile) => {
-    const senderCellCoords = sender.getCellCoordinates();
-    this.tryDestroyTilesAroundPoint(senderCellCoords, sender.color);
-  }
+    async start () {
+        this.cnf = await this._toolsInitializer.loadLevelConfigAsync(this.curLevel);
+        this.tileSpawner = this._toolsInitializer.createTileSpawner(
+        this.cnf as LevelConfig, this.node, this.tilePrefabs);  
 
-  protected tryDestroyTilesAroundPoint(
-    { col, row }: GridCellCoordinates, targetColor: Color) {  
+        Tile.is1stSeeding = true;
+        this.tileSpawner.seedGamefield(this.onTileSpawn);
+        Tile.is1stSeeding = false;
 
-    const tilesGroupToDstr: Tile[] = [];
-    this._collectTileGroup({ col, row }, targetColor, tilesGroupToDstr);
-    
-    const cnf = this._cnf as LevelConfig;
-    if (tilesGroupToDstr.length < cnf.tilesetVolToDstr) return;    
-    tilesGroupToDstr.forEach(tile => tile.node.destroy());
-  }
+        this.groupsAnalizer = new ItemGroupsAnalizer(this.fieldMap);
+        Tile.onClick = this.onTileClick;
+    }
+        
+    protected onTileSpawn = (tileLogic: Tile) => {
+        const { col } = tileLogic.getCellCoordinates();
+        if (this.fieldMap.length < col + 1) this.fieldMap.push([]);
+        this.fieldMap[col].push(tileLogic);
+    }
 
-  private _collectTileGroup(
-    tileGCC: GridCellCoordinates, trgColor: Color, tiles: Tile[]) {
+    protected onTileClick = (sender: Tile) => {
+        const senderCellCoords = sender.getCellCoordinates();        
+        const groupHit = this._getTilesAroundPoint(senderCellCoords, sender);
+        this.onGroupHitCollect(groupHit);
+    }
 
-    if (!this._areGridCellCoordsValid(tileGCC)) return;
-    const tileAtPoint: Tile = this.fieldMap[tileGCC.col][tileGCC.row];
+    protected onGroupHitCollect(groupHit: IClassifyable[]) {
+        const cnf = this.cnf as LevelConfig;
+        if (groupHit.length < cnf.tilesetVolToDstr) return;    
+        groupHit.forEach(tile => this.onTileHitIterate(tile as Tile));
+    }
 
-    if (tileAtPoint.color !== trgColor || 
-      tiles.find(tile => tile == tileAtPoint)) return; 
-    tiles.push(tileAtPoint);
-    
-    for (const sw of this._tileCoordsSearchSwitchers) this._collectTileGroup(
-      sw(tileGCC), trgColor, tiles
-    );
-  }
+    protected onTileHitIterate(tile: Tile) {
+        tile.node.destroy();
+    }
 
-  private _areGridCellCoordsValid({ col, row }: GridCellCoordinates) {
-    const cnf = this._cnf as LevelConfig;
-    const areCoordsValid = col >= 0 && col < cnf.fieldWidth &&
-      row >= 0 && row < cnf.fieldHeight;
-    return areCoordsValid;
-  }
+    private _getTilesAroundPoint({ 
+        col, row }: GridCellCoordinates, targetTile: IClassifyable) {  
+        const tilesAroundPoint = this.groupsAnalizer?.collectItemsGroup({
+            col, row }, targetTile) || [];
+        return tilesAroundPoint;
+    }
 }
