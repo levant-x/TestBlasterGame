@@ -1,42 +1,56 @@
 
-import { _decorator, Component, Prefab } from 'cc';
+import { _decorator, Prefab } from 'cc';
+import { GamefieldContext } from '../tools/gamefield-context';
 import { ItemGroupsAnalizer } from '../tools/item-groups-analizer';
-import { TileSpawner } from '../tools/tile-spawner';
-import { ToolsInitializer } from '../tools/tools-initializer';
-import { GridCellCoordinates, IClassifyable, LevelConfig } from '../types';
+import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
+import { ToolsFactory } from '../tools/tools-factory';
+import { GridCellCoordinates, IClassifyable, ITile, LevelConfig } from '../types';
 import { Tile } from './tile';
 const { ccclass, property } = _decorator;
 
 @ccclass('Gameplay')
-export class Gameplay extends Component {
-    private _toolsInitializer = new ToolsInitializer();
+export class Gameplay extends GamefieldContext {
+    private _toolsInitializer = new ToolsFactory();
 
     protected curLevel = 0;
-    protected cnf?: LevelConfig;
+    protected cfg?: LevelConfig;
     protected tileSpawner?: TileSpawner;
     protected groupsAnalizer?: ItemGroupsAnalizer;
-    protected fieldMap: Tile[][] = []; // use as [col][row]
+    protected gamefield: ITile[][] = []; 
 
     @property({ type: [Prefab] })
     private tilePrefabs: Prefab[] = [];
 
     async start () {
-        this.cnf = await this._toolsInitializer.loadLevelConfigAsync(this.curLevel);
-        this.tileSpawner = this._toolsInitializer.createTileSpawner(
-        this.cnf as LevelConfig, this.node, this.tilePrefabs);  
+        this.cfg = await this._toolsInitializer.loadLevelConfigAsync(
+            this.curLevel
+        );
+        this.initCtx({
+            gamefield: [],
+            w: this.cfg.fieldWidth,
+            h: this.cfg.fieldHeight,
+        });
 
+        // AFTER CONFIG INIT
+        this.tileSpawner = ToolsFactory.get(TileSpawner, {
+            rows: this.height,
+            cols: this.witdh,
+            fieldNode: this.node,
+            prefabs: this.tilePrefabs,
+        } as TileSpawnerArgs);
+        
         Tile.is1stSeeding = true;
         this.tileSpawner.seedGamefield(this.onTileSpawn);
         Tile.is1stSeeding = false;
 
-        this.groupsAnalizer = new ItemGroupsAnalizer(this.fieldMap);
+        this.groupsAnalizer = ToolsFactory.get(ItemGroupsAnalizer);
         Tile.onClick = this.onTileClick;
     }
         
     protected onTileSpawn = (tileLogic: Tile) => {
         const { col } = tileLogic.getCellCoordinates();
-        if (this.fieldMap.length < col + 1) this.fieldMap.push([]);
-        this.fieldMap[col].push(tileLogic);
+        if (this.gamefield.length < col + 1) this.gamefield.push([]);
+        this.gamefield[col].push(tileLogic);
     }
 
     protected onTileClick = (sender: Tile) => {
@@ -46,12 +60,12 @@ export class Gameplay extends Component {
     }
 
     protected onGroupHitCollect(groupHit: IClassifyable[]) {
-        const cnf = this.cnf as LevelConfig;
-        if (groupHit.length < cnf.tilesetVolToDstr) return;    
-        groupHit.forEach(tile => this.onTileHitIterate(tile as Tile));
+        const cfg = this.cfg as LevelConfig;
+        if (groupHit.length < cfg.tilesetVolToDstr) return;    
+        groupHit.forEach(tile => this.destroyHitTile(tile as Tile));
     }
 
-    protected onTileHitIterate(tile: Tile) {
+    protected destroyHitTile(tile: ITile) {
         tile.node.destroy();
     }
 

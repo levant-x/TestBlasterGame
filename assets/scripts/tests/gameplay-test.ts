@@ -11,7 +11,7 @@ export class GameplayTest extends Gameplay {
   }
 
   private _tileAt12hasCoordsCol1Row2() {
-    const tileAt12 = this.fieldMap[1][2];
+    const tileAt12 = this.gamefield[1][2];
     const { col, row } = tileAt12.getCellCoordinates();
     if (col !== 1) throw `Tile column equals ${col}`;
     if (row !== 2) throw `Tile row equals ${row}`;

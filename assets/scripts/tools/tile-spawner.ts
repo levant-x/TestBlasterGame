@@ -2,7 +2,7 @@ import { Node, instantiate, Prefab } from "cc";
 import { Tile } from "../controllers/tile";
 import { GridCellCoordinates, TileSpawnCallback } from "../types";
 
-export type InitArgs = {
+export type TileSpawnerArgs = {
   rows: number;
   cols: number;
   fieldNode: Node;
@@ -16,7 +16,7 @@ export class TileSpawner {
   private prefabs: Prefab[];
   private onTileSpawn?: TileSpawnCallback;
 
-  constructor(args: InitArgs) {
+  constructor(args: TileSpawnerArgs) {
     this.rows = args.rows;
     this.cols = args.cols;                
     this.fieldNode = args.fieldNode;
@@ -25,21 +25,28 @@ export class TileSpawner {
 
   public seedGamefield(onTileSpawn?: TileSpawnCallback) {
     this.onTileSpawn = onTileSpawn;
-    for (let row = 0; row < this.rows; row++) this.spawnAtRow(row);
+    for (let row = 0; row < this.rows; row++) this.spawnObjAtRow(row);
   }
 
-  protected spawnAtRow(row: number) {
-    for (let col = 0; col < this.cols; col++) this.spawnAtCell({ row, col });
+  protected spawnObjAtRow(row: number) {
+    for (let col = 0; col < this.cols; col++) this.spawnObjAtCell({
+      row, col 
+    });
   }
 
-  protected spawnAtCell({ row, col }: GridCellCoordinates) {
-    const prefVariantIndex = Math.round(Math.random() * (this.prefabs.length - 1));
-    const prefSelected = this.prefabs[prefVariantIndex];
+  protected spawnObjAtCell({ row, col }: GridCellCoordinates) {
+    const indexLimit = this.prefabs.length - 1;
+    const rndIndex = Math.round(Math.random() * indexLimit);
+    const prefSelected = this.prefabs[rndIndex];
     const newTileNode = instantiate(prefSelected);
+    this.setupNewItem(newTileNode, { row, col });
+  }
 
-    this.fieldNode.addChild(newTileNode);
-    const newTileMainLogic = newTileNode.getComponent(Tile) as Tile;
-    newTileMainLogic.positionAtCell({ col, row });
+  protected setupNewItem(
+    itemNode: Node, coords: GridCellCoordinates) {
+    this.fieldNode.addChild(itemNode);
+    const newTileMainLogic = itemNode.getComponent(Tile) as Tile;
+    newTileMainLogic.positionAtCell(coords);
     this.onTileSpawn?.(newTileMainLogic);
   }
 }

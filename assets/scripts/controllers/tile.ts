@@ -1,11 +1,11 @@
 
 import { _decorator, Component, Vec3, UITransform, Size, Node, Animation } from 'cc';
 import { Config } from '../config';
-import { Color, GridCellCoordinates, IClassifyable } from '../types';
+import { Color, GridCellCoordinates, IClassifyable, ITile } from '../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Tile')
-export class Tile extends Component implements IClassifyable {
+export class Tile extends Component implements IClassifyable, ITile {    
     private static _size?: Vec3 = undefined;
     private static _layoutOrigin?: Vec3 = undefined; 
 
@@ -42,6 +42,12 @@ export class Tile extends Component implements IClassifyable {
         const cellAbsPos = Vec3.clone(Tile._layoutOrigin as Vec3).add(cellPosInGrid);
         this.node.setPosition(cellAbsPos);
         this._cellCoords = { row, col };
+    }
+
+    public moveToCell(gridCoordinates: GridCellCoordinates, 
+        onComplete: (sender: ITile) => void) {
+            
+        throw new Error('Method not implemented.');
     }
 
     public getCellCoordinates(): GridCellCoordinates {
