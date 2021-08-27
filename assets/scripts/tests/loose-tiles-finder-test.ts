@@ -1,8 +1,8 @@
 
-import { _decorator, Component, Node, warn } from 'cc';
+import { _decorator, Node } from 'cc';
 import { Tile } from '../controllers/tile';
 import { LooseTilesFinder } from '../tools/loose-tiles-finder';
-import { ITile, TileOffsetInfo } from '../types';
+import { TileOffsetInfo } from '../types';
 
 type MatrixIterateCallback = (r: number, c: number) => void;
 type K = number;
@@ -14,6 +14,7 @@ type DataPattern<T> = {
 
 export class LooseTilesFinderTest extends LooseTilesFinder {
     private _currPattern?: DataPattern<K>;
+    
     // !!ALL LAYOUTS ARE RIGHT TRANSPOSED!!
     private _hitItemsInMiddle: DataPattern<K> = {
         pointsToDestroy: [
@@ -44,6 +45,64 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
         looseItemsCount: 12,
     };
 
+    private _hitItemsUpToTop: DataPattern<K> = {
+        pointsToDestroy: [
+        //   0 1 2 3 4 5 6 7 8 9
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,1,1,1,1,0,0,0,0],
+            [0,0,0,0,1,1,1,1,1,1],
+        ],
+        pointsToOffset: [            
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,2,3,4,5],
+            [0,0,0,0,0,0,0,0,0,0],
+        ],
+        looseItemsCount: 4,
+    };
+
+    private _hitItemsCircular: DataPattern<K> = {
+        pointsToDestroy: [
+        //   0 1 2 3 4 5 6 7 8 9
+            [0,0,1,1,1,1,1,0,0,0],
+            [0,0,0,1,0,0,1,1,0,0],
+            [0,0,0,1,0,0,0,1,0,0],
+            [0,0,0,1,1,1,1,1,0,0],
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+        ],
+        pointsToOffset: [         
+            [0,0,0,0,0,0,0,2,3,4],
+            [0,0,0,0,3,4,0,0,5,6],
+            [0,0,0,0,3,4,5,0,6,7],
+            [0,0,0,0,0,0,0,0,3,4],
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0], 
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+        ],
+        looseItemsCount: 14,
+    };
+
     constructor() {
         super();
         this._looseTilesAndTheirNewPositionsMatchThePattern();
@@ -51,6 +110,8 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
 
     private _looseTilesAndTheirNewPositionsMatchThePattern() {
         this._testPattern(this._hitItemsInMiddle);
+        this._testPattern(this._hitItemsUpToTop);
+        this._testPattern(this._hitItemsCircular);
     }
     
     private _iterateMatrix<T>(mtx: T[][], cbck: MatrixIterateCallback) {
@@ -86,7 +147,7 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
             ptrn.looseItemsCount, looseTilesInfo.length
         );
         looseTilesInfo.forEach(this._assertTilesCollected);
-        console.warn(`Loose tiles: offset correct`);
+        console.warn(`Loose tiles: offset is correct`);
     }
 
     private _extractTileCellCoords(node: Node) {
