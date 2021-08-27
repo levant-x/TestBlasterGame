@@ -50,7 +50,7 @@ export class Tile extends Component implements IClassifyable, ITile {
         throw new Error('Method not implemented.');
     }
 
-    public getCellCoordinates(): GridCellCoordinates {
+    public getCellCoordinates = (): GridCellCoordinates => {
         return this._cellCoords as GridCellCoordinates;
     }
 

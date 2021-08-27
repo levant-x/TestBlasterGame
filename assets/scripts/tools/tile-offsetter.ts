@@ -1,68 +1,24 @@
 
 import { GridCellCoordinates, ITile } from '../types';
 import { GamefieldContext } from './gamefield-context';
-import { ItemGroupsAnalizer } from './item-groups-analizer';
-import { TileSpawner } from './tile-spawner';
-
-type Col2RowsMap = Record<number, number[]>;
+import { LooseTilesFinder } from './loose-tiles-finder';
+import { ToolsFactory } from './tools-factory';
 
 export class TileOffsetter extends GamefieldContext {
     public onTileOffset?: (tile: ITile) => void;
 
     private _tilesInMove: ITile[] = [];    
+    private _fallingTilesFinder: LooseTilesFinder;
+
+    constructor() {
+        super();
+        this._fallingTilesFinder = ToolsFactory.get(LooseTilesFinder);
+    }
 
     public async offsetUpperTilesAsync(
         emptyCellsCoords: GridCellCoordinates[]) {
 
-        const colsInvolved = emptyCellsCoords
-            .filter(({ row }) => row < this.height)
-            .reduce(this._groupCrdsByCol, {} as Col2RowsMap);
-        const ofsCol = this._offsetTilesCol;
-        for (const col in colsInvolved) ofsCol(+col, colsInvolved[col]);
-        await this._waitForOffsetToCompleteAsync();
-    }
-
-    private _groupCrdsByCol(
-        colCrdsMap: Col2RowsMap, crds: GridCellCoordinates) {
-        const trgCol = colCrdsMap[crds.col];
-        if (trgCol) trgCol.push(crds.row);
-        else colCrdsMap[crds.col] = [crds.row];
-        return colCrdsMap;
-    }
-
-    private _offsetTilesCol(col: number, rowNumsStack: number[]) {   
-        let rowOfLowestTileAbv = col;
-        const rowNumsSorted = rowNumsStack.sort();
-
-        for (let i = 0; i < rowNumsSorted.length; i++) {
-            const crrEmptyRow = rowNumsSorted[i];
-            const { wasFound, rowAbv } = this._findClosestTileAbove({
-                col: rowOfLowestTileAbv, 
-                row: crrEmptyRow,
-            });
-            if (!wasFound) break;
-            rowOfLowestTileAbv = rowAbv;
-            this._setupTileForOffset({ 
-                row: rowAbv, col }, 
-                crrEmptyRow
-            );
-        }
-    }
-
-    private _findClosestTileAbove({ col, row }: GridCellCoordinates) {
-        const result = { 
-            wasFound: false, 
-            rowAbv: -1
-        };
-        for (let r = row + 1; r < this.height; r++) {
-            const tileAbove = this.gamefield[col][r];
-
-            if (!tileAbove.node.active) continue;
-            result.wasFound = true;
-            result.rowAbv = r;
-            break;
-        }
-        return result;
+        
     }
 
     private _setupTileForOffset({

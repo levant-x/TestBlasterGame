@@ -1,8 +1,10 @@
 
 import { _decorator, Node, resources, JsonAsset, Prefab, __private } from 'cc';
 import { Config } from '../config';
+import { LooseTilesFinderTest } from '../tests/loose-tiles-finder-test';
 import { LevelConfig, LevelSystemConfig } from '../types';
-import { ItemGroupsAnalizer } from './item-groups-analizer';
+import { HitTilesFinder } from './hit-tiles-finder';
+import { LooseTilesFinder } from './loose-tiles-finder';
 import { TileSpawner, TileSpawnerArgs } from './tile-spawner';
 
 type Type<T> = __private.Constructor<T>;
@@ -10,22 +12,25 @@ const LEVEL_SYS_CFG_PATH = 'level-sys-config';
 
 export class ToolsFactory {
   private _gamelevel: number = 0;
-  private static _typesFactory: Record<
+  private static _testsFactory: Record<
     string, (args?: any) => any> = {
     TileSpawner: (args: TileSpawnerArgs) => new TileSpawner(args),
-    ItemGroupsAnalizer: () => new ItemGroupsAnalizer(),
+    HitTilesFinder: () => new HitTilesFinder(),
+    LooseTilesFinder : () => new LooseTilesFinderTest(),
   }
 
   public static get<T>(type: Type<T>, args?: any): T {
     const typeName = type.name;
-    const create = this._typesFactory[typeName];
-    if (!create) throw 'Type creator not found!';
-    else return create(args) as T;
+    const create = this._testsFactory[typeName];
+    if (!create) throw `Creator for ${typeName} not found!`;
+    else return create(args);
   }
 
   public loadLevelConfigAsync(gamelevel: number): Promise<LevelConfig> {
     this._gamelevel = gamelevel;    
-    return new Promise<LevelConfig>(resolve => this._loadLvlCnf(resolve));
+    return new Promise<LevelConfig>(resolve => 
+      this._loadLvlCnf(resolve)
+    );
   }
 
   private _loadLvlCnf(resolve: (cnf: LevelConfig) => void) {

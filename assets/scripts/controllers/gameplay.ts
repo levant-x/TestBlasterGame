@@ -1,7 +1,8 @@
 
 import { _decorator, Prefab } from 'cc';
 import { GamefieldContext } from '../tools/gamefield-context';
-import { ItemGroupsAnalizer } from '../tools/item-groups-analizer';
+import { HitTilesFinder } from '../tools/hit-tiles-finder';
+import { LooseTilesFinder } from '../tools/loose-tiles-finder';
 import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
 import { ToolsFactory } from '../tools/tools-factory';
 import { GridCellCoordinates, IClassifyable, ITile, LevelConfig } from '../types';
@@ -15,8 +16,8 @@ export class Gameplay extends GamefieldContext {
     protected curLevel = 0;
     protected cfg?: LevelConfig;
     protected tileSpawner?: TileSpawner;
-    protected groupsAnalizer?: ItemGroupsAnalizer;
-    protected gamefield: ITile[][] = []; 
+    protected hitTilesCollector?: HitTilesFinder;
+    protected looseTilesFinder?: LooseTilesFinder;
 
     @property({ type: [Prefab] })
     private tilePrefabs: Prefab[] = [];
@@ -43,7 +44,8 @@ export class Gameplay extends GamefieldContext {
         this.tileSpawner.seedGamefield(this.onTileSpawn);
         Tile.is1stSeeding = false;
 
-        this.groupsAnalizer = ToolsFactory.get(ItemGroupsAnalizer);
+        this.hitTilesCollector = ToolsFactory.get(HitTilesFinder);
+        this.looseTilesFinder = ToolsFactory.get(LooseTilesFinder);
         Tile.onClick = this.onTileClick;
     }
         
@@ -71,8 +73,13 @@ export class Gameplay extends GamefieldContext {
 
     private _getTilesAroundPoint({ 
         col, row }: GridCellCoordinates, targetTile: IClassifyable) {  
-        const tilesAroundPoint = this.groupsAnalizer?.collectItemsGroup({
-            col, row }, targetTile) || [];
-        return tilesAroundPoint;
+        if (!this.hitTilesCollector) throw 'Hit-collector not init!';
+
+        const callback = (other: IClassifyable) => (
+            other.getGroupID() === targetTile.getGroupID()
+        );
+        return this.hitTilesCollector.collectItemsGroup({
+            col, row }, callback
+        );
     }
 }

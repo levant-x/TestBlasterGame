@@ -1,8 +1,12 @@
-
-import { GridCellCoordinates, IClassifyable } from '../types';
+import { GridCellCoordinates, IClassifyable, IItemsGroupAnalyzer as IItemsGroupFinder, ITile } from '../types';
 import { GamefieldContext } from './gamefield-context';
 
-export class ItemGroupsAnalizer extends GamefieldContext {
+type ItemSelector<T> = (item: T) => boolean;
+type T = IClassifyable;
+
+export class HitTilesFinder extends GamefieldContext 
+    implements IItemsGroupFinder<T> {
+    private _selectItem?: ItemSelector<T>;
     private _coordsSearchSwitchers = [
         ({ row, col }: GridCellCoordinates) => ({ row, col: col + 1, }),
         ({ row, col }: GridCellCoordinates) => ({ row, col: col - 1, }),
@@ -11,28 +15,29 @@ export class ItemGroupsAnalizer extends GamefieldContext {
     ]
 
     public collectItemsGroup(
-        { col, row }: GridCellCoordinates, targetGroup: IClassifyable) {  
+        { col, row }: GridCellCoordinates, 
+        select: ItemSelector<T>): T[] {
 
-        const itemsGroup: IClassifyable[] = [];
-        this._collectItemsForGroup({ col, row }, targetGroup, itemsGroup);
+        this._selectItem = select;
+        const itemsGroup: T[] = [];
+        this._collectItemsForGroup({ col, row }, itemsGroup);
         return itemsGroup;
     }
 
     private _collectItemsForGroup(
-        posCoords: GridCellCoordinates, trgGroup: IClassifyable, 
-        items: IClassifyable[]) {
+        posCoords: GridCellCoordinates, items: T[]) {
         
         if (!this._areGridCellCoordsValid(posCoords)) return;
         const { row, col } = posCoords;
-        const itemAtPoint = this.gamefield[col][row] as unknown as IClassifyable;
+        const itemAtPoint = this.gamefield[col][row] as unknown as T;
 
-        if (itemAtPoint.getGroupID() !== trgGroup.getGroupID() || 
-            items.find(item => item == itemAtPoint)) return; 
+        if (!this._selectItem?.(itemAtPoint) || 
+            items.includes(itemAtPoint)) return; 
         items.push(itemAtPoint);
 
         const switchers = this._coordsSearchSwitchers;        
         for (const offsetCoord of switchers) this._collectItemsForGroup(
-            offsetCoord(posCoords), trgGroup, items
+            offsetCoord(posCoords), items
         );
     }
 

@@ -142,7 +142,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 571.5723270440252,
+    "_orthoHeight": 567.6433121019109,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -379,7 +379,6 @@
       "__id__": 2
     },
     "_enabled": true,
-    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",
