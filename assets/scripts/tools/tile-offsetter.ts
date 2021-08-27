@@ -1,5 +1,5 @@
 
-import { GridCellCoordinates, ITile } from '../types';
+import { GridCellCoordinates, ITile, TileOffsetInfo } from '../types';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
 import { ToolsFactory } from './tools-factory';
@@ -8,25 +8,33 @@ export class TileOffsetter extends GamefieldContext {
     public onTileOffset?: (tile: ITile) => void;
 
     private _tilesInMove: ITile[] = [];    
-    private _fallingTilesFinder: LooseTilesFinder;
+    private _looseTilesFinder: LooseTilesFinder;
 
     constructor() {
         super();
-        this._fallingTilesFinder = ToolsFactory.get(LooseTilesFinder);
+        this._looseTilesFinder = ToolsFactory.get(LooseTilesFinder);
     }
 
-    public async offsetUpperTilesAsync(
-        emptyCellsCoords: GridCellCoordinates[]) {
-
-        
+    public async offsetLooseTilesAsync(
+        hitCellsCoords: GridCellCoordinates[]
+    ) {
+        const tilesToMove = this._looseTilesFinder.collectItemsGroup(
+            hitCellsCoords, tileNode => tileNode.active
+        );
+        for (const tileInfo of tilesToMove) this._setupTileForOffset(
+            tileInfo
+        );
+        await this._waitForOffsetToCompleteAsync();
     }
 
-    private _setupTileForOffset({
-        col, row }: GridCellCoordinates, newRow: number) {
-        const tileToMove = this.gamefield[col][row];
-        this._tilesInMove.push(tileToMove);
-        tileToMove.moveToCell({ col, row: newRow }, () => {
-            this._onTileOffsetComplete(tileToMove);
+    private _setupTileForOffset({ 
+        tile, rowToSettleTo }: TileOffsetInfo
+    ) {
+        this._tilesInMove.push(tile);        
+        const { col, row } = tile.getCellCoordinates();
+        const newRow = rowToSettleTo;
+        tile.moveToCell({ col, row: newRow }, () => {
+            this._onTileOffsetComplete(tile);
         })
         this.gamefield[col][newRow] = this.gamefield[col][row];
     }

@@ -3,6 +3,7 @@ import { _decorator, Prefab } from 'cc';
 import { GamefieldContext } from '../tools/gamefield-context';
 import { HitTilesFinder } from '../tools/hit-tiles-finder';
 import { LooseTilesFinder } from '../tools/loose-tiles-finder';
+import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
 import { ToolsFactory } from '../tools/tools-factory';
 import { GridCellCoordinates, IClassifyable, ITile, LevelConfig } from '../types';
@@ -17,7 +18,7 @@ export class Gameplay extends GamefieldContext {
     protected cfg?: LevelConfig;
     protected tileSpawner?: TileSpawner;
     protected hitTilesCollector?: HitTilesFinder;
-    protected looseTilesFinder?: LooseTilesFinder;
+    protected looseTilesOffsetter?: TileOffsetter;
 
     @property({ type: [Prefab] })
     private tilePrefabs: Prefab[] = [];
@@ -45,7 +46,7 @@ export class Gameplay extends GamefieldContext {
         Tile.is1stSeeding = false;
 
         this.hitTilesCollector = ToolsFactory.get(HitTilesFinder);
-        this.looseTilesFinder = ToolsFactory.get(LooseTilesFinder);
+        this.looseTilesOffsetter = ToolsFactory.get(TileOffsetter);
         Tile.onClick = this.onTileClick;
     }
         
@@ -65,10 +66,24 @@ export class Gameplay extends GamefieldContext {
         const cfg = this.cfg as LevelConfig;
         if (groupHit.length < cfg.tilesetVolToDstr) return;    
         groupHit.forEach(tile => this.destroyHitTile(tile as Tile));
+        this.offsetLooseTilesAsync(groupHit as ITile[]);
+        this.onLooseTilesOffset();
+    }
+
+    protected onLooseTilesOffset() {
+
     }
 
     protected destroyHitTile(tile: ITile) {
         tile.node.destroy();
+    }
+
+    protected async offsetLooseTilesAsync(groupHit: ITile[]){
+        const groupHitCrds = groupHit
+            .map(tileHit => tileHit.getCellCoordinates());
+        await this.looseTilesOffsetter?.offsetLooseTilesAsync(
+            groupHitCrds
+        );
     }
 
     private _getTilesAroundPoint({ 

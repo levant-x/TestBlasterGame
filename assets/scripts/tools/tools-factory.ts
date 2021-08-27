@@ -5,6 +5,7 @@ import { LooseTilesFinderTest } from '../tests/loose-tiles-finder-test';
 import { LevelConfig, LevelSystemConfig } from '../types';
 import { HitTilesFinder } from './hit-tiles-finder';
 import { LooseTilesFinder } from './loose-tiles-finder';
+import { TileOffsetter } from './tile-offsetter';
 import { TileSpawner, TileSpawnerArgs } from './tile-spawner';
 
 type Type<T> = __private.Constructor<T>;
@@ -16,7 +17,8 @@ export class ToolsFactory {
     string, (args?: any) => any> = {
     TileSpawner: (args: TileSpawnerArgs) => new TileSpawner(args),
     HitTilesFinder: () => new HitTilesFinder(),
-    LooseTilesFinder : () => new LooseTilesFinderTest(),
+    LooseTilesFinder : () => new LooseTilesFinder(),
+    TileOffsetter: () => new TileOffsetter(),
   }
 
   public static get<T>(type: Type<T>, args?: any): T {

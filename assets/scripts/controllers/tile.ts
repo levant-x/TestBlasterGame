@@ -6,10 +6,10 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Tile')
 export class Tile extends Component implements IClassifyable, ITile {    
-    private static _size?: Vec3 = undefined;
-    private static _layoutOrigin?: Vec3 = undefined; 
+    private static _size: Vec3 = Vec3.ZERO;
+    private static _layoutOrigin?: Vec3; 
 
-    private _cellCoords?: GridCellCoordinates;
+    private _cellCoords = { row: 0, col: 0, };
     
     @property
     public color: Color = Color.blue;
@@ -19,7 +19,7 @@ export class Tile extends Component implements IClassifyable, ITile {
 
     onLoad() {
         if (Tile.is1stSeeding) this.setGreetingAnimationToPlay();    
-        if (Tile._size) return;   
+        if (Tile._size !== Vec3.ZERO) return;   
         this._computeSizeParams();    
     } 
 
@@ -35,23 +35,22 @@ export class Tile extends Component implements IClassifyable, ITile {
         return Color[this.color];
     }
 
-    public positionAtCell({ row, col }: GridCellCoordinates) {
-        if (!Tile._size) throw 'Tile size not initialized';
-
-        const cellPosInGrid = new Vec3(col, row).multiply(Tile._size);    
-        const cellAbsPos = Vec3.clone(Tile._layoutOrigin as Vec3).add(cellPosInGrid);
+    public positionAtCell(coords: GridCellCoordinates) {
+        const cellAbsPos = this.getCellAbsPosition(coords);
         this.node.setPosition(cellAbsPos);
-        this._cellCoords = { row, col };
+        this._cellCoords = {...coords};
     }
 
-    public moveToCell(gridCoordinates: GridCellCoordinates, 
-        onComplete: (sender: ITile) => void) {
-            
-        throw new Error('Method not implemented.');
+    public moveToCell(
+        gridCoords: GridCellCoordinates, 
+        onComplete: (sender: ITile) => void
+    ) {
+        this.positionAtCell(gridCoords);
+        onComplete(this);
     }
 
     public getCellCoordinates = (): GridCellCoordinates => {
-        return this._cellCoords as GridCellCoordinates;
+        return this._cellCoords;
     }
 
     protected onClick = () => {
@@ -63,6 +62,15 @@ export class Tile extends Component implements IClassifyable, ITile {
         anim.playOnLoad = true;
     }
 
+    protected getCellAbsPosition({ 
+        row, col }: GridCellCoordinates
+    ) {
+        const cellPosInGrid = new Vec3(col, row).multiply(Tile._size);    
+        const cellAbsPos = Vec3.clone(Tile._layoutOrigin as Vec3)
+            .add(cellPosInGrid);
+        return cellAbsPos;
+    }
+
     private _computeSizeParams() {
         const size = this.getComponent(UITransform)?.contentSize as Size;
         const { width, height } = size;    
@@ -70,6 +78,8 @@ export class Tile extends Component implements IClassifyable, ITile {
 
         Tile._size = new Vec3(minDim, minDim);
         const hfSize = new Vec3(minDim / 2, minDim / 2);
-        Tile._layoutOrigin = Vec3.clone(Config.layoutOriginLeftBottom).add(hfSize);
+        Tile._layoutOrigin = Vec3.clone(
+            Config.LAYOUT_ORIGIN_LEFT_BOTTOM
+        ).add(hfSize);
     }
 }
