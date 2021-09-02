@@ -2,11 +2,16 @@
 import { _decorator, Prefab } from 'cc';
 import { GamefieldContext } from '../tools/gamefield-context';
 import { HitTilesFinder } from '../tools/hit-tiles-finder';
-import { LooseTilesFinder } from '../tools/loose-tiles-finder';
 import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
 import { ToolsFactory } from '../tools/tools-factory';
-import { GridCellCoordinates, IClassifyable, ITile, LevelConfig } from '../types';
+import { 
+    EmptyCellsCount, 
+    GridCellCoordinates, 
+    IClassifyable, 
+    ITile, 
+    LevelConfig 
+} from '../types';
 import { Tile } from './tile';
 const { ccclass, property } = _decorator;
 
@@ -32,7 +37,6 @@ export class Gameplay extends GamefieldContext {
             w: this.cfg.fieldWidth,
             h: this.cfg.fieldHeight,
         });
-
         // AFTER CONFIG INIT
         this.tileSpawner = ToolsFactory.get(TileSpawner, {
             rows: this.height,
@@ -50,7 +54,7 @@ export class Gameplay extends GamefieldContext {
         Tile.onClick = this.onTileClick;
     }
         
-    protected onTileSpawn = (tileLogic: Tile) => {
+    protected onTileSpawn = (tileLogic: ITile) => {
         const { col } = tileLogic.getCellCoordinates();
         if (this.gamefield.length < col + 1) this.gamefield.push([]);
         this.gamefield[col].push(tileLogic);
@@ -65,23 +69,31 @@ export class Gameplay extends GamefieldContext {
     protected onGroupHitCollect(groupHit: IClassifyable[]) {
         const cfg = this.cfg as LevelConfig;
         if (groupHit.length < cfg.tilesetVolToDstr) return;    
-        groupHit.forEach(tile => this.destroyHitTile(tile as Tile));
-        this.offsetLooseTilesAsync(groupHit as ITile[]);
-        this.onLooseTilesOffset();
+        this.destroyHitTilesAsync(groupHit as ITile[]);
+        const emptyCellCntsGroupedByCol = this.offsetLooseTilesAsync(
+            groupHit as ITile[]
+        );
     }
 
-    protected onLooseTilesOffset() {
+    protected onLooseTilesOffset<T>(
+        emptyCellsCountByCols: T[]
+    ) {
 
     }
 
-    protected destroyHitTile(tile: ITile) {
-        tile.node.destroy();
+    protected async destroyHitTilesAsync(groupHit: ITile[]) {
+        const moveTileTasks = groupHit
+            .map(tile => tile.destroyHitAsync());
+        await Promise.all(moveTileTasks);
     }
 
-    protected async offsetLooseTilesAsync(groupHit: ITile[]){
+
+    /** Returns count of empty cells grouped by column */
+    protected async offsetLooseTilesAsync(groupHit: ITile[]) {
         const groupHitCrds = groupHit
             .map(tileHit => tileHit.getCellCoordinates());
-        await this.looseTilesOffsetter?.offsetLooseTilesAsync(
+        return await this
+            .looseTilesOffsetter?.offsetLooseTilesAsync(
             groupHitCrds
         );
     }
@@ -93,8 +105,8 @@ export class Gameplay extends GamefieldContext {
         const callback = (other: IClassifyable) => (
             other.getGroupID() === targetTile.getGroupID()
         );
-        return this.hitTilesCollector.collectItemsGroup({
-            col, row }, callback
+        return this.hitTilesCollector.collectItemsGroup([{
+            col, row }], callback
         );
     }
 }

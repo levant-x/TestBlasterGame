@@ -1,11 +1,11 @@
 
 import { _decorator, Component, Vec3, UITransform, Size, Node, Animation } from 'cc';
 import { Config } from '../config';
-import { Color, GridCellCoordinates, IClassifyable, ITile } from '../types';
+import { Color, GridCellCoordinates, ITile } from '../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Tile')
-export class Tile extends Component implements IClassifyable, ITile {    
+export class Tile extends Component implements ITile {    
     private static _size: Vec3 = Vec3.ZERO;
     private static _layoutOrigin?: Vec3; 
 
@@ -33,25 +33,25 @@ export class Tile extends Component implements IClassifyable, ITile {
 
     public getGroupID() {
         return Color[this.color];
+    }   
+
+    public getCellCoordinates(): GridCellCoordinates {
+        return this._cellCoords;
     }
 
     public positionAtCell(coords: GridCellCoordinates) {
         const cellAbsPos = this.getCellAbsPosition(coords);
         this.node.setPosition(cellAbsPos);
-        this._cellCoords = {...coords};
+        this._cellCoords = { ...coords };
     }
 
-    public moveToCell(
-        gridCoords: GridCellCoordinates, 
-        onComplete: (sender: ITile) => void
-    ) {
+    public async moveToCellAsync(gridCoords: GridCellCoordinates) {
         this.positionAtCell(gridCoords);
-        onComplete(this);
-    }
+    } 
 
-    public getCellCoordinates = (): GridCellCoordinates => {
-        return this._cellCoords;
-    }
+    public async destroyHitAsync() {
+        this.node.destroy();
+    }    
 
     protected onClick = () => {
         Tile.onClick?.(this);

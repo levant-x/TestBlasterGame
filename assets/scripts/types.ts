@@ -32,8 +32,13 @@ export type GridCellCoordinates = {
 }
 
 export type TileOffsetInfo = {
-    rowToSettleTo: number,
-    tile: ITile,
+    rowToSettleTo: number;
+    tile: ITile;
+}
+
+export type EmptyCellsCount = {
+    emptyCount: number;
+    col: number;     
 }
 
 export interface IClassifyable {
@@ -42,13 +47,14 @@ export interface IClassifyable {
 
 export interface ITile extends Component, IClassifyable {
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
-    moveToCell(gridCoordinates: GridCellCoordinates, onComplete: () => void): void;
+    moveToCellAsync(gridCoordinates: GridCellCoordinates): Promise<void>;
     getCellCoordinates(): GridCellCoordinates;  
+    destroyHitAsync(): Promise<void>;    
 }
 
 export interface IItemsGroupAnalyzer<T, R = undefined> {
     collectItemsGroup(
-        startPointCoords: GridCellCoordinates | GridCellCoordinates[],
+        startPointCoords: GridCellCoordinates[],
         select: (item: T) => boolean
     ): T[] | R[];
 }

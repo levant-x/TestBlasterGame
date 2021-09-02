@@ -15,7 +15,7 @@ export class HitTilesFinder extends GamefieldContext
     ]
 
     public collectItemsGroup(
-        { col, row }: GridCellCoordinates, 
+        [{ col, row }]: GridCellCoordinates[], 
         select: ItemSelector<T>): T[] {
 
         this._selectItem = select;

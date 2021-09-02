@@ -3,7 +3,7 @@ import { _decorator, Node } from 'cc';
 import { GridCellCoordinates, IItemsGroupAnalyzer, ITile, TileOffsetInfo } from '../types';
 import { GamefieldContext } from './gamefield-context';
 
-type Col2MinRowsMap = Record<number, number>;
+type Col2RowsMap = Record<number, number[]>;
 
 export class LooseTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<Node, TileOffsetInfo> {
@@ -17,36 +17,36 @@ export class LooseTilesFinder extends GamefieldContext
     ) => {
         this._selectItem = select;
         const cols2RowsMap = hitTilesCoords
-            .reduce(this._groupMinRowsByCol, {});
-        const tile_newPos_maps = (Object.entries(cols2RowsMap))
-            .map(this._convertRowsToLooseTilesInfo)
-            .filter(map => map && true)
+            .reduce(this._groupRowsByCol, {});
+        const tileOffsetInfos = (Object.entries(cols2RowsMap))
+            .map(this._convertRowsToTilesOffsetInfos)
             .reduce((acc, map) => [...acc, ...map], []); 
-        return tile_newPos_maps as TileOffsetInfo[];
+        return tileOffsetInfos as TileOffsetInfo[];
     }
 
-    private _groupMinRowsByCol(
-        col2MinRowsMap: Col2MinRowsMap, 
-        hitTileCrds: GridCellCoordinates
+    private _groupRowsByCol(
+        col2RowsMap: Col2RowsMap, 
+        { row, col }: GridCellCoordinates
     ) {
-        const knownMinRow = col2MinRowsMap[hitTileCrds.col];
-        if (!knownMinRow || hitTileCrds.row < knownMinRow) 
-            col2MinRowsMap[hitTileCrds.col] = hitTileCrds.row;
-        return col2MinRowsMap;
+        const colRows = col2RowsMap[col];  
+        if (colRows) colRows.push(row);
+        else col2RowsMap[col] = [row];
+        return col2RowsMap;
     }
 
-    private _convertRowsToLooseTilesInfo = (
-        [col, minRow]: [string, number]
+    private _convertRowsToTilesOffsetInfos = (
+        [col, rows]: [string, number[]]
     ) => {
+        const minRow = Math.min(...rows);
         this._crrRowToSrchFrom = minRow + 1;
         this._crrRowToOffsetTo = minRow;
-        const looseTilesInfos = this._collectLooseTilesInfo(
+        const looseTilesInfos = this._collectTilesOffsetInfo(
             this.gamefield[+col]
         );
         return looseTilesInfos;
     }
 
-    private _collectLooseTilesInfo(tilesCol: ITile[]) {
+    private _collectTilesOffsetInfo(tilesCol: ITile[]) {
         const looseTiles: TileOffsetInfo[] = []
         const startRow = this._crrRowToSrchFrom;
         for (let row = startRow; row < this.height; row++)
@@ -59,11 +59,11 @@ export class LooseTilesFinder extends GamefieldContext
         tile: ITile, looseTiles: TileOffsetInfo[]
     ) {
         if (!this._selectItem?.(tile.node)) return;            
-        looseTiles.push(this._extractLooseTileInfo(tile));   
+        looseTiles.push(this._extractTileOffsetInfo(tile));   
         this._crrRowToOffsetTo++;
     }
 
-    private _extractLooseTileInfo(tile: ITile) {
+    private _extractTileOffsetInfo(tile: ITile) {
         return {
             rowToSettleTo: this._crrRowToOffsetTo,
             tile,
