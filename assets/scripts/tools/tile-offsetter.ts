@@ -3,6 +3,7 @@ import { Component } from 'cc';
 import { GridCellCoordinates, ITile, TileOffsetInfo } from '../types';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
+import { Task } from './task';
 import { ToolsFactory } from './tools-factory';
 
 export class TileOffsetter extends GamefieldContext {
@@ -11,18 +12,26 @@ export class TileOffsetter extends GamefieldContext {
     private _tilesInMove: ITile[] = [];    
     private _looseTilesFinder = ToolsFactory.get(LooseTilesFinder);
 
-    /** Returns count of empty cells grouped by column */
-    public async offsetLooseTilesAsync(
+    public getTaskOffsetLooseTiles = (
         hitCellsCoords: GridCellCoordinates[]
-    ) {
+    ) => {
         const tilesOffsInfos = this
             ._looseTilesFinder.collectItemsGroup(
             hitCellsCoords, tileNode => tileNode.active
         );
-        const tilesOffsetTasks = tilesOffsInfos
-            .map(tileOffsInfo => this._getTileOffsetTask(tileOffsInfo));
-        await Promise.all(tilesOffsetTasks);
-        return this._countEmptyCellsByCol();
+        const tilesOffsetTask = new Task();
+        tilesOffsInfos.forEach(
+            tileOffsInfo => tilesOffsetTask.bundleWith(
+            this._getTileOffsetTask(tileOffsInfo)
+        ));
+        return tilesOffsetTask;            
+    }
+
+    public getEmptyCellsGroupedByColumn() {
+        const colsToEmptyCellsMap = this.gamefield
+            .map(this._extractEmptyCellsCnt)
+            .filter(empCllCntInfo => empCllCntInfo.emptyCount > 0);
+        return colsToEmptyCellsMap;
     }
 
     private _getTileOffsetTask({ 
@@ -44,13 +53,6 @@ export class TileOffsetter extends GamefieldContext {
         const tileMoved = this.gamefield[col][row];
         this.gamefield[col][row] = this.gamefield[col][newRow];
         this.gamefield[col][newRow] = tileMoved;
-    }
-
-    private _countEmptyCellsByCol() {
-        const colsToEmptyCellsMap = this.gamefield
-            .map(this._extractEmptyCellsCnt)
-            .filter(empCllCntInfo => empCllCntInfo.emptyCount > 0);
-        return colsToEmptyCellsMap;
     }
 
     private _extractEmptyCellsCnt = (

@@ -1,6 +1,6 @@
 
 import { _decorator, Node } from 'cc';
-import { Tile } from '../controllers/tile';
+import { TileBase } from '../controllers/tile-base';
 import { LooseTilesFinder } from '../tools/loose-tiles-finder';
 import { TileOffsetInfo } from '../types';
 
@@ -151,7 +151,7 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
     }
 
     private _extractTileCellCoords(node: Node) {
-        const tile = node.getComponent(Tile);
+        const tile = node.getComponent(TileBase);
         if (!tile) throw 'Node does not contain Tile component';
         return tile?.getCellCoordinates();
     }

@@ -1,5 +1,4 @@
 import { Component } from "cc";
-import { Tile } from "./controllers/tile";
 
 export type LevelConfig = Record<string, string> & {
     fieldWidth: number;
@@ -24,7 +23,7 @@ export enum Color {
     'yellow' = 4,
 };
 
-export type TileSpawnCallback = (tileLogic: Tile) => void;
+export type TileSpawnCallback = (tileLogic: ITile) => void;
 
 export type GridCellCoordinates = {
     row: number;
@@ -41,15 +40,17 @@ export type EmptyCellsCount = {
     col: number;     
 }
 
+export type BooleanGetter = () => boolean;
+
 export interface IClassifyable {
     getGroupID(): number | string;
 }
 
 export interface ITile extends Component, IClassifyable {
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
-    moveToCellAsync(gridCoordinates: GridCellCoordinates): Promise<void>;
+    moveToCellAsync(gridCoordinates: GridCellCoordinates): BooleanGetter;
     getCellCoordinates(): GridCellCoordinates;  
-    destroyHitAsync(): Promise<void>;    
+    destroyHitAsync(): BooleanGetter; 
 }
 
 export interface IItemsGroupAnalyzer<T, R = undefined> {

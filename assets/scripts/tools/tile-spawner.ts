@@ -1,6 +1,6 @@
 import { Node, instantiate, Prefab } from "cc";
-import { Tile } from "../controllers/tile";
-import { GridCellCoordinates, TileSpawnCallback } from "../types";
+import { TileBase } from "../controllers/tile-base";
+import { GridCellCoordinates, ITile, TileSpawnCallback } from "../types";
 
 export type TileSpawnerArgs = {
   rows: number;
@@ -45,7 +45,7 @@ export class TileSpawner {
   protected setupNewItem(
     itemNode: Node, coords: GridCellCoordinates) {
     this.fieldNode.addChild(itemNode);
-    const newTileMainLogic = itemNode.getComponent(Tile) as Tile;
+    const newTileMainLogic = itemNode.getComponent(TileBase) as ITile;
     newTileMainLogic.positionAtCell(coords);
     this.onTileSpawn?.(newTileMainLogic);
   }
