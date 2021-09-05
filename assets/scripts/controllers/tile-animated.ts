@@ -8,11 +8,13 @@ const { ccclass } = _decorator;
 @ccclass('Tile-animated')
 export class TileAnimated extends TileBase {
     private _hasMoveCompleted = false;
+    private _gridNewCrds?: GridCellCoordinates;
 
     public moveToCellAsync = (
         gridNewCoords: GridCellCoordinates
     ) => {
         this._hasMoveCompleted = false; 
+        this._gridNewCrds = gridNewCoords;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
         const moveDuration = (this.cellCoords.row - gridNewCoords.row) * 
             Config.TILES_OFFSET_DURATION_SEC;
@@ -25,8 +27,15 @@ export class TileAnimated extends TileBase {
     ) => {
         tween(this.node).to(
             dur, { position: cellAbsPos }
-        ).call(() => { 
-            this._hasMoveCompleted = true; 
-        }).start();
+        ).call(
+            this._onMoveCompleted
+        ).start();
+    }
+
+    private _onMoveCompleted = () => {
+        this._hasMoveCompleted = true; 
+        const newCrds = this._gridNewCrds as GridCellCoordinates;
+        this.cellCoords = { ...newCrds };
+        this._gridNewCrds = undefined;
     }
 }

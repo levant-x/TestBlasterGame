@@ -4,7 +4,7 @@ import { LevelConfig, LevelSystemConfig } from './types';
 
 export class Config {
   public static LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
-  public static TILES_OFFSET_DURATION_SEC = 0.3;
+  public static TILES_OFFSET_DURATION_SEC = 0.2;
 
   public static Parse4Level(
     source: LevelSystemConfig, level: number): LevelConfig {

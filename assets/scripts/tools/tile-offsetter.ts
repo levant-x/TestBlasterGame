@@ -1,6 +1,6 @@
 
 import { Component } from 'cc';
-import { GridCellCoordinates, ITile, TileOffsetInfo } from '../types';
+import { BooleanGetter, GridCellCoordinates, ITile, TileOffsetInfo } from '../types';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
 import { Task } from './task';
@@ -14,7 +14,7 @@ export class TileOffsetter extends GamefieldContext {
 
     public getTaskOffsetLooseTiles = (
         hitCellsCoords: GridCellCoordinates[]
-    ) => {
+    ): Task => {
         const tilesOffsInfos = this
             ._looseTilesFinder.collectItemsGroup(
             hitCellsCoords, tileNode => tileNode.active
@@ -27,16 +27,9 @@ export class TileOffsetter extends GamefieldContext {
         return tilesOffsetTask;            
     }
 
-    public getEmptyCellsGroupedByColumn() {
-        const colsToEmptyCellsMap = this.gamefield
-            .map(this._extractEmptyCellsCnt)
-            .filter(empCllCntInfo => empCllCntInfo.emptyCount > 0);
-        return colsToEmptyCellsMap;
-    }
-
     private _getTileOffsetTask({ 
         tile, rowToSettleTo }: TileOffsetInfo
-    ) {
+    ): BooleanGetter {
         this._tilesInMove.push(tile);        
         const { col, row } = tile.getCellCoordinates();
         const newRow = rowToSettleTo;
@@ -49,18 +42,9 @@ export class TileOffsetter extends GamefieldContext {
     private _swapGridContents(
         { col, row }: GridCellCoordinates, 
         newRow: number
-    ) {
+    ): void {
         const tileMoved = this.gamefield[col][row];
         this.gamefield[col][row] = this.gamefield[col][newRow];
         this.gamefield[col][newRow] = tileMoved;
     }
-
-    private _extractEmptyCellsCnt = (
-        rows: Component[], col: number
-    ) => ({
-        col,     
-        emptyCount: rows.reduce((acc, tile) => (
-            tile.enabled ? acc : acc++
-        ), 0),           
-    })
 }

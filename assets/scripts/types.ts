@@ -23,7 +23,7 @@ export enum Color {
     'yellow' = 4,
 };
 
-export type TileSpawnCallback = (tileLogic: ITile) => void;
+export type TileSpawnCallback = (newTile: ITile) => void;
 
 export type GridCellCoordinates = {
     row: number;
@@ -33,6 +33,12 @@ export type GridCellCoordinates = {
 export type TileOffsetInfo = {
     rowToSettleTo: number;
     tile: ITile;
+}
+
+export type Demand4NewTilesInfo = {
+    col: number;
+    lowestRow: number;
+    tiles2Spawn: number;
 }
 
 export type EmptyCellsCount = {

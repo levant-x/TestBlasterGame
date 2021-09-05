@@ -2,13 +2,12 @@
 import { _decorator, Prefab } from 'cc';
 import { GamefieldContext } from '../tools/gamefield-context';
 import { HitTilesFinder } from '../tools/hit-tiles-finder';
-import { LooseTilesFinder } from '../tools/loose-tiles-finder';
 import { Task, TaskManager } from '../tools/task';
 import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
 import { ToolsFactory } from '../tools/tools-factory';
 import { 
-    EmptyCellsCount, 
+    Demand4NewTilesInfo,
     GridCellCoordinates, 
     IClassifyable, 
     ITile, 
@@ -25,7 +24,7 @@ export class Gameplay extends GamefieldContext {
     protected curLevel = 0;
     protected cfg?: LevelConfig;
     protected tileSpawner?: TileSpawner;
-    protected hitTilesCollector?: HitTilesFinder;
+    protected hitTilesFinder?: HitTilesFinder;
     protected tileOffsetter?: TileOffsetter;
 
     @property({ type: [Prefab] })
@@ -52,66 +51,111 @@ export class Gameplay extends GamefieldContext {
         this.tileSpawner.seedGamefield(this.onTileSpawn);
         TileBase.is1stSeeding = false;
 
-        this.hitTilesCollector = ToolsFactory.get(HitTilesFinder);
+        this.hitTilesFinder = ToolsFactory.get(HitTilesFinder);
         this.tileOffsetter = ToolsFactory.get(TileOffsetter);
         TileBase.onClick = this.onTileClick;
     }
 
     update() {
-        this.taskMng.runCurrent();
+        this.taskMng.isComplete();
     }
         
-    protected onTileSpawn = (tileLogic: ITile) => {
-        const { col } = tileLogic.getCellCoordinates();
+    protected onTileSpawn = (newTile: ITile) => {
+        const { col } = newTile.getCellCoordinates();
         if (this.gamefield.length < col + 1) this.gamefield.push([]);
-        this.gamefield[col].push(tileLogic);
+        if (TileBase.is1stSeeding)
+            this.gamefield[col].push(newTile);
+        else this._replaceTileWithNewOne(newTile, col);
     }
 
     protected onTileClick = (sender: ITile) => {
         if (!this.taskMng.isComplete()) return;
         const senderCellCoords = sender.getCellCoordinates();   
-        const action = this._getTilesAroundPoint;     
-        const groupHit = action(senderCellCoords, sender);
+        const find = this._getTilesAroundPoint;     
+        const groupHit = find(senderCellCoords, sender);
         this.onGroupHitCollect(groupHit);
     }
 
     protected onGroupHitCollect(groupHit: IClassifyable[]) {
         const cfg = this.cfg as LevelConfig;
         if (groupHit.length < cfg.tilesetVolToDstr) return;    
-        this.destroyHitTilesAsync(groupHit as ITile[]);
-        this.setupTask_OffsetLooseTiles(groupHit as ITile[]);
+        this.setupTask_DestroyHitTiles(groupHit as ITile[]);
+        this.setupTask_OffsetLooseTiles(
+            groupHit as ITile[]
+        );
     }
 
-    protected onLooseTilesOffset() {
-        // will be spawned new ones
+    protected onLooseTilesOffset = () => {
+        const hitTilesFinder = 
+            this.hitTilesFinder as HitTilesFinder;
+        const empCellsInfo = 
+            hitTilesFinder.getEmptyCellsGroupedByColumn();
+        const spawner = this.tileSpawner as TileSpawner;
+        empCellsInfo.forEach(infoItem => 
+            this.setupTask_SpawnNewTiles(
+            infoItem, spawner)
+        );
     }
 
-    protected destroyHitTilesAsync(groupHit: ITile[]) {
-        groupHit.forEach(tile => tile.destroyHitAsync());
-    }
+    protected setupTask_DestroyHitTiles(groupHit: ITile[]) {
+        const task = new Task();
+        groupHit.forEach(tile => 
+            task.bundleWith(tile.destroyHitAsync()));
+        this.taskMng.bundleWith(task);
+    }    
 
     protected setupTask_OffsetLooseTiles(
         groupHit: ITile[]
-    ) {
+    ): void {
         const hitTilesCrds = groupHit
             .map(tileHit => tileHit.getCellCoordinates());
         const task = (this.tileOffsetter as TileOffsetter)
             .getTaskOffsetLooseTiles(hitTilesCrds);
-        this.taskMng.setTask(
+        this.taskMng.bundleWith(
             task, this.onLooseTilesOffset
         );
+    }
+
+    protected setupTask_SpawnNewTiles = (
+        demandInfo: Demand4NewTilesInfo,
+        spawner: TileSpawner
+    ): void => {
+        if (!demandInfo.tiles2Spawn) return;
+        const crds: GridCellCoordinates = {
+            col: demandInfo.col,
+            row: demandInfo.lowestRow,
+        };
+        demandInfo.tiles2Spawn--;
+        demandInfo.lowestRow++;
+        const cbck = () => this.setupTask_SpawnNewTiles(
+            demandInfo, spawner
+        );
+        this.taskMng.bundleWith(spawner.spawnNewTile(
+            crds, +this.height
+        ), cbck);
     }
 
     private _getTilesAroundPoint = (
         { col, row }: GridCellCoordinates, trgTile: IClassifyable
     ) => {  
         const tilesFinder = 
-            this.hitTilesCollector as HitTilesFinder;
-        const callback = (other: IClassifyable) => (
+            this.hitTilesFinder as HitTilesFinder;
+        const selector = (other: IClassifyable) => (
             other.getGroupID() === trgTile.getGroupID()
         );
         return tilesFinder.collectItemsGroup([{
-            col, row }], callback
+            col, row }], selector
         );
+    }
+
+    private _replaceTileWithNewOne(
+        newTile: ITile, col: number
+    ): void {
+        const colItems = this.gamefield[col];
+        const lowestEmptyCell = colItems.find(tile => !tile.isValid);
+        if (!lowestEmptyCell) 
+            throw 'Empty cell for new tile not found';
+        const cellRow = colItems.indexOf(lowestEmptyCell);
+        this.gamefield[col][cellRow] = newTile;
     }
 }

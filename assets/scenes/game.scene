@@ -379,7 +379,6 @@
       "__id__": 2
     },
     "_enabled": true,
-    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",

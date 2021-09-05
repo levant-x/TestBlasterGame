@@ -1,6 +1,7 @@
 import { Node, instantiate, Prefab } from "cc";
 import { TileBase } from "../controllers/tile-base";
 import { GridCellCoordinates, ITile, TileSpawnCallback } from "../types";
+import { Task } from "./task";
 
 export type TileSpawnerArgs = {
   rows: number;
@@ -10,43 +11,61 @@ export type TileSpawnerArgs = {
 }
 
 export class TileSpawner {
-  private rows: number;
-  private cols: number;
-  private fieldNode: Node;
-  private prefabs: Prefab[];
-  private onTileSpawn?: TileSpawnCallback;
+  private _rows: number;
+  private _cols: number;
+  private _fieldNode: Node;
+  private _prefabs: Prefab[];
+  private _onTileSpawn?: TileSpawnCallback;
 
   constructor(args: TileSpawnerArgs) {
-    this.rows = args.rows;
-    this.cols = args.cols;                
-    this.fieldNode = args.fieldNode;
-    this.prefabs = args.prefabs;
+    this._rows = args.rows;
+    this._cols = args.cols;                
+    this._fieldNode = args.fieldNode;
+    this._prefabs = args.prefabs;
   }
 
   public seedGamefield(onTileSpawn?: TileSpawnCallback) {
-    this.onTileSpawn = onTileSpawn;
-    for (let row = 0; row < this.rows; row++) this.spawnObjAtRow(row);
+    this._onTileSpawn = onTileSpawn;
+    for (let row = 0; row < this._rows; row++) this.spawnObjAtRow(row);
+  }
+
+  /** Will always spawn tile outside of the field area */
+  public spawnNewTile(
+    finalCoords: GridCellCoordinates,
+    fieldHeight: number,
+  ): Task {
+    const newTile = this.spawnObjAtCell({
+      col: finalCoords.col,
+      row: fieldHeight + 1,
+    });
+    const tileMove = newTile.moveToCellAsync(finalCoords);
+    const task = new Task();
+    return task.bundleWith(tileMove);
   }
 
   protected spawnObjAtRow(row: number) {
-    for (let col = 0; col < this.cols; col++) this.spawnObjAtCell({
+    for (let col = 0; col < this._cols; col++) this.spawnObjAtCell({
       row, col 
     });
   }
 
-  protected spawnObjAtCell({ row, col }: GridCellCoordinates) {
-    const indexLimit = this.prefabs.length - 1;
+  protected spawnObjAtCell(
+    { row, col }: GridCellCoordinates
+  ): ITile {
+    const indexLimit = this._prefabs.length - 1;
     const rndIndex = Math.round(Math.random() * indexLimit);
-    const prefSelected = this.prefabs[rndIndex];
+    const prefSelected = this._prefabs[rndIndex];
     const newTileNode = instantiate(prefSelected);
-    this.setupNewItem(newTileNode, { row, col });
+    return this.setupNewItemFireCbck(newTileNode, { row, col });
   }
 
-  protected setupNewItem(
-    itemNode: Node, coords: GridCellCoordinates) {
-    this.fieldNode.addChild(itemNode);
-    const newTileMainLogic = itemNode.getComponent(TileBase) as ITile;
-    newTileMainLogic.positionAtCell(coords);
-    this.onTileSpawn?.(newTileMainLogic);
+  protected setupNewItemFireCbck(
+    itemNode: Node, coords: GridCellCoordinates
+  ): ITile {
+    this._fieldNode.addChild(itemNode);
+    const newTileCtrl = itemNode.getComponent(TileBase) as ITile;
+    newTileCtrl.positionAtCell(coords);
+    this._onTileSpawn?.(newTileCtrl);
+    return newTileCtrl;
   }
 }

@@ -54,7 +54,7 @@ export class TileBase extends Component implements ITile {
 
     public destroyHitAsync() {
         this.node.destroy();
-        return () => true;
+        return () => !this.isValid;
     }    
 
     protected onClick = () => {
@@ -66,8 +66,8 @@ export class TileBase extends Component implements ITile {
         anim.playOnLoad = true;
     }
 
-    protected getCellAbsPosition({ 
-        row, col }: GridCellCoordinates
+    protected getCellAbsPosition(
+        { row, col }: GridCellCoordinates
     ) {
         const cellPosInGrid = new Vec3(col, row).multiply(TileBase._size);    
         const cellAbsPos = Vec3.clone(TileBase._layoutOrigin as Vec3)
