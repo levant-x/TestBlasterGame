@@ -1,18 +1,18 @@
 import { Component } from "cc";
 
-export type LevelConfig = Record<string, string> & {
+export type LevelConfig = {
     fieldWidth: number;
     fieldHeight: number;
     targetScore: number;
-    leadsAvail: number;
+    stepsAvail: number;
     tileColorsAvail: number;
     tileShufflesAvail: number;
     tilesetVolToDstr: number;
-}
+} & Record<string, number>;
 
 export type LevelSystemConfig = {
-    glossary: Record<string, any>;
-    levelConfigs: [];
+    glossary: Record<string, string>;
+    levelConfigs: LevelConfig[];
 }
 
 export enum Color {

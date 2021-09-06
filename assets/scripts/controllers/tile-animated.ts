@@ -1,6 +1,6 @@
 
 import { _decorator, Vec3, tween } from 'cc';
-import { Config } from '../config';
+import { TILES_OFFSET_DURATION_SEC } from '../config';
 import { GridCellCoordinates } from '../types';
 import { TileBase } from './tile-base';
 const { ccclass } = _decorator;
@@ -17,7 +17,7 @@ export class TileAnimated extends TileBase {
         this._gridNewCrds = gridNewCoords;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
         const moveDuration = (this.cellCoords.row - gridNewCoords.row) * 
-            Config.TILES_OFFSET_DURATION_SEC;
+            TILES_OFFSET_DURATION_SEC;
         this.setupMovement(cellAbsPosition, moveDuration);
         return () => this._hasMoveCompleted;
     }
@@ -25,11 +25,10 @@ export class TileAnimated extends TileBase {
     protected setupMovement = (
         cellAbsPos: Vec3, dur: number
     ) => {
-        tween(this.node).to(
-            dur, { position: cellAbsPos }
-        ).call(
-            this._onMoveCompleted
-        ).start();
+        tween(this.node)
+            .to(dur, { position: cellAbsPos })
+            .call(this._onMoveCompleted)
+            .start();
     }
 
     private _onMoveCompleted = () => {

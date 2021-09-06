@@ -2,32 +2,31 @@
 import { Vec3 } from 'cc';
 import { LevelConfig, LevelSystemConfig } from './types';
 
+export const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
+export const TILES_OFFSET_DURATION_SEC = 0.2;
+
 export class Config {
-  public static LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
-  public static TILES_OFFSET_DURATION_SEC = 0.2;
+    public static ParseLevelConfig(
+        source: LevelSystemConfig, level: number
+    ): LevelConfig {
+        const keys = Object.keys(source.glossary);
+        const res = {} as LevelConfig;
 
-  public static Parse4Level(
-    source: LevelSystemConfig, level: number): LevelConfig {
+        for (const key of keys) Config.ParsePropViaGlossary(
+            key, source, res, level
+        );
+        return res;
+    }
 
-    const keys = Object.keys(source.glossary);
-    const res = {} as LevelConfig;
-
-    for (const key of keys) Config.ParsePropViaGlossary<
-      LevelConfig
-    >(key, source, res, level);
-    return res;
-  }
-
-  private static ParsePropViaGlossary<
-    T extends Record<string, any>
-  >(
-    key: string, src: LevelSystemConfig, res: T, lvl: number
-  ) {
-    const { glossary, levelConfigs } = src;
-    if (levelConfigs.length <= lvl) throw 'Invalid gamelevel';
-
-    const formulaKey = glossary[key];
-    const configEntryVal = levelConfigs[lvl][formulaKey];
-    (res as Record<string, any>)[key] = configEntryVal;
-  }
+    protected static ParsePropViaGlossary(
+        key: string, 
+        { glossary, levelConfigs }: LevelSystemConfig, 
+        res: LevelConfig, 
+        lvl: number,
+    ): void {
+        if (levelConfigs.length <= lvl) throw 'Invalid gamelevel';
+        const glossKey = glossary[key];
+        const configEntryVal = levelConfigs[lvl][glossKey];
+        res[key] = configEntryVal;
+    }
 }

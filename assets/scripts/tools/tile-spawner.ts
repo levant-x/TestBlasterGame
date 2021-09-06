@@ -1,7 +1,11 @@
 import { Node, instantiate, Prefab } from "cc";
 import { TileBase } from "../controllers/tile-base";
-import { GridCellCoordinates, ITile, TileSpawnCallback } from "../types";
-import { Task } from "./task";
+import { 
+  GridCellCoordinates, 
+  ITile, 
+  TileSpawnCallback 
+} from "../types";
+import { Task } from "./common/task";
 
 export type TileSpawnerArgs = {
   rows: number;
@@ -39,8 +43,7 @@ export class TileSpawner {
       row: fieldHeight + 1,
     });
     const tileMove = newTile.moveToCellAsync(finalCoords);
-    const task = new Task();
-    return task.bundleWith(tileMove);
+    return new Task().bundleWith(tileMove);
   }
 
   protected spawnObjAtRow(row: number) {
@@ -60,7 +63,8 @@ export class TileSpawner {
   }
 
   protected setupNewItemFireCbck(
-    itemNode: Node, coords: GridCellCoordinates
+    itemNode: Node, 
+    coords: GridCellCoordinates
   ): ITile {
     this._fieldNode.addChild(itemNode);
     const newTileCtrl = itemNode.getComponent(TileBase) as ITile;

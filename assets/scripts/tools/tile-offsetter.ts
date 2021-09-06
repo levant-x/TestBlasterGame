@@ -1,41 +1,44 @@
 
-import { Component } from 'cc';
-import { BooleanGetter, GridCellCoordinates, ITile, TileOffsetInfo } from '../types';
+import { Component, Node } from 'cc';
+import { 
+    BooleanGetter, 
+    GridCellCoordinates, 
+    ITile, 
+    TileOffsetInfo 
+} from '../types';
+import { Task } from './common/task';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
-import { Task } from './task';
 import { ToolsFactory } from './tools-factory';
 
 export class TileOffsetter extends GamefieldContext {
     public onTileOffset?: (tile: ITile) => void;
 
-    private _tilesInMove: ITile[] = [];    
-    private _looseTilesFinder = ToolsFactory.get(LooseTilesFinder);
+    private _looseTilesFinder = ToolsFactory.get(
+        LooseTilesFinder
+    );
 
     public getTaskOffsetLooseTiles = (
         hitCellsCoords: GridCellCoordinates[]
     ): Task => {
+        const selectorCbck = (tile: Component) => tile.isValid;
         const tilesOffsInfos = this
-            ._looseTilesFinder.collectItemsGroup(
-            hitCellsCoords, tileNode => tileNode.active
-        );
+            ._looseTilesFinder
+            .collectItemsGroup(hitCellsCoords, selectorCbck);
         const tilesOffsetTask = new Task();
-        tilesOffsInfos.forEach(
-            tileOffsInfo => tilesOffsetTask.bundleWith(
-            this._getTileOffsetTask(tileOffsInfo)
-        ));
+        tilesOffsInfos
+            .forEach(tileOffsInfo => tilesOffsetTask
+            .bundleWith(this._getTileOffsetTask(tileOffsInfo)));
         return tilesOffsetTask;            
     }
 
-    private _getTileOffsetTask({ 
-        tile, rowToSettleTo }: TileOffsetInfo
+    private _getTileOffsetTask(
+        { tile, rowToSettleTo }: TileOffsetInfo
     ): BooleanGetter {
-        this._tilesInMove.push(tile);        
         const { col, row } = tile.getCellCoordinates();
-        const newRow = rowToSettleTo;
-        this._swapGridContents({ col, row }, newRow);
+        this._swapGridContents({ col, row }, rowToSettleTo);
         return tile.moveToCellAsync({ 
-            col, row: newRow 
+            col, row: rowToSettleTo 
         });
     }
 

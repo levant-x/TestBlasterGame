@@ -1,6 +1,14 @@
 
-import { _decorator, Component, Vec3, UITransform, Size, Node, Animation } from 'cc';
-import { Config } from '../config';
+import { 
+    _decorator, 
+    Component, 
+    Vec3, 
+    UITransform, 
+    Size,
+    Node, 
+    Animation 
+} from 'cc';
+import { LAYOUT_ORIGIN_LEFT_BOTTOM } from '../config';
 import { Color, GridCellCoordinates, ITile } from '../types';
 const { ccclass, property } = _decorator;
 
@@ -10,8 +18,6 @@ export class TileBase extends Component implements ITile {
     private static _layoutOrigin?: Vec3; 
 
     protected cellCoords = { row: 0, col: 0, };
-    
-    // @property
     protected color?: Color;
 
     public static onClick: (sender: TileBase) => void;
@@ -70,7 +76,8 @@ export class TileBase extends Component implements ITile {
         { row, col }: GridCellCoordinates
     ) {
         const cellPosInGrid = new Vec3(col, row).multiply(TileBase._size);    
-        const cellAbsPos = Vec3.clone(TileBase._layoutOrigin as Vec3)
+        const cellAbsPos = Vec3
+            .clone(TileBase._layoutOrigin as Vec3)
             .add(cellPosInGrid);
         return cellAbsPos;
     }
@@ -82,9 +89,9 @@ export class TileBase extends Component implements ITile {
 
         TileBase._size = new Vec3(minDim, minDim);
         const hfSize = new Vec3(minDim / 2, minDim / 2);
-        TileBase._layoutOrigin = Vec3.clone(
-            Config.LAYOUT_ORIGIN_LEFT_BOTTOM
-        ).add(hfSize);
+        TileBase._layoutOrigin = Vec3
+            .clone(LAYOUT_ORIGIN_LEFT_BOTTOM)
+            .add(hfSize);
     }
 
     private _setupColor() {

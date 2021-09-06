@@ -1,19 +1,24 @@
 
-import { _decorator, Node } from 'cc';
-import { GridCellCoordinates, IItemsGroupAnalyzer, ITile, TileOffsetInfo } from '../types';
+import { _decorator, Component } from 'cc';
+import { 
+    GridCellCoordinates, 
+    IItemsGroupAnalyzer, 
+    ITile, 
+    TileOffsetInfo 
+} from '../types';
 import { GamefieldContext } from './gamefield-context';
 
 type Col2RowsMap = Record<number, number[]>;
 
 export class LooseTilesFinder extends GamefieldContext 
-    implements IItemsGroupAnalyzer<Node, TileOffsetInfo> {
+    implements IItemsGroupAnalyzer<Component, TileOffsetInfo> {
     private _crrRowToOffsetTo = 0;
     private _crrRowToSrchFrom = 0;
-    private _selectItem?: (item: Node) => boolean;
+    private _selectItem?: (item: Component) => boolean;
 
     public collectItemsGroup = (
         hitTilesCoords: GridCellCoordinates[], 
-        select: (item: Node) => boolean
+        select: (item: Component) => boolean
     ) => {
         this._selectItem = select;
         const cols2RowsMap = hitTilesCoords
@@ -40,9 +45,8 @@ export class LooseTilesFinder extends GamefieldContext
         const minRow = Math.min(...rows);
         this._crrRowToSrchFrom = minRow + 1;
         this._crrRowToOffsetTo = minRow;
-        const looseTilesInfos = this._collectTilesOffsetInfo(
-            this.gamefield[+col]
-        );
+        const looseTilesInfos = this
+            ._collectTilesOffsetInfo(this.gamefield[+col]);
         return looseTilesInfos;
     }
 
@@ -56,9 +60,10 @@ export class LooseTilesFinder extends GamefieldContext
     }
 
     private _collectTileInfoIfPossible(
-        tile: ITile, looseTiles: TileOffsetInfo[]
+        tile: ITile, 
+        looseTiles: TileOffsetInfo[]
     ) {
-        if (!this._selectItem?.(tile.node)) return;            
+        if (!this._selectItem?.(tile)) return;            
         looseTiles.push(this._extractTileOffsetInfo(tile));   
         this._crrRowToOffsetTo++;
     }
