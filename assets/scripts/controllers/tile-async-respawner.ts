@@ -11,8 +11,6 @@ export class TileAsyncRespawner {
     private _spawner: TileSpawner;
     private _height: number;
 
-    public onRespawnComplete: Function = () => {};
-    
     constructor(tileSpawner: TileSpawner, height: number) {
         this._spawner = tileSpawner;
         this._height = +height;

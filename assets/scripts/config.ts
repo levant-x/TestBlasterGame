@@ -4,6 +4,7 @@ import { LevelConfig, LevelSystemConfig } from './types';
 
 export const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
 export const TILES_OFFSET_DURATION_SEC = 0.2;
+export const TILES_1ST_FALL_SPEEDUP = 2.5;
 
 export class Config {
     public static ParseLevelConfig(
