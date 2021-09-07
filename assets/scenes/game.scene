@@ -105,7 +105,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": 1000
+      "z": 1
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -140,11 +140,11 @@
     "__prefab": null,
     "_projection": 0,
     "_priority": 1073741824,
-    "_fov": 45,
+    "_fov": 90,
     "_fovAxis": 0,
     "_orthoHeight": 558.4024577572965,
     "_near": 1,
-    "_far": 2000,
+    "_far": 1000,
     "_color": {
       "__type__": "cc.Color",
       "r": 0,
@@ -379,7 +379,6 @@
       "__id__": 2
     },
     "_enabled": true,
-    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",

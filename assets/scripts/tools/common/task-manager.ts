@@ -1,5 +1,6 @@
 
 import { _decorator } from 'cc';
+import { removeFromArray } from './array-tools';
 import { ObservableCollection } from './observable-collection';
 import { Task } from './task';
 
@@ -41,8 +42,7 @@ export class TaskManager extends ObservableCollection<Task> {
     private _clearCompleteTask(
         task: Task
     ) {
-        const taskIndex = this.items.indexOf(task);
-        this.items.splice(taskIndex, 1);      
+        removeFromArray(this.items, task);
         const { id } = task as unknown as IIdentifiable;
         if (!this._cbcks[id]) return;
         (this._cbcks[id] as Function)();

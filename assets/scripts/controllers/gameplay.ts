@@ -5,7 +5,6 @@ import { Task } from '../tools/common/task';
 import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner } from '../tools/tile-spawner';
 import { 
-    Demand4NewTilesInfo,
     GridCellCoordinates, 
     IClassifyable, 
     ITile,
@@ -13,11 +12,21 @@ import {
 } from '../types';
 import { GameplayBase } from './gameplay-base';
 import { TileBase } from './tile-base';
+import { TileAsyncRespawner } from './tile-async-respawner';
 const { ccclass } = _decorator;
 
 @ccclass('Gameplay')
 export class Gameplay extends GameplayBase {  
     private _hitTilesCrds: GridCellCoordinates[] = [];
+    private _asyncRespawner?: TileAsyncRespawner;
+
+    async start() {
+        await super.start();
+        this._asyncRespawner = new TileAsyncRespawner(
+            this.tileSpawner as TileSpawner, 
+            this.height
+        );
+    }
     
     protected onTileSpawn = (
         newTile: ITile
@@ -66,23 +75,9 @@ export class Gameplay extends GameplayBase {
     protected onLooseTilesOffset = () => {
         const finder = this.hitTilesFinder as HitTilesFinder;
         const empCellsInfo = finder.getEmptyCellsGroupedByColumn();
-        const spawner = this.tileSpawner as TileSpawner;        
-        empCellsInfo.forEach(infoItem => this
-            .setupTask_SpawnNewTiles(infoItem, spawner));
+        const respawner = this._asyncRespawner as TileAsyncRespawner;        
+        this.taskMng.bundleWith(respawner.respawnAsync(empCellsInfo));
         this.check4GameFinish();
-    }
-
-    protected setupTask_SpawnNewTiles = (
-        demandInfo: Demand4NewTilesInfo,
-        spawner: TileSpawner
-    ): void => {
-        if (!demandInfo.tiles2Spawn) return;
-        const crds = this._updateDemand4TileInfo(demandInfo);
-        const recursionCbck = () => this
-            .setupTask_SpawnNewTiles(demandInfo, spawner);
-        this.taskMng.bundleWith(spawner
-            .spawnNewTile(crds, +this.height
-        ), recursionCbck);
     }
 
     protected setupTask_UpdateScore(): void {
@@ -101,14 +96,5 @@ export class Gameplay extends GameplayBase {
         if (!lowestEmptyCell) throw 'Excessive tile spawned';
         const cellRow = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][cellRow] = newTile;
-    }        
-    
-    private _updateDemand4TileInfo = (
-        infoItem: Demand4NewTilesInfo
-    ): GridCellCoordinates => {
-        const { col, lowestRow: row } = infoItem;
-        infoItem.tiles2Spawn--;
-        infoItem.lowestRow++;
-        return { row, col };
-    }
+    } 
 }
