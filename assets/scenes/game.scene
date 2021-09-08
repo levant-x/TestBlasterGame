@@ -23,7 +23,7 @@
     "_prefab": null,
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 34
+      "__id__": 35
     },
     "_id": "3306d3b1-0ef6-4bdc-82dc-3ab01ab1c8bb"
   },
@@ -48,16 +48,16 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 27
+        "__id__": 28
       },
       {
-        "__id__": 29
+        "__id__": 30
       },
       {
-        "__id__": 31
+        "__id__": 32
       },
       {
-        "__id__": 33
+        "__id__": 34
       }
     ],
     "_prefab": null,
@@ -307,6 +307,9 @@
     "_components": [
       {
         "__id__": 26
+      },
+      {
+        "__id__": 27
       }
     ],
     "_prefab": null,
@@ -689,6 +692,22 @@
     "_id": "9fvkHv/NFPJ60DalScyK1l"
   },
   {
+    "__type__": "fe210U6THxBbqtz4dvWq1Y9",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 10
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "scoreLabel": {
+      "__id__": 20
+    },
+    "useStrict": true,
+    "updateRate": 0.07,
+    "_id": "20P4c8+15KdIKKnw25CCsr"
+  },
+  {
     "__type__": "cc.UITransform",
     "_name": "",
     "_objFlags": 0,
@@ -697,7 +716,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 28
+      "__id__": 29
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -724,7 +743,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 30
+      "__id__": 31
     },
     "_cameraComponent": {
       "__id__": 4
@@ -745,7 +764,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 32
+      "__id__": 33
     },
     "_alignFlags": 21,
     "_target": null,
@@ -779,6 +798,7 @@
       "__id__": 2
     },
     "_enabled": true,
+    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",
@@ -801,21 +821,24 @@
         "__expectedType__": "cc.Prefab"
       }
     ],
-    "_id": "37r3MiyM9HyJ/2fFziZcYy"
+    "uiNode": {
+      "__id__": 10
+    },
+    "_id": "5eo+vCXZdF97NXiBq7Wkpq"
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 35
-    },
-    "shadows": {
       "__id__": 36
     },
-    "_skybox": {
+    "shadows": {
       "__id__": 37
     },
-    "fog": {
+    "_skybox": {
       "__id__": 38
+    },
+    "fog": {
+      "__id__": 39
     }
   },
   {

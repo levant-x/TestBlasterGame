@@ -1,5 +1,5 @@
 
-import { _decorator } from 'cc';
+import { Node, _decorator } from 'cc';
 import { HitTilesFinder } from '../tools/hit-tiles-finder';
 import { Task } from '../tools/common/task';
 import { TileOffsetter } from '../tools/tile-offsetter';
@@ -7,21 +7,28 @@ import { TileSpawner } from '../tools/tile-spawner';
 import { 
     GridCellCoordinates, 
     IClassifyable, 
+    IScore, 
     ITile,
     LevelConfig, 
 } from '../types';
 import { GameplayBase } from './gameplay-base';
 import { TileBase } from './tile-base';
 import { TileAsyncRespawner } from './tile-async-respawner';
-const { ccclass } = _decorator;
+import { UI } from './ui';
+const { ccclass, property } = _decorator;
 
 @ccclass('Gameplay')
 export class Gameplay extends GameplayBase {  
     private _hitTilesCrds: GridCellCoordinates[] = [];
     private _asyncRespawner?: TileAsyncRespawner;
+    private _uiMng?: IScore;
+
+    @property(Node)
+    uiNode?: Node;
 
     async start() {
         await super.start();
+        this._uiMng = this.uiNode?.getComponent(UI) as IScore;
         this._asyncRespawner = new TileAsyncRespawner(
             this.tileSpawner as TileSpawner, 
             this.height
@@ -62,7 +69,7 @@ export class Gameplay extends GameplayBase {
         this._hitTilesCrds = this.hitTiles
             .map(tileHit => tileHit.getCellCoordinates());
         this.taskMng.bundleWith(task, this.setupTask_OffsetLooseTiles);
-        this.setupTask_UpdateScore();
+        this.setupTask_UpdateProgress();
     }   
 
     protected setupTask_OffsetLooseTiles = (): void => {
@@ -80,8 +87,10 @@ export class Gameplay extends GameplayBase {
         this.check4GameFinish();
     }
 
-    protected setupTask_UpdateScore(): void {
-        console.error('Implement score update');
+    protected setupTask_UpdateProgress(): void {
+        const deltaPoints = this.hitTiles.length;
+        const mng = this._uiMng as IScore;
+        this.taskMng.bundleWith(mng.gainPoints(deltaPoints));
     }
 
     protected check4GameFinish(): void {

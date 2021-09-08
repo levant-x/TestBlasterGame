@@ -31,7 +31,8 @@ export abstract class GameplayBase extends GamefieldContext {
     private tilePrefabs: Prefab[] = [];
 
     async start () {
-        this.cfg = await this._toolsInitializer.loadLevelConfigAsync(
+        this.cfg = await 
+            this._toolsInitializer.loadLevelConfigAsync(
             this.curLevel
         );
         this.initCtx({
@@ -86,7 +87,7 @@ export abstract class GameplayBase extends GamefieldContext {
 
     protected abstract setupTask_DestroyHitTiles(): void;
 
-    protected abstract setupTask_UpdateScore(): void;
+    protected abstract setupTask_UpdateProgress(): void;
 
     protected abstract setupTask_OffsetLooseTiles(): void;
 

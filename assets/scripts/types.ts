@@ -1,4 +1,5 @@
 import { Component } from "cc";
+import { Task } from "./tools/common/task";
 
 export type LevelConfig = {
     fieldWidth: number;
@@ -64,4 +65,11 @@ export interface IItemsGroupAnalyzer<T, R = undefined> {
         startPointCoords: GridCellCoordinates[],
         select: (item: T) => boolean
     ): T[] | R[];
+}
+
+export interface IScore {
+    /**Throw exception if indicator is missing */
+    useStrict: boolean;
+    updateRate: number;
+    gainPoints(deltaPoints: number): Task;
 }
