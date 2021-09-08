@@ -6,7 +6,7 @@
         "tilesetVolToDstr": "K",
         "tileShufflesAvail": "S",
         "targetScore": "X",
-        "leadsAvail": "Y"
+        "stepsAvail": "Y"
     },
     "levelConfigs": [
         {

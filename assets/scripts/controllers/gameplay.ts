@@ -21,17 +21,14 @@ const { ccclass, property } = _decorator;
 export class Gameplay extends GameplayBase {  
     private _hitTilesCrds: GridCellCoordinates[] = [];
     private _asyncRespawner?: TileAsyncRespawner;
-    private _uiMng?: IScore;
-
-    @property(Node)
-    uiNode?: Node;
+    private _gainPointsTask = new Task();
 
     async start() {
         await super.start();
-        this._uiMng = this.uiNode?.getComponent(UI) as IScore;
+        this._initProgress(this.uiMng as UI);
         this._asyncRespawner = new TileAsyncRespawner(
             this.tileSpawner as TileSpawner, 
-            this.height
+            this.height,
         );
     }
     
@@ -44,9 +41,7 @@ export class Gameplay extends GameplayBase {
         else this._replaceTileWithNewOne(newTile, col);
     }
 
-    protected isStepValid (
-        config: LevelConfig
-    ): boolean {
+    protected isStepValid (config: LevelConfig): boolean {
         const { length } = this.hitTiles;
         return length >= config.tilesetVolToDstr;
     }
@@ -83,14 +78,20 @@ export class Gameplay extends GameplayBase {
         const finder = this.hitTilesFinder as HitTilesFinder;
         const empCellsInfo = finder.getEmptyCellsGroupedByColumn();
         const respawner = this._asyncRespawner as TileAsyncRespawner;        
-        this.taskMng.bundleWith(respawner.respawnAsync(empCellsInfo));
+        this.taskMng.bundleWith(respawner.respawnAsync(empCellsInfo))
+            .bundleWith(this._gainPointsTask);
         this.check4GameFinish();
     }
 
     protected setupTask_UpdateProgress(): void {
+        const mng = this.uiMng as UI;
         const deltaPoints = this.hitTiles.length;
-        const mng = this._uiMng as IScore;
-        this.taskMng.bundleWith(mng.gainPoints(deltaPoints));
+        this._gainPointsTask = mng.gainPoints(deltaPoints);
+        this.updateStepsNum(mng);
+    }
+
+    protected updateStepsNum(uiMng: UI) {
+        uiMng.stepsNum--;
     }
 
     protected check4GameFinish(): void {
@@ -106,4 +107,10 @@ export class Gameplay extends GameplayBase {
         const cellRow = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][cellRow] = newTile;
     } 
+
+    private _initProgress(mng: UI) {
+        const cfg = this.cfg as LevelConfig;
+        mng.stepsNum = cfg.stepsAvail;
+        mng.reset();
+    }
 }

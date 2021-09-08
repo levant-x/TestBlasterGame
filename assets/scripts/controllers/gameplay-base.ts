@@ -13,6 +13,7 @@ import {
     LevelConfig 
 } from '../types';
 import { TileBase } from './tile-base';
+import { UI } from './ui';
 const { ccclass, property } = _decorator;
 
 @ccclass('Gameplay-base')
@@ -29,6 +30,8 @@ export abstract class GameplayBase extends GamefieldContext {
     
     @property({ type: [Prefab] })
     private tilePrefabs: Prefab[] = [];
+    @property({ type: UI })
+    uiMng?: UI;
 
     async start () {
         this.cfg = await 
@@ -55,6 +58,7 @@ export abstract class GameplayBase extends GamefieldContext {
         this.hitTilesFinder = ToolsFactory.get(HitTilesFinder);
         this.tileOffsetter = ToolsFactory.get(TileOffsetter);
         TileBase.onClick = this.onTileClick;
+        this.setupTask_UpdateProgress();
     }
         
     update() {

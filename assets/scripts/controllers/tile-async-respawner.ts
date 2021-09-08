@@ -13,7 +13,7 @@ export class TileAsyncRespawner {
 
     constructor(tileSpawner: TileSpawner, height: number) {
         this._spawner = tileSpawner;
-        this._height = +height;
+        this._height = height;
     }
     
     public respawnAsync = (

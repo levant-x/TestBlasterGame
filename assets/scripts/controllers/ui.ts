@@ -1,23 +1,25 @@
 
 import { _decorator, Component, Node, RichText } from 'cc';
 import { Task } from '../tools/common/task';
-import { IScore } from '../types';
+import { IScore, ISteps } from '../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('UI')
-export class UI extends Component implements IScore {
+export class UI extends Component implements IScore, ISteps {
     private _currValue = 0;
     private _trgValue = 0;
     private _dt = 0;
 
+    public stepsNum = 0;
     @property(RichText)
-    scoreLabel?: RichText;
-    @property
-    useStrict: boolean = true;
+    pointsNumLabel?: RichText;
+    @property(RichText)
+    stepsNumLabel?: RichText;    
     @property
     updateRate: number = 0.15;
 
     update(dt: number) {
+        this._updateLbl(this.stepsNum, this.stepsNumLabel);
         if (this._currValue === this._trgValue) return;
         this._dt += dt;
         if (this._dt < this.updateRate) return;
@@ -27,20 +29,32 @@ export class UI extends Component implements IScore {
     public gainPoints(
         deltaPoints: number
     ): Task {
-        const strictErr = this.useStrict && !this.scoreLabel;
-        if (strictErr) throw 'Score display not specified';
         this._trgValue += deltaPoints;
         return new Task().bundleWith(this._wasScoreUpdated);
     }
 
-    private _updateScore() {
-        if (!this.scoreLabel) return;
-        this._dt = 0;
-        this._currValue++;
-        this.scoreLabel.string = this._currValue.toString();
+    public reset(): void {
+        this._currValue = this._trgValue = 0;
     }
 
     private _wasScoreUpdated = () => {
         return this._currValue === this._trgValue;
+    }
+
+    private _updateScore() {
+        if (!this.pointsNumLabel) return;
+        this._dt = 0;
+        this._currValue++;
+        this._updateLbl(this._currValue, this.pointsNumLabel);
+    }
+
+    private _updateLbl(
+        val: any, lbl?: RichText, 
+    ): void {
+        if (!lbl) {
+            console.warn('Text label undefined');    
+            return;
+        }    
+        lbl.string = val.toString();
     }
 }

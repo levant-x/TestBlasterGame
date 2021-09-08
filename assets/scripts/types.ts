@@ -69,7 +69,11 @@ export interface IItemsGroupAnalyzer<T, R = undefined> {
 
 export interface IScore {
     /**Throw exception if indicator is missing */
-    useStrict: boolean;
     updateRate: number;
     gainPoints(deltaPoints: number): Task;
+    reset(): void;
+}
+
+export interface ISteps {
+    stepsNum: number;
 }
