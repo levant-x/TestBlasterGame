@@ -1,21 +1,21 @@
 
-import { Node, _decorator } from 'cc';
-import { HitTilesFinder } from '../tools/hit-tiles-finder';
+import { _decorator } from 'cc';
 import { Task } from '../tools/common/task';
-import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner } from '../tools/tile-spawner';
 import { 
     GridCellCoordinates, 
     IClassifyable, 
-    IScore, 
     ITile,
     LevelConfig, 
 } from '../types';
 import { GameplayBase } from './gameplay-base';
 import { TileBase } from './tile-base';
 import { TileAsyncRespawner } from './tile-async-respawner';
-import { UI } from './ui';
-const { ccclass, property } = _decorator;
+import { UI } from './ui/ui';
+import { HitTilesFinder } from '../tools/hit-tiles-finder';
+import { TileOffsetter } from '../tools/tile-offsetter';
+import { Menu } from './ui/menu';
+const { ccclass } = _decorator;
 
 @ccclass('Gameplay')
 export class Gameplay extends GameplayBase {  
@@ -46,15 +46,16 @@ export class Gameplay extends GameplayBase {
         return length >= config.tilesetVolToDstr;
     }
 
-    protected getHitTiles(
+    protected getHitTiles = (
         clickedCellCoords: GridCellCoordinates, 
         targetType: IClassifyable
-    ): ITile[] {
-        const finder = this.hitTilesFinder as HitTilesFinder;
+    ): ITile[] => {
         const selectorCbck = (other: IClassifyable) => (
             other.getGroupID() === targetType.getGroupID());
-        return finder.collectItemsGroup([clickedCellCoords], 
-            selectorCbck) as ITile[];
+        const finder = this.hitTilesFinder as HitTilesFinder;
+        const collect = finder.collectItemsGroup;
+        const hitTiles = collect([clickedCellCoords], selectorCbck);
+        return hitTiles as ITile[];
     }
 
     protected setupTask_DestroyHitTiles(): void {
@@ -77,10 +78,10 @@ export class Gameplay extends GameplayBase {
     protected onLooseTilesOffset = () => {
         const finder = this.hitTilesFinder as HitTilesFinder;
         const empCellsInfo = finder.getEmptyCellsGroupedByColumn();
-        const respawner = this._asyncRespawner as TileAsyncRespawner;        
-        this.taskMng.bundleWith(respawner.respawnAsync(empCellsInfo))
-            .bundleWith(this._gainPointsTask);
-        this.check4GameFinish();
+        const respawner = this._asyncRespawner as TileAsyncRespawner;  
+        this.taskMng.bundleWith(
+            respawner.respawnAsync(empCellsInfo)
+        ).bundleWith(this._gainPointsTask, this.check4GameFinish);
     }
 
     protected setupTask_UpdateProgress(): void {
@@ -94,7 +95,16 @@ export class Gameplay extends GameplayBase {
         uiMng.stepsNum--;
     }
 
-    protected check4GameFinish(): void {
+    protected check4GameFinish = (): void => {
+        const cfg = this.cfg as LevelConfig;
+        const uiMng = this.uiMng as UI;
+        const hasWon = uiMng.getPoints() >= cfg.targetScore;
+        if (hasWon) {
+            const menu = this.menu as Menu;
+            menu.show('win');
+            return;
+        }
+        
         console.error('Implement game finish');
     }
 

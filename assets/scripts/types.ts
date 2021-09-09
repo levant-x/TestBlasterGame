@@ -67,10 +67,17 @@ export interface IItemsGroupAnalyzer<T, R = undefined> {
     ): T[] | R[];
 }
 
+export interface IModal {
+    onHide?: Function;
+    show(target?: any): void;
+    hide(): void;
+}
+
 export interface IScore {
     /**Throw exception if indicator is missing */
     updateRate: number;
     gainPoints(deltaPoints: number): Task;
+    getPoints(): number;
     reset(): void;
 }
 

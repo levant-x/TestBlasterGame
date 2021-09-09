@@ -1,7 +1,7 @@
 
-import { _decorator, Component, Node, RichText } from 'cc';
-import { Task } from '../tools/common/task';
-import { IScore, ISteps } from '../types';
+import { _decorator, Component, Label } from 'cc';
+import { Task } from '../../tools/common/task';
+import { IScore, ISteps } from '../../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('UI')
@@ -11,10 +11,10 @@ export class UI extends Component implements IScore, ISteps {
     private _dt = 0;
 
     public stepsNum = 0;
-    @property(RichText)
-    pointsNumLabel?: RichText;
-    @property(RichText)
-    stepsNumLabel?: RichText;    
+    @property(Label)
+    pointsNumLabel?: Label;
+    @property(Label)
+    stepsNumLabel?: Label;    
     @property
     updateRate: number = 0.15;
 
@@ -33,6 +33,10 @@ export class UI extends Component implements IScore, ISteps {
         return new Task().bundleWith(this._wasScoreUpdated);
     }
 
+    public getPoints() {
+        return this._currValue;
+    }
+
     public reset(): void {
         this._currValue = this._trgValue = 0;
     }
@@ -49,7 +53,7 @@ export class UI extends Component implements IScore, ISteps {
     }
 
     private _updateLbl(
-        val: any, lbl?: RichText, 
+        val: any, lbl?: Label, 
     ): void {
         if (!lbl) {
             console.warn('Text label undefined');    

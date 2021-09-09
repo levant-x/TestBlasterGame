@@ -22,10 +22,10 @@ export class HitTilesFinder extends GamefieldContext
         ({ row, col }: GridCellCoordinates) => ({ row: row - 1, col, }),
     ]
 
-    public collectItemsGroup(
+    public collectItemsGroup = (
         [{ col, row }]: GridCellCoordinates[], 
         select: ItemSelector<T>
-    ): T[] {
+    ): T[] => {
         this._selectItem = select;
         const itemsGroup: T[] = [];
         this._collectItems({ col, row }, itemsGroup);
