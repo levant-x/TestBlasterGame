@@ -1,6 +1,9 @@
 
 import { _decorator, Vec3, tween } from 'cc';
-import { TILES_1ST_FALL_SPEEDUP, TILES_OFFSET_DURATION_SEC } from '../config';
+import { 
+    TILES_1ST_FALL_SPEEDUP, 
+    TILES_OFFSET_DURATION_SEC 
+} from '../config';
 import { GridCellCoordinates } from '../types';
 import { TileBase } from './tile-base';
 const { ccclass } = _decorator;

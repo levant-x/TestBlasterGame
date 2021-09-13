@@ -1,12 +1,10 @@
 
 import { _decorator, Component } from 'cc';
-import { ITile } from '../types';
+import { ITile, LevelConfig } from '../types';
 
-type GamefieldParams = {
-    gamefield: ITile[][];
-    w: number;
-    h: number;
-}
+type GamefieldParams = Pick<
+    LevelConfig, 'fieldWidth' | 'fieldHeight'
+>;
 
 /**
  Provides a mutable 2d-array context of the ITile gamefield
@@ -14,32 +12,35 @@ type GamefieldParams = {
  the initCtx. Index the context the way [col][row]
  */
 export class GamefieldContext extends Component {
-   private static _gamefield: ITile[][] = []; 
-   private static _w = 0;
-   private static _h = 0;
+    private static _instances = [] as GamefieldContext[];
+    private static _body: ITile[][] = []; 
+    private static _w = 0;
+    private static _h = 0;
 
-   protected gamefield: ITile[][] = [];
-   protected height: number = 0;
-   protected witdh: number = 0;
+    protected gamefield: ITile[][] = [];
+    protected height: number = 0;
+    protected witdh: number = 0;
 
-   constructor() {
-       super();
-       if (!GamefieldContext._gamefield) return;
-       this._initThisCtxFromStatic()        
-   }
+    constructor() {
+        super();
+        // necessary to sync the instances
+        GamefieldContext._instances.push(this);
+    }
 
-   protected initCtx(args?: GamefieldParams) {
-       if (!args) return;
+    protected initContext(
+        { fieldWidth, fieldHeight }: GamefieldParams
+    ) {
+        GamefieldContext._body = [];
+        GamefieldContext._h = fieldHeight;
+        GamefieldContext._w = fieldWidth;
+        GamefieldContext._instances.forEach(ctxItem => {
+            ctxItem._initThisCtxFromStaticOne();
+        });
+    }
 
-       GamefieldContext._gamefield = args.gamefield;
-       GamefieldContext._h = args.h;
-       GamefieldContext._w = args.w;
-       this._initThisCtxFromStatic();
-   }
-
-   private _initThisCtxFromStatic() {
-       this.gamefield = GamefieldContext._gamefield;
-       this.height = GamefieldContext._h;
-       this.witdh = GamefieldContext._w;
-   }
+    private _initThisCtxFromStaticOne() {
+        this.gamefield = GamefieldContext._body;
+        this.height = GamefieldContext._h;
+        this.witdh = GamefieldContext._w;
+    }
 }

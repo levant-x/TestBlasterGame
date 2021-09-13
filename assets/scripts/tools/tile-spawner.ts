@@ -3,13 +3,13 @@ import { TileBase } from "../controllers/tile-base";
 import { 
   GridCellCoordinates, 
   ITile, 
+  LevelConfig, 
   TileSpawnCallback 
 } from "../types";
 import { Task } from "./common/task";
 
-export type TileSpawnerArgs = {
-  rows: number;
-  cols: number;
+export type TileSpawnerArgs = Pick<
+  LevelConfig, 'fieldWidth' | 'fieldHeight'> & {
   fieldNode: Node;
   prefabs: Prefab[];
 }
@@ -22,8 +22,11 @@ export class TileSpawner {
   private _onTileSpawn?: TileSpawnCallback;
 
   constructor(args: TileSpawnerArgs) {
-    this._rows = args.rows;
-    this._cols = args.cols;                
+    Object.values(args).forEach(argVal => {
+      if (!argVal) throw `${argVal} missing`;
+    });
+    this._rows = args.fieldHeight;
+    this._cols = args.fieldWidth;                
     this._fieldNode = args.fieldNode;
     this._prefabs = args.prefabs;
   }

@@ -1,5 +1,6 @@
 
 import { Component, Node } from 'cc';
+import { CONFIG } from '../config';
 import { 
     BooleanGetter, 
     GridCellCoordinates, 
@@ -9,12 +10,11 @@ import {
 import { Task } from './common/task';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
-import { ToolsFactory } from './tools-factory';
 
 export class TileOffsetter extends GamefieldContext {
     public onTileOffset?: (tile: ITile) => void;
 
-    private _looseTilesFinder = ToolsFactory.get(
+    private _looseTilesFinder = CONFIG.get(
         LooseTilesFinder
     );
 

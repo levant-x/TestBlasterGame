@@ -141,7 +141,7 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
         const dstrNodes = this._destroyNodesByMask(ptrn.pointsToDestroy);
         const dstrNodesCrds = dstrNodes.map(this._extractTileCellCoords);
         const looseTilesInfo = this.collectItemsGroup(
-            dstrNodesCrds, node => node.active
+            dstrNodesCrds, tile => tile.node.active
         );
         this._assertCountMatch(
             ptrn.looseItemsCount, looseTilesInfo.length
@@ -161,7 +161,9 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
         throw `Loose tiles count equals ${actual} instead of ${expected}`;
     }
 
-    private _assertTilesCollected = (looseTile: TileOffsetInfo) => {
+    private _assertTilesCollected = (
+        looseTile: TileOffsetInfo
+    ): void => {
         const { row, col } = looseTile.tile.getCellCoordinates();
         const trgRowIntended = this._currPattern?.pointsToOffset[col][row];
         if (!trgRowIntended) throw `Wrong tile collected: ${looseTile}`;

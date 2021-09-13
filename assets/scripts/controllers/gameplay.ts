@@ -23,8 +23,8 @@ export class Gameplay extends GameplayBase {
     private _asyncRespawner?: TileAsyncRespawner;
     private _gainPointsTask = new Task();
 
-    async start() {
-        await super.start();
+    start() {
+        super.start();
         this._initProgress(this.uiMng as UI);
         this._asyncRespawner = new TileAsyncRespawner(
             this.tileSpawner as TileSpawner, 
@@ -85,8 +85,9 @@ export class Gameplay extends GameplayBase {
     }
 
     protected setupTask_UpdateProgress(): void {
-        const mng = this.uiMng as UI;
         const deltaPoints = this.hitTiles.length;
+        if (!deltaPoints) return;
+        const mng = this.uiMng as UI;
         this._gainPointsTask = mng.gainPoints(deltaPoints);
         this.updateStepsNum(mng);
     }

@@ -1,17 +1,19 @@
 
-import { _decorator, Node, Prefab } from 'cc';
+import { _decorator, Prefab } from 'cc';
+import { CONFIG, LOADER_SCENE_NAME } from '../config';
 import { TaskManager } from '../tools/common/task-manager';
 import { GamefieldContext } from '../tools/gamefield-context';
 import { HitTilesFinder } from '../tools/hit-tiles-finder';
 import { TileOffsetter } from '../tools/tile-offsetter';
 import { TileSpawner, TileSpawnerArgs } from '../tools/tile-spawner';
-import { ToolsFactory } from '../tools/tools-factory';
 import { 
     GridCellCoordinates, 
     IClassifyable, 
     ITile, 
     LevelConfig 
 } from '../types';
+import { ConfigStore } from './scenes-switch/config-store';
+import { SceneSwitcher } from './scenes-switch/scene-switcher';
 import { TileBase } from './tile-base';
 import { Menu } from './ui/menu';
 import { UI } from './ui/ui';
@@ -19,18 +21,13 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Gameplay-base')
 export abstract class GameplayBase extends GamefieldContext {
-    private _toolsInitializer = new ToolsFactory();
-
     protected taskMng = TaskManager.create();
-    protected static currLevel = 0;
-    protected cfg?: LevelConfig;
+    protected cfg = ConfigStore.getConfig();
     protected tileSpawner?: TileSpawner;
-    protected hitTilesFinder?: HitTilesFinder;
-    protected tileOffsetter?: TileOffsetter;
+    protected hitTilesFinder = CONFIG.get(HitTilesFinder);
+    protected tileOffsetter = CONFIG.get(TileOffsetter);
     protected hitTiles: ITile[] = [];
-    
-    @property(Node)
-    protected fieldNode?: Node;
+
     @property([Prefab])
     protected tilePrefabs: Prefab[] = [];
     @property(UI)
@@ -38,32 +35,23 @@ export abstract class GameplayBase extends GamefieldContext {
     @property(Menu)
     protected menu?: Menu;
 
-    async start () {
-        await this._loadCfgAsync();
-        this._initFieldCtx(this.cfg as LevelConfig);        
-        // AFTER CONFIG INIT
-        this.tileSpawner = ToolsFactory.get(TileSpawner, {
-            rows: this.height,
-            cols: this.witdh,
-            fieldNode: this.fieldNode as Node,
-            prefabs: this.tilePrefabs,
+    start () {
+        this.initContext(this.cfg);
+        // AFTER CONTEXT INIT
+        this.tileSpawner = CONFIG.get(TileSpawner, {
+            fieldNode: this.node,
+            prefabs: this.tilePrefabs as Prefab[],
+            ...this.cfg
         } as TileSpawnerArgs);
-        this.hitTilesFinder = ToolsFactory.get(HitTilesFinder);
-        this.tileOffsetter = ToolsFactory.get(TileOffsetter);
         this._setupLvl(this.tileSpawner);
         this.setupTask_UpdateProgress();
-        (this.menu as Menu).onHide = () => {
-            console.log('LOADING NACHSTES SCENE');
-            
-        }
-         
+        const { addCloseEventHandler } = (this.menu as Menu);
+        addCloseEventHandler('win', this.switchLevel);
     }
         
     update() {
         this.taskMng.isComplete();
     }
-
-    protected abstract onTileSpawn(newTile: ITile): void;
 
     protected onTileClick = (
         sender: ITile
@@ -73,6 +61,8 @@ export abstract class GameplayBase extends GamefieldContext {
         const hitTiles = this.getHitTiles(senderCellCoords, sender);     
         this.onHitTilesDetect(hitTiles);
     }    
+
+    protected abstract onTileSpawn(newTile: ITile): void;
 
     protected abstract getHitTiles(
         clickedCellCoords: GridCellCoordinates,
@@ -89,30 +79,19 @@ export abstract class GameplayBase extends GamefieldContext {
 
     protected abstract setupTask_DestroyHitTiles(): void;
 
-    protected abstract setupTask_UpdateProgress(): void;
-
     protected abstract setupTask_OffsetLooseTiles(): void;
+
+    protected abstract setupTask_UpdateProgress(): void;
 
     protected abstract check4GameFinish(): void;
 
-    private async _loadCfgAsync() {
-        this.cfg = await 
-            this._toolsInitializer.loadLevelConfigAsync(
-            GameplayBase.currLevel
-        );
+    protected switchLevel = () => {
+        SceneSwitcher.switchLevel(LOADER_SCENE_NAME);
     }
 
-    private _initFieldCtx(cfg: LevelConfig) {
-        this.initCtx({
-            gamefield: [],
-            w: cfg.fieldWidth,
-            h: cfg.fieldHeight,
-        });
-    }
-
-    private _setupLvl(
+    private _setupLvl = (
         tileSpawner: TileSpawner
-    ): void {
+    ): void => {
         TileBase.is1stSeeding = true;
         tileSpawner.seedGamefield(this.onTileSpawn);
         TileBase.is1stSeeding = false;
