@@ -1,55 +1,50 @@
 
 import { _decorator } from 'cc';
-import { IModal } from '../../types';
-import { ModalBase } from './modal-base';
+import { StepResult } from '../../types';
 import { ModalBody } from './modal-body';
+import { ModalOverlay } from './modal-overlay';
 const { ccclass, property } = _decorator;
 
 @ccclass('Menu')
-export class Menu extends ModalBase {
-    protected _modes = {
-        win: {
-            modal: this.winModal,
-            closeHdlr: () => {},
-        },
+export class Menu extends ModalOverlay {
+    protected _modals = {
+        won: this.winModal,
     };
    
     @property(ModalBody)
-    protected winModal?: ModalBase;
+    protected winModal?: ModalOverlay;
 
     onLoad() {
         super.onLoad();
-        this._modes.win.modal = this.winModal; 
-        this.bubbleHideEvents();
+        this._modals.won = this.winModal; 
+        this.node.active = false;
     }
 
     public show(
-        target: keyof typeof this._modes
+        stepResult: StepResult
     ): void {
         super.show();
-        (this._modes[target].modal as ModalBase).show();
+        const modal = this._getModalInfo(stepResult)
+        modal.show();
     }    
 
-    public addCloseEventHandler = (
-        target: keyof typeof this._modes,
+    public addModalCloseHandler = (
+        stepResult: StepResult,
         handler: () => void
     ): void => {
-        const modalRef = this._modes[target];
-        modalRef.closeHdlr = handler;
-    }    
-
-    protected bubbleHideEvents(): void {
-        Object.values(this._modes)
-            .forEach(({ modal, closeHdlr }) => this
-            ._bubbleHideEvent(modal as IModal, closeHdlr));
-    }
-
-    private _bubbleHideEvent(
-        modal: IModal, handler: Function
-    ): void {
+        const modal = this._getModalInfo(stepResult);
         modal.onHide = () => {
-            handler();
             this.hide();
+            handler();
         }
+    }   
+
+    private _getModalInfo(
+        stepRsl: StepResult
+    ): ModalOverlay {
+        const key = stepRsl as keyof typeof this._modals;
+        const modalInfo = this._modals[key];
+        if (!modalInfo) throw `There is no modal for ${stepRsl}`;
+        return modalInfo;
     }
 }

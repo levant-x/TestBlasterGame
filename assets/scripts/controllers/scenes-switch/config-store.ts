@@ -1,12 +1,12 @@
 import { _decorator, Component, game } from 'cc';
 import { CONFIG } from '../../config';
-import { LevelConfig } from '../../types';
+import { LevelInfo } from '../../types';
 const { ccclass } = _decorator;
 
 @ccclass('ConfigStore')
 export class ConfigStore extends Component {
     private static _currLevel = -1;
-    private static _cfg: LevelConfig;
+    private static _cfg: LevelInfo;
 
     onLoad() {
         game.addPersistRootNode(this.node);
@@ -17,12 +17,12 @@ export class ConfigStore extends Component {
         await ConfigStore._loadConfigAsync();
     }
 
-    public static getConfig(): LevelConfig {
+    public static getConfig(): LevelInfo {
         if (!ConfigStore._cfg) {
             ConfigStore._currLevel++;
             ConfigStore._loadConfigAsync();
         }
-        return ConfigStore._cfg as LevelConfig;
+        return ConfigStore._cfg as LevelInfo;
     }
 
     public static async _loadConfigAsync() {

@@ -1,10 +1,10 @@
 
 import { _decorator, Vec3, tween } from 'cc';
-import { ModalBase } from './modal-base';
+import { ModalOverlay } from './modal-overlay';
 const { ccclass } = _decorator;
 
 @ccclass('Modal-body')
-export class ModalBody extends ModalBase {
+export class ModalBody extends ModalOverlay {
     protected transitionDuration = 0.4;
 
     onEnable() {

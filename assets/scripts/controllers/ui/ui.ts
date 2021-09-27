@@ -53,7 +53,8 @@ export class UI extends Component implements IScore, ISteps {
     }
 
     private _updateLbl(
-        val: any, lbl?: Label, 
+        val: any, 
+        lbl?: Label, 
     ): void {
         if (!lbl) {
             console.warn('Text label undefined');    

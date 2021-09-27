@@ -3,6 +3,12 @@
   "extends": "./temp/tsconfig.cocos.json",
   "compilerOptions": {
       "allowSyntheticDefaultImports": true, // Needs to be turned on
+      "target": "ES2020",
+      "module": "ES6",
+      "lib": ["ES2018", "DOM"],
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      "strictPropertyInitialization": false
   }
 
   /* Add your custom configuration here. */

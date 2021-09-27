@@ -1,6 +1,6 @@
 
 import { _decorator, Component } from 'cc';
-import { ITile, LevelConfig } from '../types';
+import { ITile, LevelConfig } from '../../types';
 
 type GamefieldParams = Pick<
     LevelConfig, 'fieldWidth' | 'fieldHeight'
@@ -9,7 +9,7 @@ type GamefieldParams = Pick<
 /**
  Provides a mutable 2d-array context of the ITile gamefield
  and its dimensions. Necessary and sufficient to init by calling
- the initCtx. Index the context the way [col][row]
+ the initCtx. Index the gameField the way [col][row]
  */
 export class GamefieldContext extends Component {
     private static _instances = [] as GamefieldContext[];

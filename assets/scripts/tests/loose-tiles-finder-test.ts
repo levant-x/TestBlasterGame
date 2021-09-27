@@ -1,7 +1,7 @@
 
 import { _decorator, Node } from 'cc';
 import { TileBase } from '../controllers/tile-base';
-import { LooseTilesFinder } from '../tools/loose-tiles-finder';
+import { LooseTilesFinder } from '../tools/game/loose-tiles-finder';
 import { TileOffsetInfo } from '../types';
 
 type MatrixIterateCallback = (r: number, c: number) => void;

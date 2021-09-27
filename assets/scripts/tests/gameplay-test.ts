@@ -1,10 +1,10 @@
 
 import { _decorator } from 'cc';
-import { Gameplay } from '../controllers/gameplay';
+import { GameplayBase } from '../controllers/gameplay-base';
 const { ccclass } = _decorator;
 
 @ccclass('Gameplay Test')
-export class GameplayTest extends Gameplay {
+export class GameplayTest extends GameplayBase {
   async start() {
     await super.start();
     this._tileAt12hasCoordsCol1Row2();

@@ -1,14 +1,11 @@
 
 import { _decorator, Vec3, tween } from 'cc';
-import { 
-    TILES_1ST_FALL_SPEEDUP, 
-    TILES_OFFSET_DURATION_SEC 
-} from '../config';
+import { CONFIG } from '../config';
 import { GridCellCoordinates } from '../types';
 import { TileBase } from './tile-base';
 const { ccclass } = _decorator;
 
-@ccclass('Tile-animated')
+@ccclass('TileAnimated')
 export class TileAnimated extends TileBase {
     private _hasMoveCompleted = false;
     private _gridNewCrds?: GridCellCoordinates;
@@ -25,9 +22,9 @@ export class TileAnimated extends TileBase {
         this._gridNewCrds = gridNewCoords;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
         const moveDurBasic = (this.cellCoords.row - gridNewCoords.row) * 
-            TILES_OFFSET_DURATION_SEC;
+            CONFIG.TILES_OFFSET_DURATION_SEC;
         const moveDurFinite = this._toFallInSpawn ?
-            moveDurBasic / TILES_1ST_FALL_SPEEDUP : moveDurBasic;
+            moveDurBasic / CONFIG.TILES_1ST_FALL_SPEEDUP : moveDurBasic;
         this.setupMovement(cellAbsPosition, moveDurFinite);
         return () => this._hasMoveCompleted;
     }    

@@ -2,7 +2,7 @@
 import { _decorator, Component, UIOpacity, tween, Tween } from 'cc';
 import { IModal } from '../../types';
 
-export abstract class ModalBase extends Component implements IModal {
+export abstract class ModalOverlay extends Component implements IModal {
     protected overlay?: UIOpacity;  
     protected targetOpacity = 0;
     protected transitionDuration = 1.2;
@@ -24,7 +24,7 @@ export abstract class ModalBase extends Component implements IModal {
     onDisable() {
         this.onHide?.();
     }
-    
+
     public show(
         target?: any
     ): void {

@@ -4,25 +4,32 @@ import {
     GridCellCoordinates, 
     IClassifyable, 
     IItemsGroupAnalyzer
-} from '../types';
+} from '../../types';
+import { injectable } from '../../decorators';
 import { GamefieldContext } from './gamefield-context';
 
 type ItemSelector<T> = (item: T) => boolean;
+type GCCAlias = GridCellCoordinates;
+type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
 
+@injectable()
 export class HitTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<T> {
-    private _selectItem: ItemSelector<T> = (_: T) => {
+
+    private _selectItem: ItemSelector<T> = (
+        _: T
+    ) => {
         throw 'Item selector not specified'
     };
-    private _coordsSearchSwitchers = [
-        ({ row, col }: GridCellCoordinates) => ({ row, col: col + 1, }),
-        ({ row, col }: GridCellCoordinates) => ({ row, col: col - 1, }),
-        ({ row, col }: GridCellCoordinates) => ({ row: row + 1, col, }),
-        ({ row, col }: GridCellCoordinates) => ({ row: row - 1, col, }),
-    ]
+    private _coordsSearchSwitchers: GCSwitcher[] = [
+        coords => ({...coords, col: coords.col + 1}),
+        coords => ({...coords, col: coords.col - 1}),
+        coords => ({...coords, row: coords.row + 1}),
+        coords => ({...coords, row: coords.row - 1}),
+    ];
 
-    public collectItemsGroup = (
+    collectItemsGroup = (
         [{ col, row }]: GridCellCoordinates[], 
         select: ItemSelector<T>
     ): T[] => {
@@ -32,7 +39,7 @@ export class HitTilesFinder extends GamefieldContext
         return itemsGroup;
     }
 
-    public getEmptyCellsGroupedByColumn() {
+    getEmptyCellsGroupedByColumn() {
         const colsToEmptyCellsMap = this.gamefield
             .map(this._extractEmptyCellsInfo)
             .filter(infoItem => infoItem.tiles2Spawn > 0);

@@ -1,24 +1,24 @@
 
-import { Component, Node } from 'cc';
-import { CONFIG } from '../config';
+import { Component } from 'cc';
 import { 
     BooleanGetter, 
     GridCellCoordinates, 
     ITile, 
     TileOffsetInfo 
-} from '../types';
-import { Task } from './common/task';
+} from '../../types';
+import { inject, injectable } from '../../decorators';
+import { Task } from '../common/task';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './loose-tiles-finder';
 
+@injectable()
 export class TileOffsetter extends GamefieldContext {
-    public onTileOffset?: (tile: ITile) => void;
+    onTileOffset?: (tile: ITile) => void;
 
-    private _looseTilesFinder = CONFIG.get(
-        LooseTilesFinder
-    );
+    @inject('LooseTilesFinder')
+    private _looseTilesFinder: LooseTilesFinder;
 
-    public getTaskOffsetLooseTiles = (
+    getTaskOffsetLooseTiles = (
         hitCellsCoords: GridCellCoordinates[]
     ): Task => {
         const selectorCbck = (tile: Component) => tile.isValid;

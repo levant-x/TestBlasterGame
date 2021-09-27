@@ -1,22 +1,25 @@
 
 import { _decorator } from 'cc';
-import { removeFromArray } from '../tools/common/array-tools';
-import { Task } from '../tools/common/task';
-import { TaskManager } from '../tools/common/task-manager';
-import { TileSpawner } from '../tools/tile-spawner';
-import { Demand4NewTilesInfo, GridCellCoordinates } from '../types';
+import { removeFromArray } from '../common/array-tools';
+import { Task } from '../common/task';
+import { TaskManager } from '../common/task-manager';
+import { 
+    Demand4NewTilesInfo, 
+    GridCellCoordinates, 
+    ITileSpawner 
+} from '../../types';
+import { inject, injectable, injectValueByKey } from '../../decorators';
+import { CONFIG } from '../../config';
 
+@injectable()
 export class TileAsyncRespawner {
-    private _taskMngrs: TaskManager[] = [];    
-    private _spawner: TileSpawner;
+    @inject('ITileSpawner')
+    private _spawner: ITileSpawner;
+    private _taskMngrs: TaskManager[] = [];   
+    @injectValueByKey(CONFIG.VALUE_KEYS.fieldHeight)
     private _height: number;
 
-    constructor(tileSpawner: TileSpawner, height: number) {
-        this._spawner = tileSpawner;
-        this._height = height;
-    }
-    
-    public respawnAsync = (
+    respawnAsync = (
         emptyCellsInfo: Demand4NewTilesInfo[]
     ): Task => {
         this._taskMngrs = [];

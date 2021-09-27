@@ -1,4 +1,6 @@
-import { Component } from "cc";
+import { Component, Node, Prefab } from "cc";
+import { Menu } from "./controllers/ui/menu";
+import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
 
 export type LevelConfig = {
@@ -16,6 +18,14 @@ export type LevelSystemConfig = {
     levelConfigs: LevelConfig[];
 }
 
+export type LevelInfo = {
+    num: {
+        current: number;
+        total: number;
+    };
+    config: LevelConfig;
+}
+
 export enum Color {
     'blue' = 0,
     'green' = 1,
@@ -23,6 +33,8 @@ export enum Color {
     'red' = 3,
     'yellow' = 4,
 };
+
+export type StepResult  = 'next' | 'complete' | 'won' | 'over';
 
 export type TileSpawnCallback = (newTile: ITile) => void;
 
@@ -54,10 +66,44 @@ export interface IClassifyable {
 }
 
 export interface ITile extends Component, IClassifyable {
+    readonly node: Node
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
     moveToCellAsync(gridCoordinates: GridCellCoordinates): BooleanGetter;
     getCellCoordinates(): GridCellCoordinates;  
     destroyHitAsync(): BooleanGetter; 
+}
+
+export interface IStepFlow {
+    detectHitTiles(clickedTile: ITile): ITile[];
+    destroyHitTiles(hitTiles?: ITile[]): Task;
+    offsetLooseTiles(): Task;
+    spawnNewTiles(): Task;
+}
+
+export interface IGameStatus {
+    isStepValid(hitTiles: ITile[]): boolean;
+    runStepResult(): StepResult;
+}
+
+export interface IGameFlow extends IGameStatus {
+    uiManager: UI;
+    menu: Menu;
+    tileSpawner: ITileSpawner;
+    setupGameStart(levelInfo: LevelInfo): Task;
+    updateUI(pointsNum: number): Task;    
+}
+
+export interface ITileSpawner {
+    rowsNum: number;
+    colsNum: number;
+    prefabs: Prefab[];
+    targetNode: Node;
+    onTileSpawn?: TileSpawnCallback;
+    seedGamefield(): void;
+    spawnNewTile(
+        finalCoords: GridCellCoordinates, 
+        fieldHeight: number,
+    ): Task;
 }
 
 export interface IItemsGroupAnalyzer<T, R = undefined> {
@@ -74,7 +120,6 @@ export interface IModal {
 }
 
 export interface IScore {
-    /**Throw exception if indicator is missing */
     updateRate: number;
     gainPoints(deltaPoints: number): Task;
     getPoints(): number;

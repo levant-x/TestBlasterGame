@@ -27,3 +27,5 @@ node_modules/
 /profiles/
 /local/
 /temp/
+/node_modules/
+/package-lock.json/

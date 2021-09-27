@@ -1,6 +1,6 @@
 
 import { _decorator, director, Component } from 'cc';
-import { DEFAULT_SCENE_NAME } from '../../config';
+import { CONFIG } from '../../config';
 import { ConfigStore } from './config-store';
 const { ccclass, property } = _decorator;
 
@@ -20,7 +20,7 @@ export class SceneSwitcher extends Component {
     }
     
     public static switchLevel = (
-        newSceneName = DEFAULT_SCENE_NAME
+        newSceneName = CONFIG.DEFAULT_SCENE_NAME
     ): void => {
         SceneSwitcher._instance?._switchLvlAsync(newSceneName);
     }

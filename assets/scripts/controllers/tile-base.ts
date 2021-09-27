@@ -8,8 +8,8 @@ import {
     Node, 
     Animation 
 } from 'cc';
-import { LAYOUT_ORIGIN_LEFT_BOTTOM } from '../config';
-import { Color, GridCellCoordinates, ITile } from '../types';
+import { CONFIG } from '../config';
+import { BooleanGetter, Color, GridCellCoordinates, ITile } from '../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Tile-base')
@@ -53,7 +53,9 @@ export class TileBase extends Component implements ITile {
         this.cellCoords = { ...coords };
     }
 
-    public moveToCellAsync(gridCoords: GridCellCoordinates) {
+    public moveToCellAsync(
+        gridCoords: GridCellCoordinates
+    ): BooleanGetter {
         this.positionAtCell(gridCoords);
         return () => true;
     } 
@@ -90,7 +92,7 @@ export class TileBase extends Component implements ITile {
         TileBase._size = new Vec3(minDim, minDim);
         const hfSize = new Vec3(minDim / 2, minDim / 2);
         TileBase._layoutOrigin = Vec3
-            .clone(LAYOUT_ORIGIN_LEFT_BOTTOM)
+            .clone(CONFIG.LAYOUT_ORIGIN_LEFT_BOTTOM)
             .add(hfSize);
     }
 

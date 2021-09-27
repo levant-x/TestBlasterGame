@@ -5,18 +5,20 @@ import {
     IItemsGroupAnalyzer, 
     ITile, 
     TileOffsetInfo 
-} from '../types';
+} from '../../types';
+import { injectable } from '../../decorators';
 import { GamefieldContext } from './gamefield-context';
 
 type Col2RowsMap = Record<number, number[]>;
 
+@injectable()
 export class LooseTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<Component, TileOffsetInfo> {
     private _crrRowToOffsetTo = 0;
     private _crrRowToSrchFrom = 0;
     private _selectItem?: (item: Component) => boolean;
 
-    public collectItemsGroup = (
+    collectItemsGroup = (
         hitTilesCoords: GridCellCoordinates[], 
         select: (item: Component) => boolean
     ) => {
@@ -29,10 +31,10 @@ export class LooseTilesFinder extends GamefieldContext
         return tileOffsetInfos as TileOffsetInfo[];
     }
 
-    private _groupRowsByCol(
+    private _groupRowsByCol = (
         col2RowsMap: Col2RowsMap, 
         { row, col }: GridCellCoordinates
-    ) {
+    ): Col2RowsMap => {
         const colRows = col2RowsMap[col];  
         if (colRows) colRows.push(row);
         else col2RowsMap[col] = [row];
@@ -50,7 +52,9 @@ export class LooseTilesFinder extends GamefieldContext
         return looseTilesInfos;
     }
 
-    private _collectTilesOffsetInfo(tilesCol: ITile[]) {
+    private _collectTilesOffsetInfo(
+        tilesCol: ITile[]
+    ): TileOffsetInfo[] {
         const looseTiles: TileOffsetInfo[] = []
         const startRow = this._crrRowToSrchFrom;
         for (let row = startRow; row < this.height; row++)
@@ -62,13 +66,15 @@ export class LooseTilesFinder extends GamefieldContext
     private _collectTileInfoIfPossible(
         tile: ITile, 
         looseTiles: TileOffsetInfo[]
-    ) {
+    ): void {
         if (!this._selectItem?.(tile)) return;            
         looseTiles.push(this._extractTileOffsetInfo(tile));   
         this._crrRowToOffsetTo++;
     }
 
-    private _extractTileOffsetInfo(tile: ITile) {
+    private _extractTileOffsetInfo(
+        tile: ITile
+    ): TileOffsetInfo {
         return {
             rowToSettleTo: this._crrRowToOffsetTo,
             tile,

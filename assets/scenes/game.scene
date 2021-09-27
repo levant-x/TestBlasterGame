@@ -148,7 +148,7 @@
     "_priority": 1073741824,
     "_fov": 90,
     "_fovAxis": 0,
-    "_orthoHeight": 689.2780337941629,
+    "_orthoHeight": 480,
     "_near": 1,
     "_far": 1000,
     "_color": {
@@ -160,7 +160,7 @@
     },
     "_depth": 1,
     "_stencil": 0,
-    "_clearFlags": 6,
+    "_clearFlags": 7,
     "_rect": {
       "__type__": "cc.Rect",
       "x": 0,
@@ -298,14 +298,13 @@
     "fileId": "e71ctEmpxFC4KlSYRZNz/a"
   },
   {
-    "__type__": "64aaeZnO6VOn6NCFZF3p+c1",
+    "__type__": "2423c3IvP1C1aAvyonOzoM4",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 5
     },
     "_enabled": true,
-    "__prefab": null,
     "tilePrefabs": [
       {
         "__uuid__": "a8db81c1-3d6c-474b-8f10-d36d83bd8eff",
@@ -334,7 +333,7 @@
     "menu": {
       "__id__": 34
     },
-    "_id": "48+xRSXUpAjZGd4N1BS9aT"
+    "_id": "444nm+d6NIsLBg4VYGy4Tj"
   },
   {
     "__type__": "fe210U6THxBbqtz4dvWq1Y9",
@@ -911,7 +910,7 @@
       "__id__": 2
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 36
