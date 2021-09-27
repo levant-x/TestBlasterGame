@@ -88,7 +88,6 @@ export interface IGameStatus {
 export interface IGameFlow extends IGameStatus {
     uiManager: UI;
     menu: Menu;
-    tileSpawner: ITileSpawner;
     setupGameStart(levelInfo: LevelInfo): Task;
     updateUI(pointsNum: number): Task;    
 }
@@ -109,7 +108,7 @@ export interface ITileSpawner {
 export interface IItemsGroupAnalyzer<T, R = undefined> {
     collectItemsGroup(
         startPointCoords: GridCellCoordinates[],
-        select: (item: T) => boolean
+        select?: (item: T) => boolean
     ): T[] | R[];
 }
 

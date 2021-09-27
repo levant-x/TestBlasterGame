@@ -12,13 +12,17 @@ import {
     StepResult 
 } from "../../types";
 import { Task } from "../common/task";
+import { HitTilesFinder } from "./hit-tiles-finder";
 
 @injectable()
 export class GameFlow implements IGameFlow {
     private _lvlInfo: LevelInfo;
 
     @inject('ITileSpawner')
-    tileSpawner: ITileSpawner;
+    protected tileSpawner: ITileSpawner;
+    @inject('HitTilesFinder')
+    protected hitTilesFinder: HitTilesFinder;
+
     uiManager: UI;
     menu: Menu;
 
@@ -63,7 +67,7 @@ export class GameFlow implements IGameFlow {
         const { targetScore } = this._lvlInfo.config;
         let result: StepResult = 
             points >= targetScore ? 'won' :
-            this.uiManager.stepsNum === 0 ? 'over' : 'next';  
+            this.isStepsLimExhausted() ? 'over' : 'next';  
         const { current, total } = this._lvlInfo.num;
         if (result === 'won' && current === total - 1)
             result = 'complete';
@@ -73,5 +77,32 @@ export class GameFlow implements IGameFlow {
 
     protected switchLevel = () => {
         SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
+    }
+
+    protected isStepsLimExhausted(): boolean {
+        if (this.uiManager.stepsNum === 0) return true;
+        const { 
+            fieldHeight, 
+            fieldWidth, 
+            tilesetVolToDstr,
+        } = this._lvlInfo.config;
+        const cellsTotalCnt = fieldHeight * fieldWidth;
+        for (let i = 0; i < cellsTotalCnt; i++) 
+            if (this.isCellClickable(i, fieldWidth, 
+                tilesetVolToDstr)) return false;                
+        console.error('No steps left! Implement shuffles!');        
+        return false;
+    }
+
+    protected isCellClickable(
+        cellIndex: number,
+        width: number,
+        tilesMinVol: number,
+    ): boolean {
+        const col = Math.floor(cellIndex / width);
+        const row = cellIndex % width;
+        const { collectItemsGroup } = this.hitTilesFinder;        
+        const tilesGroupAtPoint = collectItemsGroup([{ row, col }]);
+        return tilesGroupAtPoint.length >= tilesMinVol;
     }
 }

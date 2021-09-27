@@ -17,11 +17,7 @@ type T = IClassifyable;
 export class HitTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<T> {
 
-    private _selectItem: ItemSelector<T> = (
-        _: T
-    ) => {
-        throw 'Item selector not specified'
-    };
+    private _selectItem: ItemSelector<T>;
     private _coordsSearchSwitchers: GCSwitcher[] = [
         coords => ({...coords, col: coords.col + 1}),
         coords => ({...coords, col: coords.col - 1}),
@@ -31,9 +27,12 @@ export class HitTilesFinder extends GamefieldContext
 
     collectItemsGroup = (
         [{ col, row }]: GridCellCoordinates[], 
-        select: ItemSelector<T>
+        select?: ItemSelector<T>
     ): T[] => {
-        this._selectItem = select;
+        const itemAtPoint = this.gamefield[col][row];
+        const selectToUse = select || ((item: T) => 
+            item.getGroupID() === itemAtPoint.getGroupID());
+        this._selectItem = selectToUse;
         const itemsGroup: T[] = [];
         this._collectItems({ col, row }, itemsGroup);
         return itemsGroup;
