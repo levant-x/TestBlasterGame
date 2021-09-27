@@ -1,12 +1,22 @@
 
-import { _decorator, Component, UIOpacity, tween, Tween } from 'cc';
+import { 
+    _decorator, 
+    Component, 
+    UIOpacity, 
+    tween, 
+    Tween 
+} from 'cc';
 import { IModal } from '../../types';
+const { property } = _decorator;
 
 export abstract class ModalOverlay extends Component implements IModal {
     protected overlay?: UIOpacity;  
-    protected targetOpacity = 0;
-    protected transitionDuration = 1.2;
     protected opacityTween?: Tween<UIOpacity>;
+
+    @property
+    protected targetOpacity = 0;
+    @property
+    protected transitionDuration = 1.2;
 
     public onHide?: Function;
 

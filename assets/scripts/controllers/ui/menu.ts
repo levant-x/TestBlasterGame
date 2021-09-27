@@ -8,15 +8,19 @@ const { ccclass, property } = _decorator;
 @ccclass('Menu')
 export class Menu extends ModalOverlay {
     protected _modals = {
-        won: this.winModal,
+        won: this.wonModal,
+        complete: this.wonModal,
     };
    
     @property(ModalBody)
-    protected winModal?: ModalOverlay;
+    protected wonModal?: ModalOverlay;
+    @property(ModalBody)
+    protected completeModal?: ModalOverlay;
 
     onLoad() {
         super.onLoad();
-        this._modals.won = this.winModal; 
+        this._modals.won = this.wonModal; 
+        this._modals.complete = this.completeModal; 
         this.node.active = false;
     }
 
@@ -24,7 +28,7 @@ export class Menu extends ModalOverlay {
         stepResult: StepResult
     ): void {
         super.show();
-        const modal = this._getModalInfo(stepResult)
+        const modal = this._getModalInfo(stepResult);
         modal.show();
     }    
 
