@@ -12,6 +12,7 @@ import {
     StepResult 
 } from "../../types";
 import { Task } from "../common/task";
+import { GamefieldContext } from "./gamefield-context";
 import { HitTilesFinder } from "./hit-tiles-finder";
 
 @injectable()
@@ -81,26 +82,21 @@ export class GameFlow implements IGameFlow {
 
     protected isStepsLimExhausted(): boolean {
         if (this.uiManager.stepsNum === 0) return true;
-        const { 
-            fieldHeight, 
-            fieldWidth, 
-            tilesetVolToDstr,
-        } = this._lvlInfo.config;
-        const cellsTotalCnt = fieldHeight * fieldWidth;
-        for (let i = 0; i < cellsTotalCnt; i++) 
-            if (this.isCellClickable(i, fieldWidth, 
-                tilesetVolToDstr)) return false;                
+        const { tilesetVolToDstr } = this._lvlInfo.config;
+        const { totalLength } = GamefieldContext.get();
+        for (let i = 0; i < totalLength; i++) 
+            if (this.isCellClickable(i, tilesetVolToDstr)) 
+                return false;                
         console.error('No steps left! Implement shuffles!');        
         return false;
     }
 
     protected isCellClickable(
         cellIndex: number,
-        width: number,
         tilesMinVol: number,
     ): boolean {
-        const col = Math.floor(cellIndex / width);
-        const row = cellIndex % width;
+        const col = GamefieldContext.get().col(cellIndex);
+        const row = GamefieldContext.get().row(cellIndex);
         const { collectItemsGroup } = this.hitTilesFinder;        
         const tilesGroupAtPoint = collectItemsGroup([{ row, col }]);
         return tilesGroupAtPoint.length >= tilesMinVol;

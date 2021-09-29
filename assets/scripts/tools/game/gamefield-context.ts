@@ -1,6 +1,6 @@
 
 import { _decorator, Component } from 'cc';
-import { ITile, LevelConfig } from '../../types';
+import { GridCellCoordinates, ITile, LevelConfig } from '../../types';
 
 type GamefieldParams = Pick<
     LevelConfig, 'fieldWidth' | 'fieldHeight'
@@ -11,7 +11,7 @@ type GamefieldParams = Pick<
  and its dimensions. Necessary and sufficient to init by calling
  the initCtx. Index the gameField the way [col][row]
  */
-export class GamefieldContext extends Component {
+export class GamefieldContext extends Component {   
     private static _instances = [] as GamefieldContext[];
     private static _body: ITile[][] = []; 
     private static _w = 0;
@@ -26,10 +26,32 @@ export class GamefieldContext extends Component {
         // necessary to sync the instances
         GamefieldContext._instances.push(this);
     }
+    
+    static get() {
+        const getDecPoint =
+            GamefieldContext._getDecartPoint;
+        return {
+            totalLength: GamefieldContext._getTotalLength(),
+            row: (point: number) => getDecPoint(point, 'row'),
+            col: (point: number) => getDecPoint(point, 'col'),
+            linear: GamefieldContext._getLinearPoint,
+        };
+    }
+
+    static swapItems(
+        cell1: GridCellCoordinates, 
+        cell2: GridCellCoordinates,
+    ): void {
+        const alias = GamefieldContext;
+        const item = alias._body[cell1.col][cell1.row];
+        alias._body[cell1.col][cell1.row] = 
+            alias._body[cell2.col][cell2.row];
+        alias._body[cell2.col][cell2.row] = item;
+    }
 
     protected initContext(
         { fieldWidth, fieldHeight }: GamefieldParams
-    ) {
+    ): void {
         GamefieldContext._body = [];
         GamefieldContext._h = fieldHeight;
         GamefieldContext._w = fieldWidth;
@@ -42,5 +64,24 @@ export class GamefieldContext extends Component {
         this.gamefield = GamefieldContext._body;
         this.height = GamefieldContext._h;
         this.witdh = GamefieldContext._w;
+    }
+  
+    private static _getTotalLength() {
+        return GamefieldContext._w * GamefieldContext._h;
+    }
+
+    private static _getLinearPoint(
+        { row, col }: GridCellCoordinates
+    ): number {
+        return GamefieldContext._w * row + col;
+    }
+
+    private static _getDecartPoint(
+        point: number,
+        dimension: 'row' | 'col'
+    ): number {
+        const refDimension = GamefieldContext._h;
+        if (dimension === 'col') return point % refDimension;
+        else return Math.floor(point / refDimension);
     }
 }

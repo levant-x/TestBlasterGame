@@ -36,18 +36,11 @@ export class TileOffsetter extends GamefieldContext {
         { tile, rowToSettleTo }: TileOffsetInfo
     ): BooleanGetter {
         const { col, row } = tile.getCellCoordinates();
-        this._swapGridContents({ col, row }, rowToSettleTo);
+        GamefieldContext.swapItems({ col, row }, {
+            col, row: rowToSettleTo,
+        })
         return tile.moveToCellAsync({ 
             col, row: rowToSettleTo 
         });
-    }
-
-    private _swapGridContents(
-        { col, row }: GridCellCoordinates, 
-        newRow: number
-    ): void {
-        const tileMoved = this.gamefield[col][row];
-        this.gamefield[col][row] = this.gamefield[col][newRow];
-        this.gamefield[col][newRow] = tileMoved;
     }
 }

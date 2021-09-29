@@ -36,6 +36,8 @@ export enum Color {
 
 export type StepResult  = 'next' | 'complete' | 'won' | 'over';
 
+export type BoosterType = 'shuffle' | 'bomb';
+
 export type TileSpawnCallback = (newTile: ITile) => void;
 
 export type GridCellCoordinates = {
@@ -68,7 +70,10 @@ export interface IClassifyable {
 export interface ITile extends Component, IClassifyable {
     readonly node: Node
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
-    moveToCellAsync(gridCoordinates: GridCellCoordinates): BooleanGetter;
+    moveToCellAsync(
+        gridCoordinates: GridCellCoordinates,
+        simultaneously?: boolean,
+    ): BooleanGetter;
     getCellCoordinates(): GridCellCoordinates;  
     destroyHitAsync(): BooleanGetter; 
 }
@@ -127,4 +132,14 @@ export interface IScore {
 
 export interface ISteps {
     stepsNum: number;
+}
+
+export interface IBooster {
+    setCount(count: number): void;
+    apply<T>(args?: T): void;
+}
+
+export interface IBoosterManager {
+    registerBooster(booster: IBooster, name: string): BoosterType;
+    applyBooster(type: BoosterType): void;
 }

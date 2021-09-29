@@ -43,8 +43,9 @@ export abstract class GameplayBase extends GamefieldContext {
     start () {
         const { config } = this.info;
         this.initContext(config);
-        const { fieldHeight } = CONFIG.VALUE_KEYS;
+        const { fieldHeight, config: cfgInj } = CONFIG.VALUE_KEYS;
         resolveValue(fieldHeight, config.fieldHeight);
+        resolveValue(cfgInj, config);
 
         this.tileSpawner.colsNum = this.witdh;
         this.tileSpawner.rowsNum = this.height;

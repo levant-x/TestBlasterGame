@@ -17,6 +17,7 @@ const LOADER_SCENE_NAME = 'scene-switcher';
 const DEFAULT_SCENE_NAME = 'game';
 const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
 const TILES_OFFSET_DURATION_SEC = 0.2;
+const TILES_SHUFFLE_SPEEDUP = 3;
 const TILES_1ST_FALL_SPEEDUP = 1.7;
 
 const TOOLS_TYPES = {
@@ -27,10 +28,13 @@ const TOOLS_TYPES = {
     LooseTilesFinder: 'LooseTilesFinder',
     TileOffsetter: 'TileOffsetter',
     TileAsyncRespawner: 'TileAsyncRespawner',
+    IBoosterManager: 'BoosterManager',
+    TileShuffler: 'TileShuffler',
 };
 
 const VALUE_KEYS = {
     fieldHeight: 'fh',
+    config: 'cfg',
 }
 
 export type Types = keyof typeof TOOLS_TYPES;
@@ -41,6 +45,7 @@ export const CONFIG = {
     LAYOUT_ORIGIN_LEFT_BOTTOM,
     TILES_1ST_FALL_SPEEDUP,
     TILES_OFFSET_DURATION_SEC,   
+    TILES_SHUFFLE_SPEEDUP,
     VALUE_KEYS, 
     loadLevelConfigAsync,
     getDependencyName,

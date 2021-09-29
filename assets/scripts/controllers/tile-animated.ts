@@ -1,7 +1,7 @@
 
 import { _decorator, Vec3, tween } from 'cc';
 import { CONFIG } from '../config';
-import { GridCellCoordinates } from '../types';
+import { BooleanGetter, GridCellCoordinates } from '../types';
 import { TileBase } from './tile-base';
 const { ccclass } = _decorator;
 
@@ -16,13 +16,16 @@ export class TileAnimated extends TileBase {
     }
 
     public moveToCellAsync = (
-        gridNewCoords: GridCellCoordinates
-    ) => {
+        gridNewCoords: GridCellCoordinates,
+        simultaneously = false,
+    ): BooleanGetter => {
         this._hasMoveCompleted = false; 
         this._gridNewCrds = gridNewCoords;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
-        const moveDurBasic = (this.cellCoords.row - gridNewCoords.row) * 
-            CONFIG.TILES_OFFSET_DURATION_SEC;
+        const durCfg = CONFIG.TILES_OFFSET_DURATION_SEC;
+        const shufSpeedup = CONFIG.TILES_SHUFFLE_SPEEDUP;
+        const moveDurBasic = simultaneously ? durCfg * shufSpeedup :
+            (this.cellCoords.row - gridNewCoords.row) * durCfg;
         const moveDurFinite = this._toFallInSpawn ?
             moveDurBasic / CONFIG.TILES_1ST_FALL_SPEEDUP : moveDurBasic;
         this.setupMovement(cellAbsPosition, moveDurFinite);
@@ -31,7 +34,7 @@ export class TileAnimated extends TileBase {
 
     protected setupMovement = (
         cellAbsPos: Vec3, dur: number
-    ) => {
+    ): void => {
         tween(this.node)
             .to(dur, 
             { position: cellAbsPos }, 

@@ -12,20 +12,20 @@ export class ConfigStore extends Component {
         game.addPersistRootNode(this.node);
     }
 
-    public async loadNextConfigAsync() {
+    async loadNextConfigAsync() {
         ConfigStore._currLevel++;
         await ConfigStore._loadConfigAsync();
     }
 
-    public static getConfig(): LevelInfo {
-        if (!ConfigStore._cfg) {
+    static getConfig(): LevelInfo {
+        if (!ConfigStore._cfg) {            
             ConfigStore._currLevel++;
             ConfigStore._loadConfigAsync();
         }
         return ConfigStore._cfg as LevelInfo;
     }
 
-    public static async _loadConfigAsync() {
+    static async _loadConfigAsync() {
         const cfg = await 
             CONFIG.loadLevelConfigAsync(this._currLevel); 
         ConfigStore._cfg = cfg;

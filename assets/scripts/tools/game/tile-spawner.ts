@@ -8,6 +8,7 @@ import {
 } from "../../types";
 import { injectable } from "../../decorators";
 import { Task } from "../common/task";
+import { pickRandomItem } from "../common/array-tools";
 
 @injectable()
 export class TileSpawner implements ITileSpawner {
@@ -49,10 +50,9 @@ export class TileSpawner implements ITileSpawner {
     ): ITile {
         const { prefabs } = this;
         if (!this.targetNode) throw 'Parent node not set';
-        if (!prefabs || !prefabs.length) throw 'Prefabs not set';        
-        const indexLimit = prefabs.length - 1;
-        const rndIndex = Math.round(Math.random() * indexLimit);
-        const newTileNode = instantiate(prefabs[rndIndex]);
+        if (!prefabs || !prefabs.length) throw 'Prefabs not set';   
+        const trgPrefab = pickRandomItem(prefabs);
+        const newTileNode = instantiate(trgPrefab);
         return this.setupNewItemFireCbck(newTileNode, { row, col });
     }
 
