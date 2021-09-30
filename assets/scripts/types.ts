@@ -2,6 +2,7 @@ import { Component, Node, Prefab } from "cc";
 import { Menu } from "./controllers/ui/menu";
 import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
+import { TaskManager } from "./tools/common/task-manager";
 
 export type LevelConfig = {
     fieldWidth: number;
@@ -61,6 +62,11 @@ export type EmptyCellsCount = {
     col: number;     
 }
 
+export type BoosterInfo = {
+    type: BoosterType;
+    count: number;
+}
+
 export type BooleanGetter = () => boolean;
 
 export interface IClassifyable {
@@ -87,7 +93,7 @@ export interface IStepFlow {
 
 export interface IGameStatus {
     isStepValid(hitTiles: ITile[]): boolean;
-    runStepResult(): StepResult;
+    runStepResult(): void;
 }
 
 export interface IGameFlow extends IGameStatus {
@@ -134,12 +140,21 @@ export interface ISteps {
     stepsNum: number;
 }
 
-export interface IBooster {
-    setCount(count: number): void;
-    apply<T>(args?: T): void;
+export interface IBooster extends Component {
+    tryApply(): boolean;
 }
 
 export interface IBoosterManager {
-    registerBooster(booster: IBooster, name: string): BoosterType;
+    onBoosterApply?: (task: Task, type: BoosterType) => void;
+    registerBooster(booster: IBooster): BoosterInfo;
+    unregisterBooster(booster: IBooster): void;
     applyBooster(type: BoosterType): void;
+}
+
+export interface IStepInspector {
+    isStepDeadEnd(
+        levelInfo: LevelInfo, 
+        uiManager: UI,
+        onCheckComplete: Function,
+    ): boolean;
 }

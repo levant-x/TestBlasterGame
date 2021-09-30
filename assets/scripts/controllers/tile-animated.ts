@@ -33,12 +33,14 @@ export class TileAnimated extends TileBase {
     }    
 
     protected setupMovement = (
-        cellAbsPos: Vec3, dur: number
+        cellAbsPos: Vec3, 
+        dur: number,
+        toEaseInOnly: boolean = false,
     ): void => {
         tween(this.node)
             .to(dur, 
             { position: cellAbsPos }, 
-            { easing: 'cubicIn' })
+            { easing: toEaseInOnly ? 'sineInOut' :'cubicIn' })
             .call(this._onMoveCompleted)
             .start();
     }

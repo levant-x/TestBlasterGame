@@ -6,14 +6,13 @@ import { UI } from "../../controllers/ui/ui";
 import { inject, injectable } from "../../decorators";
 import { 
     IGameFlow, 
+    IStepInspector, 
     ITile, 
     ITileSpawner, 
     LevelInfo, 
     StepResult 
 } from "../../types";
 import { Task } from "../common/task";
-import { GamefieldContext } from "./gamefield-context";
-import { HitTilesFinder } from "./hit-tiles-finder";
 
 @injectable()
 export class GameFlow implements IGameFlow {
@@ -21,8 +20,8 @@ export class GameFlow implements IGameFlow {
 
     @inject('ITileSpawner')
     protected tileSpawner: ITileSpawner;
-    @inject('HitTilesFinder')
-    protected hitTilesFinder: HitTilesFinder;
+    @inject('IStepInspector')
+    protected stepInspector: IStepInspector;
 
     uiManager: UI;
     menu: Menu;
@@ -63,42 +62,29 @@ export class GameFlow implements IGameFlow {
         return hitTiles.length >= tilesetVolToDstr;
     }
 
-    runStepResult = (): StepResult => {
+    runStepResult = (): void => {
         const points = this.uiManager.getPoints();
         const { targetScore } = this._lvlInfo.config;
-        let result: StepResult = 
-            points >= targetScore ? 'won' :
-            this.isStepsLimExhausted() ? 'over' : 'next';  
         const { current, total } = this._lvlInfo.num;
-        if (result === 'won' && current === total - 1)
-            result = 'complete';
-        if (result !== 'next') this.menu.show(result);
-        return result;
+        let result: StepResult = 'next';
+        if (points >= targetScore) {
+            result = current === total - 1 ?
+                'complete' : 'won';
+            this.menu.show(result);
+            return;
+        }
+        const { isStepDeadEnd } = this.stepInspector;
+        const deadStepCheckCbck = () => this.runStepResult();
+        const isStepDead = isStepDeadEnd(this._lvlInfo, 
+            this.uiManager, deadStepCheckCbck);
+        if (isStepDead) {
+            result = 'over';
+            this.menu.show(result);
+            return;
+        }
     }
 
     protected switchLevel = () => {
         SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
-    }
-
-    protected isStepsLimExhausted(): boolean {
-        if (this.uiManager.stepsNum === 0) return true;
-        const { tilesetVolToDstr } = this._lvlInfo.config;
-        const { totalLength } = GamefieldContext.get();
-        for (let i = 0; i < totalLength; i++) 
-            if (this.isCellClickable(i, tilesetVolToDstr)) 
-                return false;                
-        console.error('No steps left! Implement shuffles!');        
-        return false;
-    }
-
-    protected isCellClickable(
-        cellIndex: number,
-        tilesMinVol: number,
-    ): boolean {
-        const col = GamefieldContext.get().col(cellIndex);
-        const row = GamefieldContext.get().row(cellIndex);
-        const { collectItemsGroup } = this.hitTilesFinder;        
-        const tilesGroupAtPoint = collectItemsGroup([{ row, col }]);
-        return tilesGroupAtPoint.length >= tilesMinVol;
     }
 }

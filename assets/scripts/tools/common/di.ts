@@ -1,4 +1,5 @@
 import { __private } from "cc";
+import { VALUE_KEYS } from "../../config";
 
 type Type = __private.Constructor;
 type TypeRegistry = Record<string, Type>;
@@ -45,9 +46,9 @@ export function registerValue(
     if (!_values[valueKey]) _values[valueKey] = [name, propKey];
 }
 
-export function resolveValue(
-    valueKey: string,
-    value: any,
+export function resolveValue<T>(
+    valueKey: VALUE_KEYS,
+    value: T,
 ): void {
     if (!_values[valueKey]) throw 'Value not registered';
     const [typeName, propName] = _values[valueKey];

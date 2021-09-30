@@ -16,7 +16,7 @@ export class TileAsyncRespawner {
     @inject('ITileSpawner')
     private _spawner: ITileSpawner;
     private _taskMngrs: TaskManager[] = [];   
-    @injectValueByKey(CONFIG.VALUE_KEYS.fieldHeight)
+    @injectValueByKey('fieldHeight')
     private _height: number;
 
     respawnAsync = (

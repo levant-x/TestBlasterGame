@@ -30,14 +30,15 @@ const TOOLS_TYPES = {
     TileAsyncRespawner: 'TileAsyncRespawner',
     IBoosterManager: 'BoosterManager',
     TileShuffler: 'TileShuffler',
+    IStepInspector: 'StepInspector',
 };
 
-const VALUE_KEYS = {
-    fieldHeight: 'fh',
-    config: 'cfg',
-}
-
 export type Types = keyof typeof TOOLS_TYPES;
+
+export type VALUE_KEYS = 
+    'fieldHeight' | 
+    'config' | 
+    'mainTasksManager';
 
 export const CONFIG = {
     LOADER_SCENE_NAME,
@@ -46,7 +47,6 @@ export const CONFIG = {
     TILES_1ST_FALL_SPEEDUP,
     TILES_OFFSET_DURATION_SEC,   
     TILES_SHUFFLE_SPEEDUP,
-    VALUE_KEYS, 
     loadLevelConfigAsync,
     getDependencyName,
 }

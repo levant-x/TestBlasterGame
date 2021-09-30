@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Label, Button } from 'cc';
 import { inject, injectable } from '../decorators';
 import { BoosterType, IBooster, IBoosterManager } from '../types';
 const { ccclass, property } = _decorator;
@@ -10,29 +10,37 @@ export class Booster extends Component implements IBooster {
     @inject('IBoosterManager')
     private _boostersMng: IBoosterManager;
     private _count = 0;
-    private _type: string;
+    private _type: BoosterType;
 
     @property(Label)
     protected numLabel: Label;
+    @property(Button)
+    protected button: Button;
 
-    start () {
+    start() {
         if (!this._boostersMng) throw 'Booster manager not set';
         const { registerBooster } = this._boostersMng;
-        this._type = registerBooster(this, this.node.name);
+        const { type, count } = registerBooster(this);
+        this._type = type;
+        this._updateCnt(count);
     }
     
-    setCount(
-        count: number
-    ): void {
-        if (this._count) return;
-        this._count = count;
-        this.numLabel.string = this._count.toString();
+    tryApply(): boolean {
+        if (!this._count) return false;
+        this._updateCnt(this._count - 1);
+        if (!this._count && this.button) 
+            this.button.interactable = false;
+        return true;
     }
 
-    apply<T>(args?: T): void {
-        if (!this._count) return;
-        this._count--;
+    onClick(): void {
+        this._boostersMng.applyBooster(this._type);
+    }
+
+    private _updateCnt(
+        count: number
+    ): void {
+        this._count = count;
         this.numLabel.string = this._count.toString();
-        this._boostersMng.applyBooster(this._type as BoosterType);
     }
 }

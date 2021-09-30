@@ -1,6 +1,5 @@
 
-import { _decorator, Prefab, Camera, color } from 'cc';
-import { CONFIG } from '../config';
+import { _decorator, Prefab } from 'cc';
 import { inject, injectable } from '../decorators';
 import { resolveValue } from '../tools/common/di';
 import { Task } from '../tools/common/task';
@@ -24,7 +23,7 @@ const { ccclass, property } = _decorator;
 export abstract class GameplayBase extends GamefieldContext {
     protected taskMng = TaskManager.create();
     protected info: LevelInfo = ConfigStore.getConfig();    
-    protected updateUITask?: Task;
+    protected updateUITask: Task;
 
     @property([Prefab])
     protected tilePrefabs: Prefab[] = [];
@@ -43,9 +42,9 @@ export abstract class GameplayBase extends GamefieldContext {
     start () {
         const { config } = this.info;
         this.initContext(config);
-        const { fieldHeight, config: cfgInj } = CONFIG.VALUE_KEYS;
-        resolveValue(fieldHeight, config.fieldHeight);
-        resolveValue(cfgInj, config);
+        resolveValue('fieldHeight', config.fieldHeight);
+        resolveValue('config', config);
+        resolveValue('mainTasksManager', this.taskMng);
 
         this.tileSpawner.colsNum = this.witdh;
         this.tileSpawner.rowsNum = this.height;
@@ -55,8 +54,9 @@ export abstract class GameplayBase extends GamefieldContext {
 
         TileBase.onClick = this.onTileClick;   
         this.gameFlowMng.menu = this.menu as Menu;   
-        this.gameFlowMng.uiManager = this.uiMng as UI;          
+        this.gameFlowMng.uiManager = this.uiMng as UI;   
         this.gameFlowMng.setupGameStart(this.info);
+        this._setupWait4TotalInit();
     }
         
     update() {
@@ -97,10 +97,10 @@ export abstract class GameplayBase extends GamefieldContext {
     }
 
     protected onLooseTilesOffset = () => {
-        const respawnTask = this.stepFlowMng.spawnNewTiles();
-        const stepResultCheck = this.gameFlowMng.runStepResult;
-        this.taskMng.bundleWith(respawnTask)
-            .bundleWith(this.updateUITask as Task, stepResultCheck);
+        const respawn = this.stepFlowMng.spawnNewTiles();
+        const updUI = this.updateUITask;
+        const checkStep = this.gameFlowMng.runStepResult;        
+        this.taskMng.bundleWith(respawn).bundleWith(updUI, checkStep);
     }
 
     private _replaceHitTileWithNew(
@@ -112,4 +112,10 @@ export abstract class GameplayBase extends GamefieldContext {
         const rowIndex = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][rowIndex] = newTile;
     } 
+
+    private _setupWait4TotalInit() {
+        const pregameCheck = this.gameFlowMng.runStepResult;
+        const defInitTask = new Task().bundleWith(() => true);
+        this.taskMng.bundleWith(defInitTask, pregameCheck);
+    }
 }

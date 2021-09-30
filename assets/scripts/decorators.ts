@@ -1,5 +1,5 @@
 import { __private } from 'cc';
-import { CONFIG, Types } from './config';
+import { CONFIG, Types, VALUE_KEYS } from './config';
 import { 
     registerDependency, 
     resolve, 
@@ -31,7 +31,7 @@ export const inject = (
 }
 
 export const injectValueByKey = (
-    valueKey: string
+    valueKey: VALUE_KEYS
 ) => (
     target: any, 
     propKey: string,

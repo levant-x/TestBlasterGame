@@ -1316,9 +1316,9 @@
     },
     "_hoverColor": {
       "__type__": "cc.Color",
-      "r": 211,
-      "g": 211,
-      "b": 211,
+      "r": 255,
+      "g": 245,
+      "b": 0,
       "a": 255
     },
     "_pressedColor": {
@@ -1369,7 +1369,7 @@
     },
     "component": "",
     "_componentId": "b5ef3Nk0HJB1IbHlohR11jg",
-    "handler": "apply",
+    "handler": "onClick",
     "customEventData": ""
   },
   {
@@ -1455,6 +1455,9 @@
     "__prefab": null,
     "numLabel": {
       "__id__": 37
+    },
+    "button": {
+      "__id__": 49
     },
     "_id": "1bogw6MZdOU5RXn+gIdQSP"
   },
