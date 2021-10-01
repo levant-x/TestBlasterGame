@@ -2,7 +2,6 @@ import { Component, Node, Prefab } from "cc";
 import { Menu } from "./controllers/ui/menu";
 import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
-import { TaskManager } from "./tools/common/task-manager";
 
 export type LevelConfig = {
     fieldWidth: number;
@@ -144,17 +143,18 @@ export interface IBooster extends Component {
     tryApply(): boolean;
 }
 
-export interface IBoosterManager {
+export interface IBoostNotifier {    
     onBoosterApply?: (task: Task, type: BoosterType) => void;
+}
+
+export interface IBoosterManager extends IBoostNotifier {
     registerBooster(booster: IBooster): BoosterInfo;
-    unregisterBooster(booster: IBooster): void;
-    applyBooster(type: BoosterType): void;
+    tryApplyBooster(type: BoosterType): boolean;
 }
 
 export interface IStepInspector {
     isStepDeadEnd(
         levelInfo: LevelInfo, 
-        uiManager: UI,
-        onCheckComplete: Function,
+        uiManager: UI
     ): boolean;
 }

@@ -39,12 +39,11 @@ export abstract class GameplayBase extends GamefieldContext {
     @inject('ITileSpawner')
     protected tileSpawner: ITileSpawner;
 
-    start () {
+    start() {
         const { config } = this.info;
         this.initContext(config);
         resolveValue('fieldHeight', config.fieldHeight);
         resolveValue('config', config);
-        resolveValue('mainTasksManager', this.taskMng);
 
         this.tileSpawner.colsNum = this.witdh;
         this.tileSpawner.rowsNum = this.height;
@@ -56,7 +55,6 @@ export abstract class GameplayBase extends GamefieldContext {
         this.gameFlowMng.menu = this.menu as Menu;   
         this.gameFlowMng.uiManager = this.uiMng as UI;   
         this.gameFlowMng.setupGameStart(this.info);
-        this._setupWait4TotalInit();
     }
         
     update() {
@@ -76,8 +74,7 @@ export abstract class GameplayBase extends GamefieldContext {
         sender: ITile
     ): void => {
         if (!this.taskMng.isComplete()) return;
-        const detectTiles = this.stepFlowMng.detectHitTiles;
-        const hitTiles = detectTiles(sender);
+        const hitTiles = this.stepFlowMng.detectHitTiles(sender);
         this.onHitTilesDetect(hitTiles);
     }    
 
@@ -112,10 +109,4 @@ export abstract class GameplayBase extends GamefieldContext {
         const rowIndex = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][rowIndex] = newTile;
     } 
-
-    private _setupWait4TotalInit() {
-        const pregameCheck = this.gameFlowMng.runStepResult;
-        const defInitTask = new Task().bundleWith(() => true);
-        this.taskMng.bundleWith(defInitTask, pregameCheck);
-    }
 }

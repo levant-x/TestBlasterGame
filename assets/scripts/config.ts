@@ -19,6 +19,7 @@ const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
 const TILES_OFFSET_DURATION_SEC = 0.2;
 const TILES_SHUFFLE_SPEEDUP = 3;
 const TILES_1ST_FALL_SPEEDUP = 1.7;
+const FLOW_DELAY_SEC = 1.5;
 
 const TOOLS_TYPES = {
     ITileSpawner: 'TileSpawner',
@@ -29,6 +30,7 @@ const TOOLS_TYPES = {
     TileOffsetter: 'TileOffsetter',
     TileAsyncRespawner: 'TileAsyncRespawner',
     IBoosterManager: 'BoosterManager',
+    IBoostNotifier: 'BoosterManager',
     TileShuffler: 'TileShuffler',
     IStepInspector: 'StepInspector',
 };
@@ -37,8 +39,7 @@ export type Types = keyof typeof TOOLS_TYPES;
 
 export type VALUE_KEYS = 
     'fieldHeight' | 
-    'config' | 
-    'mainTasksManager';
+    'config';
 
 export const CONFIG = {
     LOADER_SCENE_NAME,
@@ -47,6 +48,7 @@ export const CONFIG = {
     TILES_1ST_FALL_SPEEDUP,
     TILES_OFFSET_DURATION_SEC,   
     TILES_SHUFFLE_SPEEDUP,
+    FLOW_DELAY_SEC,
     loadLevelConfigAsync,
     getDependencyName,
 }
@@ -66,7 +68,8 @@ function loadLevelConfigAsync(
 }
 
 function _loadLvlCnf(
-    lvlNum: number, resolve: (cnf: LevelInfo) => void
+    lvlNum: number, 
+    resolve: (cnf: LevelInfo) => void
 ): void {
     resources.load(LEVEL_SYS_CFG_PATH, (
         er, config: JsonAsset
@@ -80,19 +83,19 @@ function _loadLvlCnf(
 }
 
 function _parseLevelConfig(
-    source: LevelSystemConfig, level: number
+    source: LevelSystemConfig, 
+    level: number,
 ): LevelInfo {
     const keys = Object.keys(source.glossary);
-    const cfgObj = {} as LevelConfig;
+    const config = {} as LevelConfig;
     const { levelConfigs, glossary } = source;
     if (levelConfigs.length <= level) throw 'Invalid gamelevel';
 
     const cfgItem = source.levelConfigs[level];
-    for (const key of keys) _parsePropViaGlossary(
-        key, glossary, cfgItem, cfgObj
-    );
+    for (const key of keys) 
+        _parsePropViaGlossary(key, glossary, cfgItem, config);
     return {
-        config: cfgObj,
+        config,
         num: {
             current: level,
             total: levelConfigs.length,

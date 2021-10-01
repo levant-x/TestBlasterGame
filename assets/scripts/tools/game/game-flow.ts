@@ -74,9 +74,8 @@ export class GameFlow implements IGameFlow {
             return;
         }
         const { isStepDeadEnd } = this.stepInspector;
-        const deadStepCheckCbck = () => this.runStepResult();
         const isStepDead = isStepDeadEnd(this._lvlInfo, 
-            this.uiManager, deadStepCheckCbck);
+            this.uiManager);
         if (isStepDead) {
             result = 'over';
             this.menu.show(result);

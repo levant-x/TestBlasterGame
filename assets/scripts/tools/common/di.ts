@@ -68,7 +68,7 @@ export function resolve(
             if (instance) instance.push(this);
             else _instances[name] = [this];
             _resolveProps(this, name);
-        }
+        }        
     }
     _types[name] = dependency;
     const registry = _dependencies[name];

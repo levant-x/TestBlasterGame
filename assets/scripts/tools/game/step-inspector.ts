@@ -9,28 +9,21 @@ import {
     IStepInspector, 
     LevelInfo 
 } from "../../types";
-import { Task } from "../common/task";
 import { TaskManager } from "../common/task-manager";
 import { GamefieldContext } from "./gamefield-context";
 import { HitTilesFinder } from "./hit-tiles-finder";
 
 @injectable()
 export class StepInspector implements IStepInspector {
-    private _cbck: Function;
-
     @inject('HitTilesFinder')
     protected hitTilesFinder: HitTilesFinder;  
     @inject('IBoosterManager')
     protected boosterManager: IBoosterManager;
-    @injectValueByKey('mainTasksManager')
-    protected mainTasksMng: TaskManager;
 
     isStepDeadEnd = (
         levelInfo: LevelInfo,
         uiManager: UI,
-        onCheckComplete: Function,
     ): boolean => {
-        this._cbck = onCheckComplete;
         if (uiManager.stepsNum === 0) return true;
 
         const tilesMinVol = levelInfo.config.tilesetVolToDstr;
@@ -38,9 +31,8 @@ export class StepInspector implements IStepInspector {
         for (let i = 0; i < totalLength; i++) 
             if (this.isCellClickable(i, tilesMinVol)) 
                 return false;        
-        this.boosterManager.onBoosterApply = this.onBoosterApply;
-        const canShuffle = this._tryShuffle();
-        return !canShuffle;
+        const hasAppliedShuffle = this._tryShuffle();
+        return !hasAppliedShuffle;
     }
 
     protected isCellClickable(
@@ -54,14 +46,9 @@ export class StepInspector implements IStepInspector {
         return tilesGroupAtPoint.length >= tilesMinVol;
     }
 
-    protected onBoosterApply = (
-        task: Task,
-    ): void => {
-        this.mainTasksMng.bundleWith(task, this._cbck);
-    }
-
     private _tryShuffle(): boolean {
-        this.boosterManager.applyBooster('shuffle');
-        return !this.mainTasksMng.isComplete();
+        const apply = this.boosterManager.tryApplyBooster;
+        const hasAppliedShuffle = apply('shuffle');
+        return hasAppliedShuffle;
     }
 }

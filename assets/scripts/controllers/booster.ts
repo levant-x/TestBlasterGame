@@ -34,7 +34,7 @@ export class Booster extends Component implements IBooster {
     }
 
     onClick(): void {
-        this._boostersMng.applyBooster(this._type);
+        this._boostersMng.tryApplyBooster(this._type);
     }
 
     private _updateCnt(

@@ -43,16 +43,17 @@ export class BoosterManager implements IBoosterManager {
 
     onBoosterApply?: (task: Task, type: BoosterType) => void;
 
-    applyBooster(
+    tryApplyBooster = (
         type: BoosterType
-    ): void {
+    ): boolean => {
         const attributes = this._attributes[type];
         const trgBooster = this._boosters[type]
         if (!attributes || !trgBooster) 
             throw `Booster ${type} not registered`;
-        if (!trgBooster.tryApply()) return;
+        if (!trgBooster.tryApply()) return false;
         const boostTask = attributes.apply();
         this.onBoosterApply?.(boostTask, type);
+        return true;
     }
 
     registerBooster = (
@@ -67,9 +68,5 @@ export class BoosterManager implements IBoosterManager {
             type: boosterType, 
             count: getCnt(),
         }
-    }
-
-    unregisterBooster(booster: IBooster): void {
-        this._boosters = {};
     }
 }
