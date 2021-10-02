@@ -17,7 +17,7 @@ export abstract class ModalOverlay extends Component implements IModal {
     protected targetOpacity = 0;
     @property
     protected transitionDuration = 1.2;
-
+    
     public onHide?: Function;
 
     onLoad() {

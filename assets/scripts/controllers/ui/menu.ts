@@ -1,35 +1,32 @@
 
 import { _decorator } from 'cc';
-import { StepResult } from '../../types';
+import { IModal, StepResult } from '../../types';
 import { ModalBody } from './modal-body';
 import { ModalOverlay } from './modal-overlay';
 const { ccclass, property } = _decorator;
 
 @ccclass('Menu')
 export class Menu extends ModalOverlay {
-    protected _modals = {
-        won: this.wonModal,
-        complete: this.wonModal,
-    };
-   
     @property(ModalBody)
-    protected wonModal?: ModalOverlay;
+    protected wonModal?: ModalBody;
     @property(ModalBody)
-    protected completeModal?: ModalOverlay;
+    protected completeModal?: ModalBody;
+    @property(ModalBody)
+    protected lostModal?: ModalBody;
 
     onLoad() {
         super.onLoad();
-        this._modals.won = this.wonModal; 
-        this._modals.complete = this.completeModal; 
         this.node.active = false;
     }
 
+    /**Pass stepResult on its own or {stepResult, summary}*/
     public show(
-        stepResult: StepResult
+        arg: any
     ): void {
+        const stepResult = arg['stepResult'] || arg;
         super.show();
-        const modal = this._getModalInfo(stepResult);
-        modal.show();
+        const modal = this._getModalInfo(stepResult);        
+        modal.show(arg['summary']);
     }    
 
     public addModalCloseHandler = (
@@ -45,9 +42,8 @@ export class Menu extends ModalOverlay {
 
     private _getModalInfo(
         stepRsl: StepResult
-    ): ModalOverlay {
-        const key = stepRsl as keyof typeof this._modals;
-        const modalInfo = this._modals[key];
+    ): ModalBody {
+        const modalInfo = (this as any)[`${stepRsl}Modal`];
         if (!modalInfo) throw `There is no modal for ${stepRsl}`;
         return modalInfo;
     }

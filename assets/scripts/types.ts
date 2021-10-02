@@ -34,7 +34,7 @@ export enum Color {
     'yellow' = 4,
 };
 
-export type StepResult  = 'next' | 'complete' | 'won' | 'over';
+export type StepResult  = 'next' | 'complete' | 'won' | 'lost';
 
 export type BoosterType = 'shuffle' | 'bomb';
 

@@ -64,7 +64,7 @@ export class GameFlow implements IGameFlow {
 
     runStepResult = (): void => {
         const points = this.uiManager.getPoints();
-        const { targetScore } = this._lvlInfo.config;
+        const { targetScore, stepsAvail } = this._lvlInfo.config;
         const { current, total } = this._lvlInfo.num;
         let result: StepResult = 'next';
         if (points >= targetScore) {
@@ -73,12 +73,21 @@ export class GameFlow implements IGameFlow {
             this.menu.show(result);
             return;
         }
+        this._overGame(result, points, stepsAvail);
+    }
+
+    private _overGame(
+        result: StepResult,
+        points: number,
+        steps: number,
+    ): void {
         const { isStepDeadEnd } = this.stepInspector;
-        const isStepDead = isStepDeadEnd(this._lvlInfo, 
-            this.uiManager);
-        if (isStepDead) {
-            result = 'over';
-            this.menu.show(result);
+        if (isStepDeadEnd(this._lvlInfo, this.uiManager)) {
+            result = 'lost';
+            this.menu.show({
+                stepResult: result,
+                summary: { points, steps, },
+            });
             return;
         }
     }
