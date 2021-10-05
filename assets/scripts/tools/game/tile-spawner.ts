@@ -9,6 +9,7 @@ import {
 import { injectable } from "../../decorators";
 import { Task } from "../common/task";
 import { pickRandomItem } from "../common/array-tools";
+import { scanGrid } from "./field-analyzers/range-scanners.ts";
 
 @injectable()
 export class TileSpawner implements ITileSpawner {
@@ -22,7 +23,14 @@ export class TileSpawner implements ITileSpawner {
         const rows = this.rowsNum;        
         if (!rows) throw 'Rows for seeding not set';
         if (!this.colsNum) throw 'Cols for seeding not set';
-        for (let row = 0; row < rows; row++) this.spawnObjAtRow(row);
+
+        scanGrid({
+            left: 0, 
+            right: this.colsNum - 1,
+        }, {
+            bottom: 0, 
+            top: this.rowsNum - 1,
+        }, this.spawnObjAtCell.bind(this));
     }
 
     /** Will always spawn tile outside of the field area */
@@ -36,13 +44,6 @@ export class TileSpawner implements ITileSpawner {
         });
         const tileMoveTask = newTile.moveToCellAsync(finalCoords);
         return new Task().bundleWith(tileMoveTask);
-    }
-
-    protected spawnObjAtRow(row: number) {
-        const cols = this.colsNum;
-        for (let col = 0; col < cols; col++) this.spawnObjAtCell({
-            row, col 
-        });
     }
 
     protected spawnObjAtCell(
