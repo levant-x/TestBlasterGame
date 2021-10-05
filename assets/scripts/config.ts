@@ -20,20 +20,23 @@ const TILES_OFFSET_DURATION_SEC = 0.2;
 const TILES_SHUFFLE_SPEEDUP = 3;
 const TILES_1ST_FALL_SPEEDUP = 1.7;
 const FLOW_DELAY_SEC = 1.5;
+const BOOSTER_NAME_TMPL = 'booster-panel-';
+const SUPERTILE_APPEAR_PROBAB = 7 / 10;
 
 const TOOLS_TYPES = {
-    ITileSpawner: 'TileSpawner',
     IGameFlow: 'GameFlowBoosted',
     IStepFlow: 'StepFlow',
+    ITileSpawner: 'TileSpawner',
     IItemsGroupAnalyzer: 'HitTilesFinderMultichoice',
     IItemsGapAnalyzer: 'HitTilesFinderBase',
+    IStepInspector: 'StepInspector',
+    IBoosterManager: 'BoosterManager',
+    IBoostNotifier: 'BoosterManager',
+    BoosterSupertile: 'BoosterSupertile',
     LooseTilesFinder: 'LooseTilesFinder',
     TileOffsetter: 'TileOffsetter',
     TileAsyncRespawner: 'TileAsyncRespawner',
-    IBoosterManager: 'BoosterManager',
-    IBoostNotifier: 'BoosterManager',
     TileShuffler: 'TileShuffler',
-    IStepInspector: 'StepInspector',
 };
 
 export type Types = keyof typeof TOOLS_TYPES;
@@ -60,6 +63,8 @@ export const CONFIG = {
     TILES_OFFSET_DURATION_SEC,   
     TILES_SHUFFLE_SPEEDUP,
     FLOW_DELAY_SEC,
+    BOOSTER_NAME_TMPL,
+    SUPERTILE_APPEAR_PROBAB,
     loadLevelConfigAsync,
     getDependencyName,
 }

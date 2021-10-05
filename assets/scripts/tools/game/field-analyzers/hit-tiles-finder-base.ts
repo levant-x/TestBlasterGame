@@ -96,7 +96,7 @@ export class HitTilesFinderBase
     private _areGridCellCoordsValid(
         { col, row }: GridCellCoordinates
     ): boolean {
-        const areCoordsValid = col >= 0 && col < this.witdh &&
+        const areCoordsValid = col >= 0 && col < this.width &&
             row >= 0 && row < this.height;
         return areCoordsValid;
     }

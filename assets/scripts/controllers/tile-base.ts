@@ -9,7 +9,12 @@ import {
     Animation 
 } from 'cc';
 import { CONFIG } from '../config';
-import { BooleanGetter, Color, GridCellCoordinates, ITile } from '../types';
+import { 
+    BooleanGetter, 
+    Color, 
+    GridCellCoordinates, 
+    ITile 
+} from '../types';
 const { ccclass } = _decorator;
 
 @ccclass('Tile-base')
@@ -17,11 +22,13 @@ export class TileBase extends Component implements ITile {
     private static _size: Vec3 = Vec3.ZERO;
     private static _layoutOrigin?: Vec3; 
 
-    protected cellCoords = { row: 0, col: 0, };
+    private _cellCoords = { row: 0, col: 0, };
+
     protected color?: Color;
 
-    public static onClick: (sender: TileBase) => void;
-    public static is1stSeeding = true;
+    static onClick: (sender: TileBase) => void;
+    static is1stSeeding = true;
+    static lastClickCoords?: GridCellCoordinates;
 
     onLoad() {
         this._setupColor();
@@ -38,19 +45,21 @@ export class TileBase extends Component implements ITile {
         this.node.off(Node.EventType.MOUSE_UP, this.onClick.bind(this));
     }
 
-    getGroupID() {
+    getGroupID(): string {
         if (!this.color) throw 'Color was not init!';
         return Color[this.color];
     }   
 
     getCellCoordinates(): GridCellCoordinates {
-        return this.cellCoords;
+        return this._cellCoords;
     }
 
-    positionAtCell(coords: GridCellCoordinates) {
+    positionAtCell(
+        coords: GridCellCoordinates
+    ): void {
         const cellAbsPos = this.getCellAbsPosition(coords);
         this.node.setPosition(cellAbsPos);
-        this.cellCoords = { ...coords };
+        this.setCellCrds(coords);
     }
 
     moveToCellAsync(
@@ -60,13 +69,19 @@ export class TileBase extends Component implements ITile {
         return () => true;
     } 
 
-    destroyHitAsync() {
+    destroyHitAsync(): BooleanGetter {
         this.node.destroy();
         return () => !this.isValid;
     }    
 
-    protected onClick() {
+    protected onClick(): void {
         TileBase.onClick?.(this);
+    }
+
+    protected setCellCrds(
+        crds: GridCellCoordinates
+    ): void {
+        this._cellCoords = {...crds};
     }
 
     protected setGreetingAnimationToPlay() {
@@ -84,7 +99,7 @@ export class TileBase extends Component implements ITile {
         return cellAbsPos;
     }
 
-    private _computeSizeParams() {
+    private _computeSizeParams(): void {
         const size = this.getComponent(UITransform)?.contentSize as Size;
         const { width, height } = size;    
         const minDim = Math.min(width, height);
@@ -96,7 +111,7 @@ export class TileBase extends Component implements ITile {
             .add(hfSize);
     }
 
-    private _setupColor() {
+    private _setupColor(): void {
         const { name } = this.node;
         const colorFromName = name.replace('tile-', '');
         this.color = colorFromName as unknown as Color;

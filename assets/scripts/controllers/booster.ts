@@ -7,10 +7,11 @@ const { ccclass, property } = _decorator;
 @ccclass('Booster')
 @injectable()
 export class Booster extends Component implements IBooster {
-    @inject('IBoosterManager')
-    private _boostersMng: IBoosterManager;
     private _count = 0;
     private _type: BoosterType;
+
+    @inject('IBoosterManager')
+    private _boostersMng: IBoosterManager;
 
     @property(Label)
     protected numLabel: Label;
@@ -19,11 +20,7 @@ export class Booster extends Component implements IBooster {
 
     start() {
         if (!this._boostersMng) throw 'Booster manager not set';
-
-        const mng = this._boostersMng;
-        const { type, count } = mng.registerBooster(this);
-        this._type = type;
-        this._updateCnt(count);
+        this.init();        
     }
     
     tryApply(): boolean {
@@ -36,6 +33,13 @@ export class Booster extends Component implements IBooster {
 
     onClick(): void {
         this._boostersMng.tryApplyBooster(this._type);
+    }
+
+    protected init(toUseUI = true) {
+        const mng = this._boostersMng;
+        const { type, count } = mng.registerBooster(this);
+        this._type = type;
+        toUseUI && this._updateCnt(count);
     }
 
     private _updateCnt(

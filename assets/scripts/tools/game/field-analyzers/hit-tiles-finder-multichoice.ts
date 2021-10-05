@@ -4,8 +4,9 @@ import {
     IBoostNotifier, 
     LevelConfig 
 } from "../../../types";
+import { pickRandomItem } from "../../common/array-tools";
 import { HitTilesFinderBase, ItemType } from "./hit-tiles-finder-base";
-import { scanGrid } from "./range-scanners.ts";
+import { scanGrid, scanHoriz, scanVertical } from "./range-scanners.ts";
 
 type T = ItemType;
 
@@ -29,29 +30,63 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
             super.runItemsCollect(crds, itemsGroup);
             return;
         }
+
         this._startPointCrds = crds;
         this._itemsGroup = itemsGroup;
         currBooster === 'bomb' && this._applyBomb();
-        this._boostNotifier.dropBoosterStatus();
+        currBooster === 'supertile' && this._applySupertile();
     }
 
     private _applyBomb(): void {
-        debugger
         const r = this._cfg.bombExplRadius;
-        const { 
-            row: centerY, 
-            col: centerX,
-        } = this._startPointCrds;
+        const { y, x, } = this._getStartPointCrds();
 
-        const top = Math.min(centerY + r, this.height - 1);
-        const bottom = Math.max(centerY - r, 0);
-        const left = Math.max(centerX - r, 0);
-        const right = Math.min(centerX + r, this.witdh - 1);
+        const top = Math.min(y + r, this.height - 1);
+        const bottom = Math.max(y - r, 0);
+        const left = Math.max(x - r, 0);
+        const right = Math.min(x + r, this.width - 1);
 
         scanGrid({ 
             left, right, }, { top, bottom, 
-        }, ({ row, col, }) => {
-            this._itemsGroup.push(this.gamefield[col][row]);
-        });
+        }, this._collectItem.bind(this));
+    }   
+
+    private _applySupertile(): void {
+        pickRandomItem([
+            () => this._applyBomb(),
+            () => this._destroyRow(),            
+            () => this._destroyCol(),
+        ])();
+    }
+
+    private _destroyRow(): void {
+        const { y } = this._getStartPointCrds();
+        scanHoriz({
+            left: 0, 
+            right: this.width - 1,
+        }, col => this._collectItem.bind(this)({
+            row: y, col,
+        }));
+    }
+
+    private _destroyCol(): void {
+        const { x } = this._getStartPointCrds();
+        scanVertical({
+            bottom: 0, 
+            top: this.height - 1,
+        }, row => this._collectItem.bind(this)({
+            row, col: x,
+        }));
+    }
+
+    private _getStartPointCrds = () => ({
+        x: this._startPointCrds.col, 
+        y: this._startPointCrds.row,
+    })
+
+    private _collectItem(
+        { row, col, }: GridCellCoordinates,
+    ): void {
+        this._itemsGroup.push(this.gamefield[col][row]);
     }
 }

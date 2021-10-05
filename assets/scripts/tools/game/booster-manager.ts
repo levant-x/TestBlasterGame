@@ -1,6 +1,7 @@
 
 import { _decorator } from 'cc';
-import { injectable, injectValueByKey } from '../../decorators';
+import { CONFIG } from '../../config';
+import { inject, injectable, injectValueByKey } from '../../decorators';
 import { 
     BoosterInfo,
     BoosterType, 
@@ -15,13 +16,10 @@ type BoosterAttributes = {
 
 @injectable()
 export class BoosterManager implements IBoosterManager {
-    @injectValueByKey('config')
-    private _cfg: LevelConfig;
-
-    private _currBooster: BoosterType | null = null;
+    private _currBooster: BoosterType | null = null;    
     private _boosters: Record<string, IBooster> = {};  
     private _attributes: Record<
-        BoosterType, BoosterAttributes
+        string, BoosterAttributes
     > = {
         shuffle: {
             getCnt: () => this._cfg.shufflesAvail,
@@ -30,6 +28,11 @@ export class BoosterManager implements IBoosterManager {
             getCnt: () => this._cfg.bombsAvail,
         },
     };
+
+    @inject('BoosterSupertile')
+    private _boosterSupertile: IBooster;
+    @injectValueByKey('config')
+    private _cfg: LevelConfig;
 
     getCurrentBooster(): BoosterType | null {
         return this._currBooster;
@@ -42,10 +45,9 @@ export class BoosterManager implements IBoosterManager {
     tryApplyBooster(
         type: BoosterType
     ): boolean {
-        const attributes = this._attributes[type];
         const trgBooster = this._boosters[type]
-        if (!attributes || !trgBooster) 
-            throw `Booster ${type} not registered`;
+        if (!trgBooster) throw `Booster ${type} not registered`;
+
         if (!trgBooster.tryApply()) return false;
         this._currBooster = type;
         return true;
@@ -55,13 +57,14 @@ export class BoosterManager implements IBoosterManager {
         booster: IBooster,
     ): BoosterInfo {
         const { name } = booster.node;
-        const typeFromName = name.replace('booster-panel-', '');
+        const typeFromName = name.replace(CONFIG.BOOSTER_NAME_TMPL, '');
         const boosterType = typeFromName as BoosterType;
-        const { getCnt } = this._attributes[boosterType];
+
         this._boosters[boosterType] = booster;
+        const attributes = this._attributes[boosterType];        
         return {
             type: boosterType, 
-            count: getCnt(),
+            count: attributes?.getCnt(),
         }
     }
 }

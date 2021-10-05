@@ -1,3 +1,4 @@
+import { TileBase } from "../../controllers/tile-base";
 import { UI } from "../../controllers/ui/ui";
 import { inject, injectable } from "../../decorators";
 import { 
@@ -24,11 +25,10 @@ export class StepInspector implements IStepInspector {
 
         const tilesMinVol = levelInfo.config.tilesetVolToDstr;
         const { totalLength } = GamefieldContext.get();
+
         for (let i = 0; i < totalLength; i++) 
             if (this.isCellClickable(i, tilesMinVol)) return false;    
-
-        const hasAppliedShuffle = this._tryShuffle();
-        return !hasAppliedShuffle;
+        return !this._tryShuffle();
     }
 
     protected isCellClickable(

@@ -47,14 +47,15 @@ export class TileSpawner implements ITileSpawner {
     }
 
     protected spawnObjAtCell(
-        { row, col }: GridCellCoordinates
+        crds: GridCellCoordinates
     ): ITile {
         const { prefabs } = this;
         if (!this.targetNode) throw 'Parent node not set';
         if (!prefabs || !prefabs.length) throw 'Prefabs not set';   
+
         const trgPrefab = pickRandomItem(prefabs);
         const newTileNode = instantiate(trgPrefab);
-        return this.setupNewItemFireCbck(newTileNode, { row, col });
+        return this.setupNewItemFireCbck(newTileNode, crds);
     }
 
     protected setupNewItemFireCbck(
@@ -63,6 +64,7 @@ export class TileSpawner implements ITileSpawner {
     ): ITile {
         this.targetNode.addChild(itemNode);
         const newTileCtrl = itemNode.getComponent(TileBase) as ITile;
+
         newTileCtrl.positionAtCell(coords);
         this.onTileSpawn?.(newTileCtrl);
         return newTileCtrl;

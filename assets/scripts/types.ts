@@ -38,7 +38,7 @@ export enum Color {
 
 export type StepResult  = 'next' | 'complete' | 'won' | 'lost';
 
-export type BoosterType = 'shuffle' | 'bomb';
+export type BoosterType = 'shuffle' | 'bomb' | 'supertile';
 
 export type TileSpawnCallback = (newTile: ITile) => void;
 
@@ -94,7 +94,8 @@ export interface IStepFlow {
 
 export interface IGameStatus {
     isStepValid(hitTiles: ITile[]): boolean;
-    runStepResult(): void;
+    isStepFinal(): boolean;
+    runStepResult(): void;    
 }
 
 export interface IGameFlow extends IGameStatus {
@@ -145,18 +146,18 @@ export interface ISteps {
     stepsNum: number;
 }
 
-export interface IBooster extends Component {
+export interface IBooster extends Pick<Component, 'node'> {
     tryApply(): boolean;
 }
 
 export interface IBoostNotifier {    
     getCurrentBooster(): BoosterType | null;
-    dropBoosterStatus(): void;    
 }
 
 export interface IBoosterManager extends IBoostNotifier {
     registerBooster(booster: IBooster): BoosterInfo;
     tryApplyBooster(type: BoosterType): boolean;
+    dropBoosterStatus(): void;    
 }
 
 export interface IStepInspector {

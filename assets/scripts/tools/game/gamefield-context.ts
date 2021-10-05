@@ -19,7 +19,7 @@ export class GamefieldContext extends Component {
 
     protected gamefield: ITile[][] = [];
     protected height: number = 0;
-    protected witdh: number = 0;
+    protected width: number = 0;
 
     constructor() {
         super();
@@ -64,7 +64,7 @@ export class GamefieldContext extends Component {
     private _initThisCtxFromStaticOne() {
         this.gamefield = GamefieldContext._body;
         this.height = GamefieldContext._h;
-        this.witdh = GamefieldContext._w;
+        this.width = GamefieldContext._w;
     }
   
     private static _getTotalLength() {

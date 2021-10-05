@@ -12,9 +12,10 @@ import { inject, injectable, injectValueByKey } from '../../decorators';
 
 @injectable()
 export class TileAsyncRespawner {
+    private _taskMngrs: TaskManager[] = [];   
+
     @inject('ITileSpawner')
     private _spawner: ITileSpawner;
-    private _taskMngrs: TaskManager[] = [];   
     @injectValueByKey('fieldHeight')
     private _height: number;
 
@@ -51,6 +52,7 @@ export class TileAsyncRespawner {
             .bind(this)(demandInfo);
         const recursionCbck = () => this
             ._setupTask_SpawnNewTiles(demandInfo, taskMng);
+            
         taskMng.bundleWith(this._spawner
             .spawnNewTile(crds, this._height
         ), recursionCbck);

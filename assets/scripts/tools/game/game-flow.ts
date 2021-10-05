@@ -17,6 +17,7 @@ import { Task } from "../common/task";
 @injectable()
 export class GameFlow implements IGameFlow {
     private _lvlInfo: LevelInfo;
+    private _isStepFinal = false;
 
     @inject('ITileSpawner')
     protected tileSpawner: ITileSpawner;
@@ -26,6 +27,10 @@ export class GameFlow implements IGameFlow {
     uiManager: UI;
     menu: Menu;
 
+    isStepFinal(): boolean {
+        return this._isStepFinal;
+    }
+
     setupGameStart(
         levelInfo: LevelInfo
     ): Task {
@@ -34,13 +39,8 @@ export class GameFlow implements IGameFlow {
         if (!this.uiManager) throw 'UI manager missing';
 
         this._lvlInfo = levelInfo;
-        TileBase.is1stSeeding = true;
-        this.tileSpawner.seedGamefield();
-        TileBase.is1stSeeding = false;
-
-        const { stepsAvail } = levelInfo.config;
-        this.uiManager.stepsNum = stepsAvail;
-        this.uiManager.reset();
+        this._seedAnimateField();
+        this._setupUI();
 
         const { menu } = this;
         const wireupModClose = menu.addModalCloseHandler.bind(menu);
@@ -66,16 +66,32 @@ export class GameFlow implements IGameFlow {
     runStepResult(): void {
         const points = this.uiManager.getPoints();
         const { targetScore, stepsAvail } = this._lvlInfo.config;
+        if (points >= targetScore) this._completeLevel();
+        else this._endGameIfLost(points, stepsAvail);
+    }
+
+    protected switchLevel() {
+        SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
+    }
+
+    private _seedAnimateField(): void {
+        TileBase.is1stSeeding = true;
+        this.tileSpawner.seedGamefield();
+        TileBase.is1stSeeding = false;
+    }
+
+    private _setupUI(): void {
+        const { stepsAvail } = this._lvlInfo.config;
+        this.uiManager.stepsNum = stepsAvail;
+        this.uiManager.reset();
+    }
+
+    private _completeLevel(): void {
         const { current, total } = this._lvlInfo.num;
-        let result: StepResult = 'next';
-        
-        if (points >= targetScore) {
-            result = current === total - 1 ?
-                'complete' : 'won';
-            this.menu.show(result);
-            return;
-        }
-        this._endGameIfLost(points, stepsAvail);
+        const result: StepResult = current === total - 1 ?
+            'complete' : 'won';
+        this._isStepFinal = true;
+        this.menu.show(result);
     }
 
     private _endGameIfLost(
@@ -83,17 +99,13 @@ export class GameFlow implements IGameFlow {
         steps: number,
     ): void {
         const inspector = this.stepInspector;
-        const isStepFinite = inspector.isStepDeadEnd.bind(inspector);
-        if (isStepFinite(this._lvlInfo, this.uiManager)) {
-            this.menu.show({
-                stepResult: 'lost' as StepResult,
-                summary: { points, steps, },
-            });
-            return;
-        }
-    }
+        this._isStepFinal = inspector.isStepDeadEnd(this._lvlInfo,
+            this.uiManager);
+        if (!this._isStepFinal) return;
 
-    protected switchLevel() {
-        SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
+        this.menu.show({
+            stepResult: 'lost' as StepResult,
+            summary: { points, steps, },
+        });
     }
 }

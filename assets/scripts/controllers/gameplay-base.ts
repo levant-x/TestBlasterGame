@@ -46,7 +46,7 @@ export abstract class GameplayBase extends GamefieldContext {
         dispatchValue('fieldHeight', config.fieldHeight);
         dispatchValue('config', config);
 
-        this.tileSpawner.colsNum = this.witdh;
+        this.tileSpawner.colsNum = this.width;
         this.tileSpawner.rowsNum = this.height;
         this.tileSpawner.prefabs = this.tilePrefabs;
         this.tileSpawner.targetNode = this.node;
@@ -66,7 +66,7 @@ export abstract class GameplayBase extends GamefieldContext {
 
     protected onTileSpawn(
         newTile: ITile
-    ): void{
+    ): void {
         const { col } = newTile.getCellCoordinates();
         if (this.gamefield.length < col + 1) this.gamefield.push([]);
         if (TileBase.is1stSeeding) this.gamefield[col].push(newTile);
@@ -83,7 +83,7 @@ export abstract class GameplayBase extends GamefieldContext {
 
     protected onHitTilesDetect(
         hitTiles: ITile[]
-    ): void{
+    ): void {
         if (!this.gameFlowMng.isStepValid(hitTiles)) return; 
         const destroyTilesTask = this.stepFlowMng.destroyHitTiles(hitTiles);
         const onDestroy = this.onHitTilesDestroy.bind(this);
@@ -93,19 +93,22 @@ export abstract class GameplayBase extends GamefieldContext {
         this.updateUITask = this.gameFlowMng.updateUI(pointsNum);
     }
 
-    protected onHitTilesDestroy(){
+    protected onHitTilesDestroy() {
         const offsetTask = this.stepFlowMng.offsetLooseTiles();        
         const bundle = this.taskMng.bundleWith.bind(this.taskMng);
         bundle(offsetTask, this.onLooseTilesOffset.bind(this));
     }
 
-    protected onLooseTilesOffset(){
+    protected onLooseTilesOffset() {
         const respawnTask = this.stepFlowMng.spawnNewTiles();
         const updUITask = this.updateUITask;
+        const onRespawn = this.onStepEnd.bind(this);
+        this.taskMng.bundleWith(respawnTask).bundleWith(updUITask, onRespawn);
+    }
 
-        const { gameFlowMng } = this;
-        const checkStep = gameFlowMng.runStepResult.bind(gameFlowMng);        
-        this.taskMng.bundleWith(respawnTask).bundleWith(updUITask, checkStep);
+    /**Checks step result by default */
+    protected onStepEnd() {
+        this.gameFlowMng.runStepResult();    
     }
 
     private _replaceHitTileWithNew(

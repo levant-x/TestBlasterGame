@@ -1,6 +1,10 @@
 import { inject, injectable } from "../../decorators";
-import { IBoostNotifier, ITile } from "../../types";
+import { BoosterType, IBoostNotifier, ITile } from "../../types";
 import { GameFlow } from "./game-flow";
+
+const BOOSTERS_ALLOWING_STEP: BoosterType[] = [
+    'bomb', 'supertile',
+];
 
 @injectable()
 export class GameFlowBoosted extends GameFlow {
@@ -11,7 +15,7 @@ export class GameFlowBoosted extends GameFlow {
         hitTiles: ITile[]
     ): boolean {
         const currBooster = this.boostNotifier.getCurrentBooster();
-        if (currBooster) return ['bomb'].includes(currBooster);
-        return super.isStepValid(hitTiles);
+        if (!currBooster) return super.isStepValid(hitTiles);
+        return BOOSTERS_ALLOWING_STEP.includes(currBooster);
     }
 }
