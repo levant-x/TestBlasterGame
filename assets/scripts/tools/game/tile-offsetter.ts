@@ -9,7 +9,7 @@ import {
 import { inject, injectable } from '../../decorators';
 import { Task } from '../common/task';
 import { GamefieldContext } from './gamefield-context';
-import { LooseTilesFinder } from './loose-tiles-finder';
+import { LooseTilesFinder } from './field-analyzers/loose-tiles-finder';
 
 @injectable()
 export class TileOffsetter extends GamefieldContext {
@@ -18,9 +18,9 @@ export class TileOffsetter extends GamefieldContext {
     @inject('LooseTilesFinder')
     private _looseTilesFinder: LooseTilesFinder;
 
-    getTaskOffsetLooseTiles = (
+    getTaskOffsetLooseTiles(
         hitCellsCoords: GridCellCoordinates[]
-    ): Task => {
+    ): Task {
         const selectorCbck = (tile: Component) => tile.isValid;
         const tilesOffsInfos = this
             ._looseTilesFinder

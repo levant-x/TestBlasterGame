@@ -19,8 +19,9 @@ export class Booster extends Component implements IBooster {
 
     start() {
         if (!this._boostersMng) throw 'Booster manager not set';
-        const { registerBooster } = this._boostersMng;
-        const { type, count } = registerBooster(this);
+
+        const mng = this._boostersMng;
+        const { type, count } = mng.registerBooster(this);
         this._type = type;
         this._updateCnt(count);
     }
@@ -28,7 +29,7 @@ export class Booster extends Component implements IBooster {
     tryApply(): boolean {
         if (!this._count) return false;
         this._updateCnt(this._count - 1);
-        if (!this._count && this.button) 
+        if (!this._count) 
             this.button.interactable = false;
         return true;
     }

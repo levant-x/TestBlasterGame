@@ -30,7 +30,8 @@ export class UI extends Component implements IScore, ISteps {
         deltaPoints: number
     ): Task {
         this._trgValue += deltaPoints;
-        return new Task().bundleWith(this._wasScoreUpdated);
+        const taskStatus = this._wasScoreUpdated.bind(this);
+        return new Task().bundleWith(taskStatus);
     }
 
     public getPoints() {
@@ -41,7 +42,7 @@ export class UI extends Component implements IScore, ISteps {
         this._currValue = this._trgValue = 0;
     }
 
-    private _wasScoreUpdated = () => {
+    private _wasScoreUpdated() {
         return this._currValue === this._trgValue;
     }
 

@@ -3,19 +3,22 @@ import {
     Demand4NewTilesInfo, 
     GridCellCoordinates, 
     IClassifyable, 
+    IItemsGapAnalyzer, 
     IItemsGroupAnalyzer
-} from '../../types';
-import { injectable } from '../../decorators';
-import { GamefieldContext } from './gamefield-context';
+} from '../../../types';
+import { injectable } from '../../../decorators';
+import { GamefieldContext } from '../gamefield-context';
 
 type ItemSelector<T> = (item: T) => boolean;
 type GCCAlias = GridCellCoordinates;
 type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
+export type ItemType = T;
 
 @injectable()
-export class HitTilesFinder extends GamefieldContext 
-    implements IItemsGroupAnalyzer<T> {
+export class HitTilesFinderBase
+    extends GamefieldContext 
+    implements IItemsGroupAnalyzer<T>, IItemsGapAnalyzer {
 
     private _selectItem: ItemSelector<T>;
     private _coordsSearchSwitchers: GCSwitcher[] = [
@@ -25,16 +28,17 @@ export class HitTilesFinder extends GamefieldContext
         coords => ({...coords, row: coords.row - 1}),
     ];
 
-    collectItemsGroup = (
+    collectItemsGroup(
         [{ col, row }]: GridCellCoordinates[], 
         select?: ItemSelector<T>
-    ): T[] => {
+    ): T[] {
         const itemAtPoint = this.gamefield[col][row];
-        const selectToUse = select || ((item: T) => 
-            item.getGroupID() === itemAtPoint.getGroupID());
-        this._selectItem = selectToUse;
+        const itemSelector = select || ((otherItem: T) => 
+            itemAtPoint.getGroupID() === otherItem.getGroupID());
+        this._selectItem = itemSelector;
+
         const itemsGroup: T[] = [];
-        this._collectItems({ col, row }, itemsGroup);
+        this.runItemsCollect({ col, row }, itemsGroup);
         return itemsGroup;
     }
 
@@ -45,6 +49,13 @@ export class HitTilesFinder extends GamefieldContext
         return colsToEmptyCellsMap;
     }
 
+    protected runItemsCollect(
+        crds: GridCellCoordinates, 
+        itemsGroup: T[],
+    ): void {
+        this._collectItems(crds, itemsGroup);
+    }
+
     private _collectItems(
         crds: GridCellCoordinates, 
         items: T[]
@@ -53,13 +64,14 @@ export class HitTilesFinder extends GamefieldContext
         const { row, col } = crds;
         const itemAtPoint = this.gamefield[col][row] as unknown as T;
 
-        if (!this._selectItem(itemAtPoint) || 
-            items.includes(itemAtPoint)) return; 
-        items.push(itemAtPoint);
+        const itemFits = this._selectItem(itemAtPoint) &&
+            !items.includes(itemAtPoint);
+        if (!itemFits) return; 
 
+        items.push(itemAtPoint);
         const switchers = this._coordsSearchSwitchers;   
-        switchers.forEach(offsetCoord => this
-            ._collectItems(offsetCoord(crds), items))     
+        const collect = this._collectItems.bind(this);
+        switchers.forEach(around => collect(around(crds), items))     
     }
 
     private _extractEmptyCellsInfo = (
@@ -75,7 +87,7 @@ export class HitTilesFinder extends GamefieldContext
 
     private _findLowestEmptyRow(
         rows: Component[]
-    ) {
+    ): number {
         const hitTile = rows.find(tile => !tile.isValid);
         if (!hitTile) return 0;
         return rows.indexOf(hitTile);

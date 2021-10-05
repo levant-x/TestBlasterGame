@@ -28,13 +28,14 @@ export class GamefieldContext extends Component {
     }
     
     static get() {
-        const getDecPoint =
-            GamefieldContext._getDecartPoint;
+        const getDecartPoint = 
+            GamefieldContext._getDecartPoint;    
+        type n = number;    
         return {
             totalLength: GamefieldContext._getTotalLength(),
-            row: (point: number) => getDecPoint(point, 'row'),
-            col: (point: number) => getDecPoint(point, 'col'),
             linear: GamefieldContext._getLinearPoint,
+            row: (point: n) => getDecartPoint(point, 'row'),
+            col: (point: n) => getDecartPoint(point, 'col'),
         };
     }
 
@@ -73,9 +74,9 @@ export class GamefieldContext extends Component {
     private static _getLinearPoint(
         { row, col }: GridCellCoordinates
     ): number {
-        return GamefieldContext._w * row + col;
-    }
-
+        return GamefieldContext._w * row + col
+    };
+    
     private static _getDecartPoint(
         point: number,
         dimension: 'row' | 'col'

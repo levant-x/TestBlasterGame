@@ -1,7 +1,8 @@
 
 import { _decorator, Prefab } from 'cc';
+import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
-import { resolveValue } from '../tools/common/di';
+import { dispatchValue } from '../tools/common/di';
 import { Task } from '../tools/common/task';
 import { TaskManager } from '../tools/common/task-manager';
 import { GamefieldContext } from '../tools/game/gamefield-context';
@@ -42,16 +43,18 @@ export abstract class GameplayBase extends GamefieldContext {
     start() {
         const { config } = this.info;
         this.initContext(config);
-        resolveValue('fieldHeight', config.fieldHeight);
-        resolveValue('config', config);
+        dispatchValue('fieldHeight', config.fieldHeight);
+        dispatchValue('config', config);
 
         this.tileSpawner.colsNum = this.witdh;
         this.tileSpawner.rowsNum = this.height;
         this.tileSpawner.prefabs = this.tilePrefabs;
         this.tileSpawner.targetNode = this.node;
-        this.tileSpawner.onTileSpawn = this.onTileSpawn;
+        this.tileSpawner.onTileSpawn = this.onTileSpawn.bind(this);
 
-        TileBase.onClick = this.onTileClick;   
+        TileBase.onClick = this.onTileClick.bind(this);    
+        TileBase.onClick.bind(this); 
+        
         this.gameFlowMng.menu = this.menu as Menu;   
         this.gameFlowMng.uiManager = this.uiMng as UI;   
         this.gameFlowMng.setupGameStart(this.info);
@@ -61,52 +64,60 @@ export abstract class GameplayBase extends GamefieldContext {
         this.taskMng.isComplete();
     }
 
-    protected onTileSpawn = (
+    protected onTileSpawn(
         newTile: ITile
-    ): void => {
+    ): void{
         const { col } = newTile.getCellCoordinates();
         if (this.gamefield.length < col + 1) this.gamefield.push([]);
         if (TileBase.is1stSeeding) this.gamefield[col].push(newTile);
         else this._replaceHitTileWithNew(newTile, col);
     }
 
-    protected onTileClick = (
+    protected onTileClick(
         sender: ITile
-    ): void => {
+    ): void {
         if (!this.taskMng.isComplete()) return;
         const hitTiles = this.stepFlowMng.detectHitTiles(sender);
         this.onHitTilesDetect(hitTiles);
     }    
 
-    protected onHitTilesDetect = (
+    protected onHitTilesDetect(
         hitTiles: ITile[]
-    ): void => {
+    ): void{
         if (!this.gameFlowMng.isStepValid(hitTiles)) return; 
-        this.taskMng.bundleWith(this.stepFlowMng
-            .destroyHitTiles(hitTiles), this.onHitTilesDestroy);
+        const destroyTilesTask = this.stepFlowMng.destroyHitTiles(hitTiles);
+        const onDestroy = this.onHitTilesDestroy.bind(this);
+
+        this.taskMng.bundleWith(destroyTilesTask, onDestroy);            
         const pointsNum = hitTiles.length;
         this.updateUITask = this.gameFlowMng.updateUI(pointsNum);
     }
 
-    protected onHitTilesDestroy = () => {
-        const offsetTask = this.stepFlowMng.offsetLooseTiles();
-        this.taskMng.bundleWith(offsetTask, this.onLooseTilesOffset);
+    protected onHitTilesDestroy(){
+        const offsetTask = this.stepFlowMng.offsetLooseTiles();        
+        const bundle = this.taskMng.bundleWith.bind(this.taskMng);
+        bundle(offsetTask, this.onLooseTilesOffset.bind(this));
     }
 
-    protected onLooseTilesOffset = () => {
-        const respawn = this.stepFlowMng.spawnNewTiles();
-        const updUI = this.updateUITask;
-        const checkStep = this.gameFlowMng.runStepResult;        
-        this.taskMng.bundleWith(respawn).bundleWith(updUI, checkStep);
+    protected onLooseTilesOffset(){
+        const respawnTask = this.stepFlowMng.spawnNewTiles();
+        const updUITask = this.updateUITask;
+
+        const { gameFlowMng } = this;
+        const checkStep = gameFlowMng.runStepResult.bind(gameFlowMng);        
+        this.taskMng.bundleWith(respawnTask).bundleWith(updUITask, checkStep);
     }
 
     private _replaceHitTileWithNew(
-        newTile: ITile, col: number
+        newTile: ITile, 
+        col: number
     ): void {
         const colItems = this.gamefield[col];
         const lowestEmptyCell = colItems.find(tile => !tile.isValid);
         if (!lowestEmptyCell) throw 'Excessive tile spawned';
+        
         const rowIndex = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][rowIndex] = newTile;
+        this.scheduleOnce
     } 
 }

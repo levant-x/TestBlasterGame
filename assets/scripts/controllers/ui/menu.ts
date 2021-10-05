@@ -19,8 +19,8 @@ export class Menu extends ModalOverlay {
         this.node.active = false;
     }
 
-    /**Pass stepResult on its own or {stepResult, summary}*/
-    public show(
+    /**Pass stepResult or {stepResult, summary}*/
+    show(
         arg: any
     ): void {
         const stepResult = arg['stepResult'] || arg;
@@ -29,10 +29,10 @@ export class Menu extends ModalOverlay {
         modal.show(arg['summary']);
     }    
 
-    public addModalCloseHandler = (
+    addModalCloseHandler(
         stepResult: StepResult,
         handler: () => void
-    ): void => {
+    ): void {
         const modal = this._getModalInfo(stepResult);
         modal.onHide = () => {
             this.hide();

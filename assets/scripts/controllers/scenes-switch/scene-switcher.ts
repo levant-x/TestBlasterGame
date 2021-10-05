@@ -19,9 +19,9 @@ export class SceneSwitcher extends Component {
         SceneSwitcher.switchLevel();
     }
     
-    public static switchLevel = (
+    public static switchLevel(
         newSceneName = CONFIG.DEFAULT_SCENE_NAME
-    ): void => {
+    ): void {
         SceneSwitcher._instance?._switchLvlAsync(newSceneName);
     }
 

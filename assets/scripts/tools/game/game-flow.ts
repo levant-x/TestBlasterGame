@@ -42,8 +42,9 @@ export class GameFlow implements IGameFlow {
         this.uiManager.stepsNum = stepsAvail;
         this.uiManager.reset();
 
-        const { addModalCloseHandler } = this.menu as Menu;
-        addModalCloseHandler('won', this.switchLevel);
+        const { menu } = this;
+        const wireupModClose = menu.addModalCloseHandler.bind(menu);
+        wireupModClose('won', this.switchLevel.bind(this));
         return new Task();
     }
 
@@ -62,37 +63,37 @@ export class GameFlow implements IGameFlow {
         return hitTiles.length >= tilesetVolToDstr;
     }
 
-    runStepResult = (): void => {
+    runStepResult(): void {
         const points = this.uiManager.getPoints();
         const { targetScore, stepsAvail } = this._lvlInfo.config;
         const { current, total } = this._lvlInfo.num;
         let result: StepResult = 'next';
+        
         if (points >= targetScore) {
             result = current === total - 1 ?
                 'complete' : 'won';
             this.menu.show(result);
             return;
         }
-        this._overGame(result, points, stepsAvail);
+        this._endGameIfLost(points, stepsAvail);
     }
 
-    private _overGame(
-        result: StepResult,
+    private _endGameIfLost(
         points: number,
         steps: number,
     ): void {
-        const { isStepDeadEnd } = this.stepInspector;
-        if (isStepDeadEnd(this._lvlInfo, this.uiManager)) {
-            result = 'lost';
+        const inspector = this.stepInspector;
+        const isStepFinite = inspector.isStepDeadEnd.bind(inspector);
+        if (isStepFinite(this._lvlInfo, this.uiManager)) {
             this.menu.show({
-                stepResult: result,
+                stepResult: 'lost' as StepResult,
                 summary: { points, steps, },
             });
             return;
         }
     }
 
-    protected switchLevel = () => {
+    protected switchLevel() {
         SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
     }
 }

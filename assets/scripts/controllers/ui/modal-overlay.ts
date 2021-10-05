@@ -35,14 +35,14 @@ export abstract class ModalOverlay extends Component implements IModal {
         this.onHide?.();
     }
 
-    public show(
+    show(
         args?: any
     ): void {
         this.node.active = true;
         this.animateOverlay();
     }
 
-    public hide() {
+    hide() {
         this.node.active = false;
     }
 

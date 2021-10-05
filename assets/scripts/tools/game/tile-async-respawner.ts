@@ -9,7 +9,6 @@ import {
     ITileSpawner 
 } from '../../types';
 import { inject, injectable, injectValueByKey } from '../../decorators';
-import { CONFIG } from '../../config';
 
 @injectable()
 export class TileAsyncRespawner {
@@ -19,36 +18,37 @@ export class TileAsyncRespawner {
     @injectValueByKey('fieldHeight')
     private _height: number;
 
-    respawnAsync = (
+    respawnAsync(
         emptyCellsInfo: Demand4NewTilesInfo[]
-    ): Task => {
+    ): Task {
         this._taskMngrs = [];
-        emptyCellsInfo.forEach(this._createColMng);
-        return new Task().bundleWith(this._checkStatus);
+        emptyCellsInfo.forEach(this._createColMng.bind(this));
+        return new Task().bundleWith(this._checkStatus.bind(this));
     }
 
-    private _createColMng = (
+    private _createColMng(
         infoItem: Demand4NewTilesInfo
-    ): void => {
+    ): void {
         const taskMng = TaskManager.create();
         this._taskMngrs.push(taskMng);
-        this._setupTask_SpawnNewTiles(infoItem, taskMng);
+        this._setupTask_SpawnNewTiles.bind(this)(infoItem, taskMng);
     }
 
-    private _checkStatus = (): boolean => {
+    private _checkStatus(): boolean {
         this._taskMngrs.forEach(mng => mng.isComplete());
         return !this._taskMngrs.length;
     }
 
-    private _setupTask_SpawnNewTiles = (
+    private _setupTask_SpawnNewTiles(
         demandInfo: Demand4NewTilesInfo,
         taskMng: TaskManager,
-    ): void => {
+    ): void {
         if (!demandInfo.tiles2Spawn) {
             removeFromArray(this._taskMngrs, taskMng);
             return;
         }
-        const crds = this._updateDemand4TileInfo(demandInfo);
+        const crds = this._updateDemand4TileInfo
+            .bind(this)(demandInfo);
         const recursionCbck = () => this
             ._setupTask_SpawnNewTiles(demandInfo, taskMng);
         taskMng.bundleWith(this._spawner
@@ -56,9 +56,9 @@ export class TileAsyncRespawner {
         ), recursionCbck);
     }
     
-    private _updateDemand4TileInfo = (
+    private _updateDemand4TileInfo(
         infoItem: Demand4NewTilesInfo
-    ): GridCellCoordinates => {
+    ): GridCellCoordinates {
         const { col, lowestRow: row } = infoItem;
         infoItem.tiles2Spawn--;
         infoItem.lowestRow++;

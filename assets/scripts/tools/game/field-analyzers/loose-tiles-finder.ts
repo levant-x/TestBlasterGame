@@ -5,9 +5,9 @@ import {
     IItemsGroupAnalyzer, 
     ITile, 
     TileOffsetInfo 
-} from '../../types';
-import { injectable } from '../../decorators';
-import { GamefieldContext } from './gamefield-context';
+} from '../../../types';
+import { injectable } from '../../../decorators';
+import { GamefieldContext } from '../gamefield-context';
 
 type Col2RowsMap = Record<number, number[]>;
 
@@ -18,32 +18,32 @@ export class LooseTilesFinder extends GamefieldContext
     private _crrRowToSrchFrom = 0;
     private _selectItem?: (item: Component) => boolean;
 
-    collectItemsGroup = (
+    collectItemsGroup(
         hitTilesCoords: GridCellCoordinates[], 
         select: (item: Component) => boolean
-    ) => {
+    ): TileOffsetInfo[] {
         this._selectItem = select;
         const cols2RowsMap = hitTilesCoords
-            .reduce(this._groupRowsByCol, {});
-        const tileOffsetInfos = (Object.entries(cols2RowsMap))
-            .map(this._convertRowsToTilesOffsetInfos)
+            .reduce(this._groupRowsByCol.bind(this), {});            
+        const tileOffsetInfos = Object.entries(cols2RowsMap)
+            .map(this._convertRowsToTilesOffsetInfos.bind(this))
             .reduce((acc, map) => [...acc, ...map], []); 
         return tileOffsetInfos as TileOffsetInfo[];
     }
 
-    private _groupRowsByCol = (
+    private _groupRowsByCol(
         col2RowsMap: Col2RowsMap, 
         { row, col }: GridCellCoordinates
-    ): Col2RowsMap => {
+    ): Col2RowsMap {
         const colRows = col2RowsMap[col];  
         if (colRows) colRows.push(row);
         else col2RowsMap[col] = [row];
         return col2RowsMap;
     }
 
-    private _convertRowsToTilesOffsetInfos = (
+    private _convertRowsToTilesOffsetInfos(
         [col, rows]: [string, number[]]
-    ) => {
+    ): TileOffsetInfo[] {
         const minRow = Math.min(...rows);
         this._crrRowToSrchFrom = minRow + 1;
         this._crrRowToOffsetTo = minRow;
@@ -58,8 +58,7 @@ export class LooseTilesFinder extends GamefieldContext
         const looseTiles: TileOffsetInfo[] = []
         const startRow = this._crrRowToSrchFrom;
         for (let row = startRow; row < this.height; row++)
-            this._collectTileInfoIfPossible(
-                tilesCol[row], looseTiles);                        
+            this._collectTileInfoIfPossible(tilesCol[row], looseTiles);                        
         return looseTiles;
     }
 

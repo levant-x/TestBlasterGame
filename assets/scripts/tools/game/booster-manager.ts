@@ -1,10 +1,6 @@
 
 import { _decorator } from 'cc';
-import { 
-    inject, 
-    injectable, 
-    injectValueByKey 
-} from '../../decorators';
+import { injectable, injectValueByKey } from '../../decorators';
 import { 
     BoosterInfo,
     BoosterType, 
@@ -12,53 +8,52 @@ import {
     IBoosterManager, 
     LevelConfig 
 } from '../../types';
-import { Task } from '../common/task';
-import { TileShuffler } from './tile-shuffler';
 
 type BoosterAttributes = {
     getCnt: () => number;
-    apply: (args?: any) => Task;
 }
 
 @injectable()
 export class BoosterManager implements IBoosterManager {
     @injectValueByKey('config')
     private _cfg: LevelConfig;
-    @inject('TileShuffler')
-    private _tileShuffler: TileShuffler;    
 
+    private _currBooster: BoosterType | null = null;
     private _boosters: Record<string, IBooster> = {};  
     private _attributes: Record<
         BoosterType, BoosterAttributes
     > = {
         shuffle: {
-            getCnt: () => this._cfg.tileShufflesAvail,
-            apply: () => this._tileShuffler.shuffle(),
+            getCnt: () => this._cfg.shufflesAvail,
         },
         bomb: {
-            getCnt: () => { throw 'Not implemented yet' },
-            apply: () => { throw 'Not implemented yet' },
+            getCnt: () => this._cfg.bombsAvail,
         },
     };
 
-    onBoosterApply?: (task: Task, type: BoosterType) => void;
+    getCurrentBooster(): BoosterType | null {
+        return this._currBooster;
+    }
 
-    tryApplyBooster = (
+    dropBoosterStatus(): void {
+        this._currBooster = null;
+    }
+
+    tryApplyBooster(
         type: BoosterType
-    ): boolean => {
+    ): boolean {
         const attributes = this._attributes[type];
         const trgBooster = this._boosters[type]
         if (!attributes || !trgBooster) 
             throw `Booster ${type} not registered`;
         if (!trgBooster.tryApply()) return false;
-        const boostTask = attributes.apply();
-        this.onBoosterApply?.(boostTask, type);
+        this._currBooster = type;
         return true;
     }
 
-    registerBooster = (
+    registerBooster(
         booster: IBooster,
-    ): BoosterInfo => {
+    ): BoosterInfo {
         const { name } = booster.node;
         const typeFromName = name.replace('booster-panel-', '');
         const boosterType = typeFromName as BoosterType;

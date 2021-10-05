@@ -23,9 +23,10 @@ const FLOW_DELAY_SEC = 1.5;
 
 const TOOLS_TYPES = {
     ITileSpawner: 'TileSpawner',
-    IGameFlow: 'GameFlow',
+    IGameFlow: 'GameFlowBoosted',
     IStepFlow: 'StepFlow',
-    HitTilesFinder: 'HitTilesFinder',
+    IItemsGroupAnalyzer: 'HitTilesFinderMultichoice',
+    IItemsGapAnalyzer: 'HitTilesFinderBase',
     LooseTilesFinder: 'LooseTilesFinder',
     TileOffsetter: 'TileOffsetter',
     TileAsyncRespawner: 'TileAsyncRespawner',
@@ -40,6 +41,16 @@ export type Types = keyof typeof TOOLS_TYPES;
 export type VALUE_KEYS = 
     'fieldHeight' | 
     'config';
+    
+export type RangeX = {
+    left: number;
+    right: number;
+};
+
+export type RangeY = {
+    top: number;
+    bottom: number;
+};
 
 export const CONFIG = {
     LOADER_SCENE_NAME,

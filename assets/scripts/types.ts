@@ -9,7 +9,9 @@ export type LevelConfig = {
     targetScore: number;
     stepsAvail: number;
     tileColorsAvail: number;
-    tileShufflesAvail: number;
+    shufflesAvail: number;
+    bombsAvail: number;
+    bombExplRadius: number;
     tilesetVolToDstr: number;
 } & Record<string, number>;
 
@@ -122,6 +124,10 @@ export interface IItemsGroupAnalyzer<T, R = undefined> {
     ): T[] | R[];
 }
 
+export interface IItemsGapAnalyzer {
+    getEmptyCellsGroupedByColumn(): Demand4NewTilesInfo[];
+}
+
 export interface IModal {
     onHide?: Function;
     show(target?: any): void;
@@ -144,7 +150,8 @@ export interface IBooster extends Component {
 }
 
 export interface IBoostNotifier {    
-    onBoosterApply?: (task: Task, type: BoosterType) => void;
+    getCurrentBooster(): BoosterType | null;
+    dropBoosterStatus(): void;    
 }
 
 export interface IBoosterManager extends IBoostNotifier {

@@ -1,36 +1,32 @@
 import { UI } from "../../controllers/ui/ui";
-import { 
-    inject, 
-    injectable, 
-    injectValueByKey 
-} from "../../decorators";
+import { inject, injectable } from "../../decorators";
 import { 
     IBoosterManager, 
+    IItemsGroupAnalyzer, 
     IStepInspector, 
+    ITile, 
     LevelInfo 
 } from "../../types";
-import { TaskManager } from "../common/task-manager";
 import { GamefieldContext } from "./gamefield-context";
-import { HitTilesFinder } from "./hit-tiles-finder";
 
 @injectable()
 export class StepInspector implements IStepInspector {
-    @inject('HitTilesFinder')
-    protected hitTilesFinder: HitTilesFinder;  
+    @inject('IItemsGroupAnalyzer')
+    protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;  
     @inject('IBoosterManager')
     protected boosterManager: IBoosterManager;
 
-    isStepDeadEnd = (
+    isStepDeadEnd(
         levelInfo: LevelInfo,
         uiManager: UI,
-    ): boolean => {
+    ): boolean {
         if (uiManager.stepsNum === 0) return true;
 
         const tilesMinVol = levelInfo.config.tilesetVolToDstr;
         const { totalLength } = GamefieldContext.get();
         for (let i = 0; i < totalLength; i++) 
-            if (this.isCellClickable(i, tilesMinVol)) 
-                return false;        
+            if (this.isCellClickable(i, tilesMinVol)) return false;    
+
         const hasAppliedShuffle = this._tryShuffle();
         return !hasAppliedShuffle;
     }
@@ -41,14 +37,17 @@ export class StepInspector implements IStepInspector {
     ): boolean {
         const col = GamefieldContext.get().col(cellIndex);
         const row = GamefieldContext.get().row(cellIndex);
-        const collect = this.hitTilesFinder.collectItemsGroup;        
+        const { hitTilesFinder } = this;
+        
+        const collect = hitTilesFinder.collectItemsGroup.bind(hitTilesFinder);        
         const tilesGroupAtPoint = collect([{ row, col }]);
         return tilesGroupAtPoint.length >= tilesMinVol;
     }
 
     private _tryShuffle(): boolean {
-        const apply = this.boosterManager.tryApplyBooster;
-        const hasAppliedShuffle = apply('shuffle');
+        const mng = this.boosterManager;
+        const applyBooster = mng.tryApplyBooster.bind(mng);
+        const hasAppliedShuffle = applyBooster('shuffle');
         return hasAppliedShuffle;
     }
 }

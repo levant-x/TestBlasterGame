@@ -10,7 +10,7 @@ import {
 } from 'cc';
 import { CONFIG } from '../config';
 import { BooleanGetter, Color, GridCellCoordinates, ITile } from '../types';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 @ccclass('Tile-base')
 export class TileBase extends Component implements ITile {    
@@ -31,41 +31,41 @@ export class TileBase extends Component implements ITile {
     } 
 
     start() {
-        this.node.on(Node.EventType.MOUSE_UP, this.onClick);    
+        this.node.on(Node.EventType.MOUSE_UP, this.onClick.bind(this));    
     }
 
     onDestroy() {
-        this.node.off(Node.EventType.MOUSE_UP, this.onClick);
+        this.node.off(Node.EventType.MOUSE_UP, this.onClick.bind(this));
     }
 
-    public getGroupID() {
+    getGroupID() {
         if (!this.color) throw 'Color was not init!';
         return Color[this.color];
     }   
 
-    public getCellCoordinates(): GridCellCoordinates {
+    getCellCoordinates(): GridCellCoordinates {
         return this.cellCoords;
     }
 
-    public positionAtCell(coords: GridCellCoordinates) {
+    positionAtCell(coords: GridCellCoordinates) {
         const cellAbsPos = this.getCellAbsPosition(coords);
         this.node.setPosition(cellAbsPos);
         this.cellCoords = { ...coords };
     }
 
-    public moveToCellAsync(
+    moveToCellAsync(
         gridCoords: GridCellCoordinates
     ): BooleanGetter {
         this.positionAtCell(gridCoords);
         return () => true;
     } 
 
-    public destroyHitAsync() {
+    destroyHitAsync() {
         this.node.destroy();
         return () => !this.isValid;
     }    
 
-    protected onClick = () => {
+    protected onClick() {
         TileBase.onClick?.(this);
     }
 
@@ -76,7 +76,7 @@ export class TileBase extends Component implements ITile {
 
     protected getCellAbsPosition(
         { row, col }: GridCellCoordinates
-    ) {
+    ): Vec3 {
         const cellPosInGrid = new Vec3(col, row).multiply(TileBase._size);    
         const cellAbsPos = Vec3
             .clone(TileBase._layoutOrigin as Vec3)

@@ -15,10 +15,10 @@ export class TileAnimated extends TileBase {
         if (this._toFallInSpawn) this._toFallInSpawn = false;
     }
 
-    public moveToCellAsync = (
+    moveToCellAsync(
         gridNewCoords: GridCellCoordinates,
         simultaneously = false,
-    ): BooleanGetter => {
+    ): BooleanGetter {
         this._hasMoveCompleted = false; 
         this._gridNewCrds = gridNewCoords;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
@@ -32,20 +32,21 @@ export class TileAnimated extends TileBase {
         return () => this._hasMoveCompleted;
     }    
 
-    protected setupMovement = (
+    protected setupMovement(
         cellAbsPos: Vec3, 
         dur: number,
         toEaseInOnly: boolean = false,
-    ): void => {
+    ): void {
         tween(this.node)
-            .to(dur, 
-            { position: cellAbsPos }, 
-            { easing: toEaseInOnly ? 'sineInOut' :'cubicIn' })
-            .call(this._onMoveCompleted)
+            .to(dur, { 
+                position: cellAbsPos }, { 
+                easing: toEaseInOnly ? 'sineInOut' :'cubicIn'
+            })
+            .call(this._onMoveCompleted.bind(this))
             .start();
     }
 
-    private _onMoveCompleted = () => {
+    private _onMoveCompleted() {
         this._hasMoveCompleted = true; 
         const newCrds = this._gridNewCrds as GridCellCoordinates;
         this.cellCoords = { ...newCrds };
