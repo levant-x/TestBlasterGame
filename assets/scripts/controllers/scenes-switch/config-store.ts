@@ -1,36 +1,41 @@
-import { _decorator, Component, game } from 'cc';
+import { _decorator } from 'cc';
 import { CONFIG } from '../../config';
 import { LevelInfo } from '../../types';
-const { ccclass } = _decorator;
 
-@ccclass('ConfigStore')
-export class ConfigStore extends Component {
-    private static _currLevel = -1;
-    private static _cfg?: LevelInfo;
+export class ConfigStore {
+    private static _instance = new ConfigStore();
 
-    onLoad() {
-        game.addPersistRootNode(this.node);
+    private _currLevel = -1;
+    private _cfg?: LevelInfo;
+    private _loadTask?: Promise<LevelInfo>;
+
+    private constructor() { }
+
+    async loadNextLevelInfoAsync(): Promise<void> {
+        this._currLevel++;
+        this._cfg = this._loadTask = undefined;
+        await this._loadLvlInfoAsync();
     }
 
-    async loadNextConfigAsync(): Promise<void> {
-        ConfigStore._currLevel++;
-        ConfigStore._cfg = undefined;
-        await ConfigStore._loadLvlInfoAsync();
+    async getLevelInfoAsync(): Promise<LevelInfo> {
+        if (this._cfg) return this._cfg;
+        this._currLevel < 0 && this._currLevel++;
+
+        if (!this._loadTask) 
+            this._loadTask = this._loadLvlInfoAsync();
+        this._cfg = await this._loadTask;
+        return this._cfg;
     }
 
-    static getLevelInfo(): LevelInfo | undefined {
-        return ConfigStore._cfg;
+    static isConfigLoaded(): boolean {
+        return this._instance._cfg !== undefined;
     }
 
-    static async loadLevelInfoAsync(): Promise<LevelInfo> {
-        if (ConfigStore._cfg) return ConfigStore._cfg;
-
-        ConfigStore._currLevel < 0 && ConfigStore._currLevel++;
-        ConfigStore._cfg = await ConfigStore._loadLvlInfoAsync();
-        return ConfigStore._cfg;
+    static get(): ConfigStore {     
+        return this._instance;
     }
 
-    private static async _loadLvlInfoAsync(): Promise<LevelInfo> {
+    private async _loadLvlInfoAsync(): Promise<LevelInfo> {
         const lvlInfo = await 
             CONFIG.loadLevelConfigAsync(this._currLevel); 
         return lvlInfo;

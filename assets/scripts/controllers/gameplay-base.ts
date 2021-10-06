@@ -1,6 +1,5 @@
 
-import { _decorator, Prefab } from 'cc';
-import { CONFIG } from '../config';
+import { _decorator, Prefab, Node } from 'cc';
 import { inject, injectable } from '../decorators';
 import { dispatchValue } from '../tools/common/di';
 import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
@@ -14,7 +13,6 @@ import {
     ITileSpawner,
     LevelInfo, 
 } from '../types';
-import { ConfigStore } from './scenes-switch/config-store';
 import { TileBase } from './tile-base';
 import { Menu } from './ui/menu';
 import { UI } from './ui/ui';
@@ -30,9 +28,11 @@ export abstract class GameplayBase extends GamefieldContext {
     @property([Prefab])
     protected tilePrefabs: Prefab[] = [];
     @property(UI)
-    protected uiMng?: UI;
+    protected uiMng: UI;
     @property(Menu)
-    protected menu?: Menu;
+    protected menu: Menu;
+    @property(Node)
+    protected mask: Node;
 
     @inject('IStepFlow')
     protected stepFlowMng: IStepFlow;
@@ -42,10 +42,11 @@ export abstract class GameplayBase extends GamefieldContext {
     protected tileSpawner: ITileSpawner;
 
     start() {
-        const wait4ConfigTask = loadLevelInfoAsync(lvlInfo => {
+        const onCfgLoad = (lvlInfo: LevelInfo) => {
             this.levelInfo = lvlInfo;
             this.init();
-        });
+        }
+        const wait4ConfigTask = loadLevelInfoAsync(onCfgLoad);
         this.taskMng.bundleWith(wait4ConfigTask);
     }
         
@@ -58,8 +59,8 @@ export abstract class GameplayBase extends GamefieldContext {
         this._setupTileSpawner();
         TileBase.onClick = this.onTileClick.bind(this);    
         
-        this.gameFlowMng.menu = this.menu as Menu;   
-        this.gameFlowMng.uiManager = this.uiMng as UI;   
+        this.gameFlowMng.menu = this.menu;   
+        this.gameFlowMng.uiManager = this.uiMng;   
         this.gameFlowMng.setupGameStart(this.levelInfo);
     }
 
@@ -120,7 +121,6 @@ export abstract class GameplayBase extends GamefieldContext {
         
         const rowIndex = colItems.indexOf(lowestEmptyCell);
         this.gamefield[col][rowIndex] = newTile;
-        this.scheduleOnce
     } 
 
     private _setupCfgValues(): void {

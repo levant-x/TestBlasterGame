@@ -1,37 +1,41 @@
 
-import { _decorator, director, Component } from 'cc';
-import { CONFIG } from '../../config';
+import { _decorator, director, Component, game } from 'cc';
 import { ConfigStore } from './config-store';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
+
+const LOADER_SCENE_NAME = 'scene-switcher';
+const GAME_SCENE_NAME = 'game';
 
 @ccclass('SceneSwitcher')
 export class SceneSwitcher extends Component {
-    private static _instance?: SceneSwitcher;
+    private static _instance: SceneSwitcher;
 
-    @property(ConfigStore)
-    configStore?: ConfigStore;
+    private _configStore = ConfigStore.get();
 
     onLoad() {
         SceneSwitcher._instance = this;
+        game.addPersistRootNode(this.node);
     }
 
     start () {
         SceneSwitcher.switchLevel();
     }
     
-    public static switchLevel(
-        newSceneName = CONFIG.DEFAULT_SCENE_NAME
-    ): void {
-        SceneSwitcher._instance?._switchLvlAsync(newSceneName);
+    static switchLevel(): void {
+        const currSceneName = director.getScene()?.name;        
+        const trgSceneName = currSceneName === LOADER_SCENE_NAME ?
+            GAME_SCENE_NAME : LOADER_SCENE_NAME;
+        SceneSwitcher._switchLvlAsync(trgSceneName);
     }
 
-    private async _switchLvlAsync(
-        newSceneName: string
+    private static async _switchLvlAsync(
+        trgSceneName: string
     ): Promise<void> {
-        await this.configStore?.loadNextConfigAsync();
-        director.loadScene(newSceneName, (er, scene) => {
+        const switcher = SceneSwitcher._instance;
+        trgSceneName === GAME_SCENE_NAME && 
+            await switcher._configStore.loadNextLevelInfoAsync();
+        director.loadScene(trgSceneName, (er) => {
             if (er) throw er;
-            else if (!scene) throw 'Scene not found';
         });
     }
 }

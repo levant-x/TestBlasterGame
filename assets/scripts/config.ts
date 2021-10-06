@@ -13,8 +13,6 @@ import {
 } from './types';
 
 const LEVEL_SYS_CFG_PATH = 'level-sys-config';
-const LOADER_SCENE_NAME = 'scene-switcher';
-const DEFAULT_SCENE_NAME = 'game';
 const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
 const TILES_OFFSET_DURATION_SEC = 0.2;
 const TILES_SHUFFLE_SPEEDUP = 3;
@@ -41,9 +39,7 @@ const TOOLS_TYPES = {
 
 export type Types = keyof typeof TOOLS_TYPES;
 
-export type VALUE_KEYS = 
-    'fieldHeight' | 
-    'config';
+export type VALUE_KEYS = 'fieldHeight' | 'config';
     
 export type RangeX = {
     left: number;
@@ -56,8 +52,6 @@ export type RangeY = {
 };
 
 export const CONFIG = {
-    LOADER_SCENE_NAME,
-    DEFAULT_SCENE_NAME,
     LAYOUT_ORIGIN_LEFT_BOTTOM,
     TILES_1ST_FALL_SPEEDUP,
     TILES_OFFSET_DURATION_SEC,   

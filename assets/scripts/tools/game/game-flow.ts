@@ -1,4 +1,3 @@
-import { CONFIG } from "../../config";
 import { SceneSwitcher } from "../../controllers/scenes-switch/scene-switcher";
 import { TileBase } from "../../controllers/tile-base";
 import { Menu } from "../../controllers/ui/menu";
@@ -71,7 +70,7 @@ export class GameFlow implements IGameFlow {
     }
 
     protected switchLevel() {
-        SceneSwitcher.switchLevel(CONFIG.LOADER_SCENE_NAME);
+        SceneSwitcher.switchLevel();
     }
 
     private _seedAnimateField(): void {
