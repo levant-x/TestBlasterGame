@@ -3,6 +3,7 @@ import { _decorator, Prefab } from 'cc';
 import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
 import { dispatchValue } from '../tools/common/di';
+import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { Task } from '../tools/common/task';
 import { TaskManager } from '../tools/common/task-manager';
 import { GamefieldContext } from '../tools/game/gamefield-context';
@@ -23,7 +24,7 @@ const { ccclass, property } = _decorator;
 @injectable()
 export abstract class GameplayBase extends GamefieldContext {
     protected taskMng = TaskManager.create();
-    protected info: LevelInfo = ConfigStore.getConfig();    
+    protected levelInfo: LevelInfo;
     protected updateUITask: Task;
 
     @property([Prefab])
@@ -41,27 +42,25 @@ export abstract class GameplayBase extends GamefieldContext {
     protected tileSpawner: ITileSpawner;
 
     start() {
-        const { config } = this.info;
-        this.initContext(config);
-        dispatchValue('fieldHeight', config.fieldHeight);
-        dispatchValue('config', config);
-
-        this.tileSpawner.colsNum = this.width;
-        this.tileSpawner.rowsNum = this.height;
-        this.tileSpawner.prefabs = this.tilePrefabs;
-        this.tileSpawner.targetNode = this.node;
-        this.tileSpawner.onTileSpawn = this.onTileSpawn.bind(this);
-
-        TileBase.onClick = this.onTileClick.bind(this);    
-        TileBase.onClick.bind(this); 
-        
-        this.gameFlowMng.menu = this.menu as Menu;   
-        this.gameFlowMng.uiManager = this.uiMng as UI;   
-        this.gameFlowMng.setupGameStart(this.info);
+        const wait4ConfigTask = loadLevelInfoAsync(lvlInfo => {
+            this.levelInfo = lvlInfo;
+            this.init();
+        });
+        this.taskMng.bundleWith(wait4ConfigTask);
     }
         
     update() {
         this.taskMng.isComplete();
+    }
+
+    protected init() {
+        this._setupCfgValues();
+        this._setupTileSpawner();
+        TileBase.onClick = this.onTileClick.bind(this);    
+        
+        this.gameFlowMng.menu = this.menu as Menu;   
+        this.gameFlowMng.uiManager = this.uiMng as UI;   
+        this.gameFlowMng.setupGameStart(this.levelInfo);
     }
 
     protected onTileSpawn(
@@ -123,4 +122,19 @@ export abstract class GameplayBase extends GamefieldContext {
         this.gamefield[col][rowIndex] = newTile;
         this.scheduleOnce
     } 
+
+    private _setupCfgValues(): void {
+        const { config } = this.levelInfo;
+        this.initContext(config);
+        dispatchValue('fieldHeight', config.fieldHeight);
+        dispatchValue('config', config);
+    }
+
+    private _setupTileSpawner(): void {
+        this.tileSpawner.colsNum = this.width;
+        this.tileSpawner.rowsNum = this.height;
+        this.tileSpawner.prefabs = this.tilePrefabs;
+        this.tileSpawner.targetNode = this.node;
+        this.tileSpawner.onTileSpawn = this.onTileSpawn.bind(this);
+    }
 }

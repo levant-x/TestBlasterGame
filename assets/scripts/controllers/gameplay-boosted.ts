@@ -2,6 +2,7 @@
 import { _decorator } from 'cc';
 import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
+import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { Task } from '../tools/common/task';
 import { TileShuffler } from '../tools/game/field-analyzers/tile-shuffler';
 import { GridCellCoordinates, IBoosterManager, ITile } from '../types';
@@ -15,12 +16,7 @@ export class GameplayBoosted extends GameplayBase {
     @inject('TileShuffler')
     private _tileShuffler: TileShuffler;  
     @inject('IBoosterManager')
-    protected boosterManager: IBoosterManager;  
-    
-    start() {
-        super.start();
-        this._checkStepAfterDelay();
-    }
+    protected boosterManager: IBoosterManager; 
 
     update() {
         super.update();
@@ -31,6 +27,11 @@ export class GameplayBoosted extends GameplayBase {
         TileBase.lastClickCoords = undefined;
         this.boosterManager.dropBoosterStatus();
         super.onDestroy?.();        
+    }
+
+    protected init(): void {
+        super.init();
+        this._checkStepAfterDelay();
     }
 
     protected checkCurrentBooster(): void {

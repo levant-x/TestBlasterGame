@@ -47,8 +47,8 @@ export class BoosterManager implements IBoosterManager {
     ): boolean {
         const trgBooster = this._boosters[type]
         if (!trgBooster) throw `Booster ${type} not registered`;
-
         if (!trgBooster.tryApply()) return false;
+        
         this._currBooster = type;
         return true;
     }

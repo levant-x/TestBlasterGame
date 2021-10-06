@@ -1,6 +1,7 @@
 
 import { _decorator, Component, Label, Button } from 'cc';
 import { inject, injectable } from '../decorators';
+import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { BoosterType, IBooster, IBoosterManager } from '../types';
 const { ccclass, property } = _decorator;
 
@@ -20,7 +21,7 @@ export class Booster extends Component implements IBooster {
 
     start() {
         if (!this._boostersMng) throw 'Booster manager not set';
-        this.init();        
+        loadLevelInfoAsync(() => this.init());
     }
     
     tryApply(): boolean {
