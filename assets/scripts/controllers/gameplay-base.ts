@@ -134,7 +134,7 @@ export abstract class GameplayBase extends GamefieldContext {
         this.tileSpawner.colsNum = this.width;
         this.tileSpawner.rowsNum = this.height;
         this.tileSpawner.prefabs = this.tilePrefabs;
-        this.tileSpawner.targetNode = this.node;
+        this.tileSpawner.targetNode = this.mask;
         this.tileSpawner.onTileSpawn = this.onTileSpawn.bind(this);
     }
 }
