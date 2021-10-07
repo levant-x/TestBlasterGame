@@ -13,7 +13,7 @@ import {
 } from './types';
 
 const LEVEL_SYS_CFG_PATH = 'level-sys-config';
-const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-430, -425);
+const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
 const TILES_OFFSET_DURATION_SEC = 0.2;
 const TILES_SHUFFLE_SPEEDUP = 3;
 const TILES_1ST_FALL_SPEEDUP = 1.7;

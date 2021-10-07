@@ -75,8 +75,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 86,
-      "height": 97
+      "width": 77,
+      "height": 85
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -173,7 +173,6 @@
     "__prefab": {
       "__id__": 9
     },
-    "color": 0,
     "_id": ""
   },
   {
