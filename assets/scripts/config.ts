@@ -21,7 +21,7 @@ const FLOW_DELAY_SEC = 1.5;
 const BOOSTER_NAME_TMPL = 'booster-panel-';
 const SUPERTILE_APPEAR_PROBAB = 7 / 10;
 
-const TOOLS_TYPES = {
+const DI_TYPES_MAPPING = {
     IGameFlow: 'GameFlowBoosted',
     IStepFlow: 'StepFlow',
     ITileSpawner: 'TileSpawner',
@@ -37,7 +37,7 @@ const TOOLS_TYPES = {
     TileShuffler: 'TileShuffler',
 };
 
-export type Types = keyof typeof TOOLS_TYPES;
+export type DependencyKey = keyof typeof DI_TYPES_MAPPING;
 
 export type VALUE_KEYS = 'fieldHeight' | 'config';
     
@@ -64,9 +64,9 @@ export const CONFIG = {
 }
 
 function getDependencyName(
-    type: Types
+    type: DependencyKey
 ): string {
-    return TOOLS_TYPES[type];
+    return DI_TYPES_MAPPING[type];
 } 
 
 function loadLevelConfigAsync(

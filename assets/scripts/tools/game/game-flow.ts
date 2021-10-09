@@ -13,7 +13,7 @@ import {
 } from "../../types";
 import { Task } from "../common/task";
 
-@injectable()
+@injectable('GameFlow')
 export class GameFlow implements IGameFlow {
     private _lvlInfo: LevelInfo;
     private _isStepFinal = false;

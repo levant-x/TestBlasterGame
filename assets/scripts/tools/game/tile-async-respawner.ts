@@ -10,7 +10,7 @@ import {
 } from '../../types';
 import { inject, injectable, injectValueByKey } from '../../decorators';
 
-@injectable()
+@injectable('TileAsyncRespawner')
 export class TileAsyncRespawner {
     private _taskMngrs: TaskManager[] = [];   
 

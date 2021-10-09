@@ -6,7 +6,7 @@ const BOOSTERS_ALLOWING_STEP: BoosterType[] = [
     'bomb', 'supertile',
 ];
 
-@injectable()
+@injectable('GameFlowBoosted')
 export class GameFlowBoosted extends GameFlow {
     @inject('IBoostNotifier')
     protected boostNotifier: IBoostNotifier;

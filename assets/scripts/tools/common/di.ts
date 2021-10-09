@@ -1,5 +1,6 @@
 import { __private } from "cc";
 import { VALUE_KEYS } from "../../config";
+import { LocalTypeName } from "../../types-list";
 
 type Type = __private.Constructor;
 type TypeRegistry = Record<string, Type>;
@@ -14,6 +15,7 @@ type DependencyInfo = {
 
 export type InjectParams = {
     isSingleton: boolean;
+    typeName?: LocalTypeName;
 };
 
 const _dependencies: Record<string, DependencyInfo> = {};
@@ -23,7 +25,7 @@ const _types: TypeRegistry = {};
 let _instances: Record<string, any[]> = {};
 
 export function registerDependency(
-    target: Type, 
+    target: any, 
     propKey: string, 
     dependencyName: string,
 ): void {
@@ -36,6 +38,9 @@ export function registerDependency(
     const depInfo = _dependencies[name] ?? {
         propInfos: [propInfo]
     };
+
+    console.warn('registering dep for type', name, propKey, dependencyName,
+        target.__proto__, target.__classname__);
 
     const prInfos = depInfo.propInfos;
     if (!_dependencies[name]) _dependencies[name] = depInfo;
@@ -62,6 +67,10 @@ export function dispatchValue<T>(
     valueKey: VALUE_KEYS,
     value: T,
 ): void {
+    console.log('dispatching', valueKey, _values[valueKey], _instances);
+    
+    debugger
+
     if (!_values[valueKey]) throw `Value ${valueKey} not registered`;
 
     _values[valueKey].forEach(valInfo => {
@@ -75,10 +84,17 @@ export function resolveObject(
     target: any, 
     params: InjectParams,
 ): any {
-    const { name } = target; 
+    const name = params.typeName || target.name;
+    console.warn('injecting class', name);
+    
     const dependency = class extends target {
         constructor() {
             super();
+            // const devName = this.__proto__.__classname__;
+            console.warn('creating class ', name, this);            
+            //console.warn('types are gotten', _types); */
+                       
+
             const instances = _instances[name] || [this];
             _instances[name] ? instances.push(this) :
                 _instances[name] = instances;
@@ -90,7 +106,7 @@ export function resolveObject(
         }
     }
 
-    _types[name] = dependency;
+    _types[name] = dependency; // maybe only for fuckers
     const registry = _dependencies[name];
     if (registry) registry.params = params;
     else _dependencies[name] = {
@@ -104,11 +120,22 @@ function _resolveDependencies(
     name: string,
 ): void {
     const deps = _dependencies[name];
+    console.warn('its dependencies are', deps, 'among', _dependencies);
+    
     deps?.propInfos?.forEach(propInfo => {
-        const depType = _types[propInfo.depName];          
+        console.warn('getting type of', propInfo.depName,
+            'among', _types, _instances[propInfo.depName], 'for', name);
+        
+        
+
+        const depType = _types[propInfo.depName];        
         const dependency = deps.params.isSingleton ?
             _instances[propInfo.depName]?.[0] || new depType() : 
-            new depType();
+            new depType();        
         target[propInfo.propName] = dependency;
+
+        // console.warn('dep resolved: trg, dep, propval for', name, propInfo.depName);
+        // console.warn(target, dependency, target[propInfo.propName]);        
+        
     });
 }

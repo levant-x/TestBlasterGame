@@ -6,7 +6,7 @@ import { pickRandomItem, removeFromArray } from '../../common/array-tools';
 import { Task } from '../../common/task';
 import { GamefieldContext } from '../gamefield-context';
 
-@injectable()
+@injectable('TileShuffler')
 export class TileShuffler extends GamefieldContext {
     private _cellIndexes: number[] = [];
     private _shuffleTask: Task = new Task();

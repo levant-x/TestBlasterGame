@@ -8,7 +8,7 @@ export function loadLevelInfoAsync(
     const isCfgLoaded = () => ConfigStore.isConfigLoaded();
     const wait4ConfigTask = new Task()
         .bundleWith(isCfgLoaded);
-    ConfigStore.get().getLevelInfoAsync()
+    ConfigStore.get().getLevelInfoAsync('current')
         .then(lvlInfo => onLoad?.(lvlInfo));
     return wait4ConfigTask;
 }

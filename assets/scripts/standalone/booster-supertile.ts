@@ -4,7 +4,7 @@ import { CONFIG } from '../config';
 import { Booster } from '../controllers/booster';
 import { injectable } from '../decorators';
 
-@injectable()
+@injectable('BoosterSupertile')
 export class BoosterSupertile extends Booster {
     constructor() {
         super();

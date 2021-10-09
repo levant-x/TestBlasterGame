@@ -10,7 +10,7 @@ import { scanGrid, scanHoriz, scanVertical } from "./range-scanners.ts";
 
 type T = ItemType;
 
-@injectable()
+@injectable('HitTilesFinderMultichoice')
 export class HitTilesFinderMultichoice extends HitTilesFinderBase{
     private _startPointCrds: GridCellCoordinates;
     private _itemsGroup: T[];
