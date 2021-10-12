@@ -1,7 +1,7 @@
 
 import { _decorator } from 'cc';
 import { CONFIG } from '../../config';
-import { inject, injectable, injectValueByKey } from '../../decorators';
+import { injectable, injectValueByKey } from '../../decorators';
 import { 
     BoosterInfo,
     BoosterType, 
@@ -29,8 +29,6 @@ export class BoosterManager implements IBoosterManager {
         },
     };
 
-    // @inject('BoosterSupertile')
-    // private _boosterSupertile: IBooster;
     @injectValueByKey('config')
     private _cfg: LevelConfig;
 

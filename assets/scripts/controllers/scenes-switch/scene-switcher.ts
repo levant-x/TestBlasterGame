@@ -29,6 +29,8 @@ export class SceneSwitcher extends Component {
     }
 
     private _onSceneLoaded(): void {
+        console.warn('scene loaded');
+        
         SceneSwitcher._currSceneName = director.getScene()?.name;     
         if (SceneSwitcher._currSceneName !== LOADER_SCENE_NAME) return;
         SceneSwitcher.switchLevel();

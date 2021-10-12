@@ -1,5 +1,5 @@
 import { __private } from 'cc';
-import { CONFIG, DependencyKey, ValueDispatchKey } from './config';
+import { DependencyKey, ValueDispatchKey } from './config';
 import { 
     registerDependency, 
     resolveObject, 
@@ -20,6 +20,8 @@ export const injectable = (
 ) => <T extends Function>(
     ctor: T
 ): T => {
+    
+    console.warn('applying injectable, f is', resolveObject);
     return resolveObject(ctor, params);
 };
 
@@ -33,6 +35,8 @@ export const inject = (
     propKey: string,
 ) => {     
     // debugger
+    console.warn('applying inject, f is', registerDependency);
+    
     registerDependency(target, propKey, typeKey);
 }
 
@@ -46,5 +50,6 @@ export const injectValueByKey = (
     target: any, 
     propKey: string,
 ) => { 
-    registerValue(target, propKey, valueKey);
+    console.warn('applying regval, f is', registerValue);
+    registerValue?.(target, propKey, valueKey);
 }
