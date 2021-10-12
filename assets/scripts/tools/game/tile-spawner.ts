@@ -11,7 +11,7 @@ import { Task } from "../common/task";
 import { pickRandomItem } from "../common/array-tools";
 import { scanGrid } from "./field-analyzers/range-scanners.ts";
 
-@injectable('TileSpawner')
+@injectable()
 export class TileSpawner implements ITileSpawner {
     rowsNum: number;
     colsNum: number;

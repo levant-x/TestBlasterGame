@@ -3,13 +3,20 @@ import { _decorator, Node } from 'cc';
 import { CONFIG } from '../config';
 import { Booster } from '../controllers/booster';
 import { injectable } from '../decorators';
+const { ccclass } = _decorator;
 
-@injectable('BoosterSupertile')
+@ccclass('BoosterSupertile')
+@injectable()
 export class BoosterSupertile extends Booster {
-    constructor() {
+    /* constructor() {
         super();
-        this.node = new Node(`${CONFIG.BOOSTER_NAME_TMPL}supertile`);
-        this.init(false);
+        // this.node = new Node(`${CONFIG.BOOSTER_NAME_TMPL}supertile`);
+        this.toUseUI = false;
+    } */
+
+    start() {
+        this.toUseUI = false;
+        super.start();
     }
 
     tryApply(): boolean {

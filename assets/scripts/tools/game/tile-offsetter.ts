@@ -11,7 +11,7 @@ import { Task } from '../common/task';
 import { GamefieldContext } from './gamefield-context';
 import { LooseTilesFinder } from './field-analyzers/loose-tiles-finder';
 
-@injectable('TileOffsetter')
+@injectable()
 export class TileOffsetter extends GamefieldContext {
     onTileOffset?: (tile: ITile) => void;
 

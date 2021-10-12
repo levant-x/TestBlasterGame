@@ -38,7 +38,7 @@ export class SceneSwitcher extends Component {
         trgSceneName: string
     ): Promise<void> {
         const switcher = SceneSwitcher._instance;
-        debugger
+        // debugger
         console.warn('loading scene ', trgSceneName);
         
         trgSceneName === GAME_SCENE_NAME && 

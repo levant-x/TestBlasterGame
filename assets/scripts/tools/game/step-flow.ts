@@ -12,7 +12,7 @@ import { Task } from '../common/task';
 import { TileAsyncRespawner } from './tile-async-respawner';
 import { TileOffsetter } from './tile-offsetter';
 
-@injectable('StepFlow')
+@injectable()
 export class StepFlow implements IStepFlow {
     protected hitTilesCrds: GridCellCoordinates[] = [];
     @inject('IItemsGroupAnalyzer')

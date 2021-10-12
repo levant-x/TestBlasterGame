@@ -15,7 +15,7 @@ type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
 export type ItemType = T;
 
-@injectable('HitTilesFinderBase')
+@injectable()
 export class HitTilesFinderBase
     extends GamefieldContext 
     implements IItemsGroupAnalyzer<T>, IItemsGapAnalyzer {

@@ -14,7 +14,7 @@ type BoosterAttributes = {
     getCnt: () => number;
 }
 
-@injectable('BoosterManager')
+@injectable()
 export class BoosterManager implements IBoosterManager {
     private _currBooster: BoosterType | null = null;    
     private _boosters: Record<string, IBooster> = {};  
@@ -29,8 +29,8 @@ export class BoosterManager implements IBoosterManager {
         },
     };
 
-    @inject('BoosterSupertile')
-    private _boosterSupertile: IBooster;
+    // @inject('BoosterSupertile')
+    // private _boosterSupertile: IBooster;
     @injectValueByKey('config')
     private _cfg: LevelConfig;
 

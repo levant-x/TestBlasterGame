@@ -10,7 +10,7 @@ import {
 } from "../../types";
 import { GamefieldContext } from "./gamefield-context";
 
-@injectable('StepInspector')
+@injectable()
 export class StepInspector implements IStepInspector {
     @inject('IItemsGroupAnalyzer')
     protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;  

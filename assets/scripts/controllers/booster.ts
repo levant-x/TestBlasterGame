@@ -1,5 +1,6 @@
 
 import { _decorator, Component, Label, Button } from 'cc';
+import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
 import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { BoosterType, IBooster, IBoosterManager } from '../types';
@@ -14,6 +15,8 @@ export class Booster extends Component implements IBooster {
     @inject('IBoosterManager')
     private _boostersMng: IBoosterManager;
 
+    protected toUseUI = true;
+
     @property(Label)
     protected numLabel: Label;
     @property(Button)
@@ -21,12 +24,12 @@ export class Booster extends Component implements IBooster {
 
     start() {
         if (!this._boostersMng) throw 'Booster manager not set';
-        loadLevelInfoAsync(() => this.init());
+        loadLevelInfoAsync(() => this._init());
     }
     
     tryApply(): boolean {
         if (!this._count) return false;
-        this._updateCnt(this._count - 1);
+        this.toUseUI && this._updateCnt(this._count - 1);
         if (!this._count) 
             this.button.interactable = false;
         return true;
@@ -36,11 +39,11 @@ export class Booster extends Component implements IBooster {
         this._boostersMng.tryApplyBooster(this._type);
     }
 
-    protected init(toUseUI = true) {
+    private _init() {
         const mng = this._boostersMng;
         const { type, count } = mng.registerBooster(this);
         this._type = type;
-        toUseUI && this._updateCnt(count);
+        this.toUseUI && this._updateCnt(count);
     }
 
     private _updateCnt(

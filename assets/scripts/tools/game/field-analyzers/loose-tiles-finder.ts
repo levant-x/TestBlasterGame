@@ -11,7 +11,7 @@ import { GamefieldContext } from '../gamefield-context';
 
 type Col2RowsMap = Record<number, number[]>;
 
-@injectable('LooseTilesFinder')
+@injectable()
 export class LooseTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<Component, TileOffsetInfo> {
     private _crrRowToOffsetTo = 0;

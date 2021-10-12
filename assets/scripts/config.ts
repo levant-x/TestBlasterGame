@@ -6,6 +6,17 @@ import {
     __private, 
     Vec3 
 } from 'cc';
+import { BoosterManager } from './tools/game/booster-manager';
+import { HitTilesFinderBase } from './tools/game/field-analyzers/hit-tiles-finder-base';
+import { HitTilesFinderMultichoice } from './tools/game/field-analyzers/hit-tiles-finder-multichoice';
+import { LooseTilesFinder } from './tools/game/field-analyzers/loose-tiles-finder';
+import { TileShuffler } from './tools/game/field-analyzers/tile-shuffler';
+import { GameFlowBoosted } from './tools/game/game-flow-boosted.ts';
+import { StepFlow } from './tools/game/step-flow';
+import { StepInspector } from './tools/game/step-inspector';
+import { TileAsyncRespawner } from './tools/game/tile-async-respawner';
+import { TileOffsetter } from './tools/game/tile-offsetter';
+import { TileSpawner } from './tools/game/tile-spawner';
 import { 
     LevelConfig, 
     LevelInfo, 
@@ -21,25 +32,24 @@ const FLOW_DELAY_SEC = 1.5;
 const BOOSTER_NAME_TMPL = 'booster-panel-';
 const SUPERTILE_APPEAR_PROBAB = 7 / 10;
 
-const DI_TYPES_MAPPING = {
-    IGameFlow: 'GameFlowBoosted',
-    IStepFlow: 'StepFlow',
-    ITileSpawner: 'TileSpawner',
-    IItemsGroupAnalyzer: 'HitTilesFinderMultichoice',
-    IItemsGapAnalyzer: 'HitTilesFinderBase',
-    IStepInspector: 'StepInspector',
-    IBoosterManager: 'BoosterManager',
-    IBoostNotifier: 'BoosterManager',
-    BoosterSupertile: 'BoosterSupertile',
-    LooseTilesFinder: 'LooseTilesFinder',
-    TileOffsetter: 'TileOffsetter',
-    TileAsyncRespawner: 'TileAsyncRespawner',
-    TileShuffler: 'TileShuffler',
+export const DI_TYPES_MAPPING = {
+    IGameFlow: () => GameFlowBoosted,
+    IStepFlow: () => StepFlow,
+    ITileSpawner: () => TileSpawner,
+    IItemsGroupAnalyzer: () => HitTilesFinderMultichoice,
+    IItemsGapAnalyzer: () => HitTilesFinderBase,
+    IStepInspector: () => StepInspector,
+    IBoosterManager: () => BoosterManager,
+    IBoostNotifier: () => BoosterManager,
+    LooseTilesFinder: () => LooseTilesFinder,
+    TileOffsetter: () => TileOffsetter,
+    TileAsyncRespawner: () => TileAsyncRespawner,
+    TileShuffler: () => TileShuffler,
 };
 
 export type DependencyKey = keyof typeof DI_TYPES_MAPPING;
 
-export type VALUE_KEYS = 'fieldHeight' | 'config';
+export type ValueDispatchKey = 'fieldHeight' | 'config';
     
 export type RangeX = {
     left: number;
@@ -60,13 +70,13 @@ export const CONFIG = {
     BOOSTER_NAME_TMPL,
     SUPERTILE_APPEAR_PROBAB,
     loadLevelConfigAsync,
-    getDependencyName,
+    getDependencyCtor,
 }
 
-function getDependencyName(
-    type: DependencyKey
-): string {
-    return DI_TYPES_MAPPING[type];
+function getDependencyCtor(
+    typeName: DependencyKey
+): __private.Constructor {
+    return DI_TYPES_MAPPING[typeName]();
 } 
 
 function loadLevelConfigAsync(
