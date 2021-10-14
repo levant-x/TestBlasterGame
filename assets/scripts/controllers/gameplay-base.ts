@@ -60,7 +60,7 @@ export abstract class GameplayBase extends GamefieldContext {
         TileBase.onClick = this.onTileClick.bind(this);    
         
         this.gameFlowMng.menu = this.menu;   
-        this.gameFlowMng.uiManager = this.uiMng;   
+        this.gameFlowMng.uiManager = this.uiMng;  
         this.gameFlowMng.setupGameStart(this.levelInfo);
     }
 

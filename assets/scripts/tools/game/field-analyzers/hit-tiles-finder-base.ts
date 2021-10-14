@@ -4,7 +4,7 @@ import {
     GridCellCoordinates, 
     IClassifyable, 
     IItemsGapAnalyzer, 
-    IItemsGroupAnalyzer
+    IItemsGroupAnalyzer,
 } from '../../../types';
 import { injectable } from '../../../decorators';
 import { GamefieldContext } from '../gamefield-context';
@@ -15,7 +15,7 @@ type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
 export type ItemType = T;
 
-@injectable()
+@injectable('HitTilesFinderBase')
 export class HitTilesFinderBase
     extends GamefieldContext 
     implements IItemsGroupAnalyzer<T>, IItemsGapAnalyzer {

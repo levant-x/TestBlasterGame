@@ -7,14 +7,14 @@ import {
     BoosterType, 
     IBooster, 
     IBoosterManager, 
-    LevelConfig 
+    LevelConfig, 
 } from '../../types';
 
 type BoosterAttributes = {
     getCnt: () => number;
 }
 
-@injectable()
+@injectable('BoosterManager')
 export class BoosterManager implements IBoosterManager {
     private _currBooster: BoosterType | null = null;    
     private _boosters: Record<string, IBooster> = {};  

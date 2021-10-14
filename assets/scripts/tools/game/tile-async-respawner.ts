@@ -6,11 +6,11 @@ import { TaskManager } from '../common/task-manager';
 import { 
     Demand4NewTilesInfo, 
     GridCellCoordinates, 
-    ITileSpawner 
+    ITileSpawner, 
 } from '../../types';
 import { inject, injectable, injectValueByKey } from '../../decorators';
 
-@injectable()
+@injectable('TileAsyncRespawner')
 export class TileAsyncRespawner {
     private _taskMngrs: TaskManager[] = [];   
 

@@ -1,4 +1,3 @@
-import { TileBase } from "../../controllers/tile-base";
 import { UI } from "../../controllers/ui/ui";
 import { inject, injectable } from "../../decorators";
 import { 
@@ -6,11 +5,11 @@ import {
     IItemsGroupAnalyzer, 
     IStepInspector, 
     ITile, 
-    LevelInfo 
+    LevelInfo, 
 } from "../../types";
 import { GamefieldContext } from "./gamefield-context";
 
-@injectable()
+@injectable('StepInspector')
 export class StepInspector implements IStepInspector {
     @inject('IItemsGroupAnalyzer')
     protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;  

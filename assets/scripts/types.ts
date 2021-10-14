@@ -3,6 +3,21 @@ import { Menu } from "./controllers/ui/menu";
 import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
 
+export enum ModuleType {
+    'BoosterManager',
+    'GameFlowBoosted',
+    'GameFlow',
+    'HitTilesFinderBase',
+    'HitTilesFinderMultichoice',
+    'LooseTilesFinder',
+    'StepFlow',
+    'StepInspector',
+    'TileAsyncRespawner',
+    'TileOffsetter',    
+    'TileShuffler',
+    'TileSpawner'
+}
+
 export type LevelConfig = {
     fieldWidth: number;
     fieldHeight: number;

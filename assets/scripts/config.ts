@@ -1,53 +1,23 @@
 
-import { 
-    _decorator, 
-    resources, 
-    JsonAsset, 
-    __private, 
-    Vec3 
-} from 'cc';
-import { BoosterManager } from './tools/game/booster-manager';
-import { HitTilesFinderBase } from './tools/game/field-analyzers/hit-tiles-finder-base';
-import { HitTilesFinderMultichoice } from './tools/game/field-analyzers/hit-tiles-finder-multichoice';
-import { LooseTilesFinder } from './tools/game/field-analyzers/loose-tiles-finder';
-import { TileShuffler } from './tools/game/field-analyzers/tile-shuffler';
-import { GameFlowBoosted } from './tools/game/game-flow-boosted.ts';
-import { StepFlow } from './tools/game/step-flow';
-import { StepInspector } from './tools/game/step-inspector';
-import { TileAsyncRespawner } from './tools/game/tile-async-respawner';
-import { TileOffsetter } from './tools/game/tile-offsetter';
-import { TileSpawner } from './tools/game/tile-spawner';
-import { 
-    LevelConfig, 
-    LevelInfo, 
-    LevelSystemConfig 
-} from './types';
+import { _decorator, resources, JsonAsset, __private, Vec3 } from 'cc';
+import { LevelConfig, LevelInfo, LevelSystemConfig, ModuleType } from './types';
 
-const LEVEL_SYS_CFG_PATH = 'level-sys-config';
-const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
-const TILES_OFFSET_DURATION_SEC = 0.2;
-const TILES_SHUFFLE_SPEEDUP = 3;
-const TILES_1ST_FALL_SPEEDUP = 1.7;
-const FLOW_DELAY_SEC = 1.5;
-const BOOSTER_NAME_TMPL = 'booster-panel-';
-const SUPERTILE_APPEAR_PROBAB = 7 / 10;
+const DI_MAPPING = {
+    IBoosterManager: ModuleType.BoosterManager,
+    IBoostNotifier: ModuleType.BoosterManager,
+    IGameFlow: ModuleType.GameFlowBoosted,
+    IStepFlow: ModuleType.StepFlow,
+    ITileSpawner: ModuleType.TileSpawner,
+    IStepInspector: ModuleType.StepInspector,
+    IItemsGroupAnalyzer: ModuleType.HitTilesFinderMultichoice,
+    IItemsGapAnalyzer: ModuleType.HitTilesFinderMultichoice,
+    LooseTilesFinder: ModuleType.LooseTilesFinder,
+    TileOffsetter: ModuleType.TileOffsetter,
+    TileAsyncRespawner: ModuleType.TileAsyncRespawner,
+    TileShuffler: ModuleType.TileShuffler,
+}
 
-export const DI_TYPES_MAPPING = {
-    IGameFlow: () => GameFlowBoosted,
-    IStepFlow: () => StepFlow,
-    ITileSpawner: () => TileSpawner,
-    IItemsGroupAnalyzer: () => HitTilesFinderMultichoice,
-    IItemsGapAnalyzer: () => HitTilesFinderBase,
-    IStepInspector: () => StepInspector,
-    IBoosterManager: () => BoosterManager,
-    IBoostNotifier: () => BoosterManager,
-    LooseTilesFinder: () => LooseTilesFinder,
-    TileOffsetter: () => TileOffsetter,
-    TileAsyncRespawner: () => TileAsyncRespawner,
-    TileShuffler: () => TileShuffler,
-};
-
-export type DependencyKey = keyof typeof DI_TYPES_MAPPING;
+export type DependencyKey = keyof typeof DI_MAPPING;
 
 export type ValueDispatchKey = 'fieldHeight' | 'config';
     
@@ -61,6 +31,16 @@ export type RangeY = {
     bottom: number;
 };
 
+const LEVEL_SYS_CFG_PATH = 'level-sys-config';
+const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
+const TILES_OFFSET_DURATION_SEC = 0.2;
+const TILES_SHUFFLE_SPEEDUP = 3;
+const TILES_1ST_FALL_SPEEDUP = 1.7;
+const FLOW_DELAY_SEC = 1.5;
+const BOOSTER_NAME_TMPL = 'booster-panel-';
+const SUPERTILE_APPEAR_PROBAB = 7 / 10;
+const MULTIINSTANCE: ModuleType[] = [];
+
 export const CONFIG = {
     LAYOUT_ORIGIN_LEFT_BOTTOM,
     TILES_1ST_FALL_SPEEDUP,
@@ -70,14 +50,26 @@ export const CONFIG = {
     BOOSTER_NAME_TMPL,
     SUPERTILE_APPEAR_PROBAB,
     loadLevelConfigAsync,
-    getDependencyCtor,
+    di: {
+        isSingleton,
+        getImplementationInfo,
+    }
 }
 
-function getDependencyCtor(
-    typeName: DependencyKey
-): __private.Constructor {
-    return DI_TYPES_MAPPING[typeName]();
-} 
+function isSingleton(
+    dependency: ModuleType
+): boolean {
+    return !MULTIINSTANCE.includes(dependency);
+}
+
+function getImplementationInfo(
+    dependencyKey: DependencyKey
+): ModuleType {
+    const implemInfo = DI_MAPPING[dependencyKey];
+    if (implemInfo === undefined) 
+        throw `Dependency for ${dependencyKey} not set`;
+    return <ModuleType>implemInfo;
+}
 
 function loadLevelConfigAsync(
     gamelevel: number

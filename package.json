@@ -6,10 +6,9 @@
   "creator": {
     "version": "3.2.0"
   },
-  "dependencies": {
-    "reflect-metadata": "^0.1.13"
-  },
+  "dependencies": {},
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "devDependencies": {}
 }

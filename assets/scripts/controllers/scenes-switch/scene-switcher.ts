@@ -14,8 +14,6 @@ export class SceneSwitcher extends Component {
     private _configStore = ConfigStore.get();
 
     onLoad() {
-        console.warn('loader loaded');
-        
         SceneSwitcher._instance = this;
         game.addPersistRootNode(this.node);
         const eventKey = Director.EVENT_AFTER_SCENE_LAUNCH;
@@ -29,8 +27,6 @@ export class SceneSwitcher extends Component {
     }
 
     private _onSceneLoaded(): void {
-        console.warn('scene loaded');
-        
         SceneSwitcher._currSceneName = director.getScene()?.name;     
         if (SceneSwitcher._currSceneName !== LOADER_SCENE_NAME) return;
         SceneSwitcher.switchLevel();
@@ -40,11 +36,9 @@ export class SceneSwitcher extends Component {
         trgSceneName: string
     ): Promise<void> {
         const switcher = SceneSwitcher._instance;
-        // debugger
-        console.warn('loading scene ', trgSceneName);
-        
         trgSceneName === GAME_SCENE_NAME && 
             await switcher._configStore.getLevelInfoAsync('next');
+            
         director.loadScene(trgSceneName, (er) => {
             if (er) throw er;
         });

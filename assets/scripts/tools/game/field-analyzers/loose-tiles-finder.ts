@@ -11,7 +11,7 @@ import { GamefieldContext } from '../gamefield-context';
 
 type Col2RowsMap = Record<number, number[]>;
 
-@injectable()
+@injectable('LooseTilesFinder')
 export class LooseTilesFinder extends GamefieldContext 
     implements IItemsGroupAnalyzer<Component, TileOffsetInfo> {
     private _crrRowToOffsetTo = 0;
@@ -23,11 +23,13 @@ export class LooseTilesFinder extends GamefieldContext
         select: (item: Component) => boolean
     ): TileOffsetInfo[] {
         this._selectItem = select;
+
         const cols2RowsMap = hitTilesCoords
-            .reduce(this._groupRowsByCol.bind(this), {});            
+            .reduce(this._groupRowsByCol.bind(this), {});  
         const tileOffsetInfos = Object.entries(cols2RowsMap)
             .map(this._convertRowsToTilesOffsetInfos.bind(this))
             .reduce((acc, map) => [...acc, ...map], []); 
+            
         return tileOffsetInfos as TileOffsetInfo[];
     }
 
@@ -47,6 +49,7 @@ export class LooseTilesFinder extends GamefieldContext
         const minRow = Math.min(...rows);
         this._crrRowToSrchFrom = minRow + 1;
         this._crrRowToOffsetTo = minRow;
+
         const looseTilesInfos = this
             ._collectTilesOffsetInfo(this.gamefield[+col]);
         return looseTilesInfos;
@@ -57,6 +60,7 @@ export class LooseTilesFinder extends GamefieldContext
     ): TileOffsetInfo[] {
         const looseTiles: TileOffsetInfo[] = []
         const startRow = this._crrRowToSrchFrom;
+
         for (let row = startRow; row < this.height; row++)
             this._collectTileInfoIfPossible(tilesCol[row], looseTiles);                        
         return looseTiles;

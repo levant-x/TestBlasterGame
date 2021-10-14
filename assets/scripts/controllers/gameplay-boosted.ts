@@ -2,7 +2,6 @@
 import { _decorator } from 'cc';
 import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
-import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { Task } from '../tools/common/task';
 import { TileShuffler } from '../tools/game/field-analyzers/tile-shuffler';
 import { GridCellCoordinates, IBoosterManager, ITile } from '../types';

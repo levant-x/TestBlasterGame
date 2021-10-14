@@ -1,7 +1,7 @@
 
 import { _decorator } from 'cc';
 import { CONFIG } from '../config';
-import { Booster } from '../controllers/booster';
+import { Booster } from './booster';
 import { injectable } from '../decorators';
 const { ccclass } = _decorator;
 

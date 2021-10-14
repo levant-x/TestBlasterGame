@@ -2,7 +2,7 @@ import { inject, injectable, injectValueByKey } from "../../../decorators";
 import { 
     GridCellCoordinates, 
     IBoostNotifier, 
-    LevelConfig 
+    LevelConfig, 
 } from "../../../types";
 import { pickRandomItem } from "../../common/array-tools";
 import { HitTilesFinderBase, ItemType } from "./hit-tiles-finder-base";
@@ -10,7 +10,7 @@ import { scanGrid, scanHoriz, scanVertical } from "./range-scanners.ts";
 
 type T = ItemType;
 
-@injectable()
+@injectable('HitTilesFinderMultichoice')
 export class HitTilesFinderMultichoice extends HitTilesFinderBase{
     private _startPointCrds: GridCellCoordinates;
     private _itemsGroup: T[];

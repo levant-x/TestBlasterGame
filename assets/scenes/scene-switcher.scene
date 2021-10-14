@@ -89,7 +89,7 @@
         "__id__": 6
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 11
@@ -186,7 +186,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 480,
+    "_orthoHeight": 563.0998248686515,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -273,8 +273,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 243.87,
-      "height": 63
+      "width": 195.1,
+      "height": 50.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -312,10 +312,10 @@
     "_string": "Загрузка...",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 50,
-    "_fontSize": 50,
+    "_actualFontSize": 40,
+    "_fontSize": 40,
     "_fontFamily": "Arial",
-    "_lineHeight": 50,
+    "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": true,
     "_font": null,

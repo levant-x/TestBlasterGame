@@ -1,4 +1,3 @@
-import { CONFIG, DI, DI_TYPES_MAPPING } from "../../config";
 import { SceneSwitcher } from "../../controllers/scenes-switch/scene-switcher";
 import { TileBase } from "../../controllers/tile-base";
 import { Menu } from "../../controllers/ui/menu";
@@ -14,7 +13,7 @@ import {
 } from "../../types";
 import { Task } from "../common/task";
 
-@injectable()
+@injectable('GameFlow')
 export class GameFlow implements IGameFlow {
     private _lvlInfo: LevelInfo;
     private _isStepFinal = false;

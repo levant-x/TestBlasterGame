@@ -3,41 +3,32 @@ import { DependencyKey, ValueDispatchKey } from './config';
 import { 
     registerDependency, 
     resolveObject, 
-    InjectParams, 
-    registerValue,
+    registerStandaloneValue,
 } from './tools/common/di';
-
-const _defaultInjParams: InjectParams = {
-    isSingleton: true,
-}
+import { ModuleType } from './types';
 
 /**Apply to any class that has dependencies or is one itself,
  * including the extended prototypes.
  * !!!Specify the type name that's prone to minification
  */
 export const injectable = (
-    params = _defaultInjParams,
+    key?: keyof typeof ModuleType,
 ) => <T extends Function>(
     ctor: T
 ): T => {
-    
-    console.warn('applying injectable, f is', resolveObject);
-    return resolveObject(ctor, params);
+    return resolveObject(ctor, key && ModuleType[key]);
 };
 
 /**Apply to any property you want to inject. The interface
  * must be mapped to the implementation name in the config
  */
 export const inject = (
-    typeKey: DependencyKey,
+    dependencyKey: DependencyKey,
 ) => (
     target: any, 
     propKey: string,
 ) => {     
-    // debugger
-    console.warn('applying inject, f is', registerDependency);
-    
-    registerDependency(target, propKey, typeKey);
+    registerDependency(target, propKey, dependencyKey);
 }
 
 /**Apply to any property you have to inject manually in
@@ -50,6 +41,5 @@ export const injectValueByKey = (
     target: any, 
     propKey: string,
 ) => { 
-    console.warn('applying regval, f is', registerValue);
-    registerValue?.(target, propKey, valueKey);
+    registerStandaloneValue(target, propKey, valueKey);
 }
