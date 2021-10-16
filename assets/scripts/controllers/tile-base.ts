@@ -30,6 +30,15 @@ export class TileBase extends Component implements ITile {
     static is1stSeeding = true;
     static lastClickCoords?: GridCellCoordinates;
 
+    get сellCoordinates(): GridCellCoordinates {
+        return this._cellCoords;
+    }
+
+    get groupID(): string {
+        if (!this.color) throw 'Color was not init!';
+        return Color[this.color];
+    }   
+
     onLoad() {
         this._setupColor();
         if (TileBase.is1stSeeding) this.setGreetingAnimationToPlay();    
@@ -38,20 +47,11 @@ export class TileBase extends Component implements ITile {
     } 
 
     start() {
-        this.node.on(Node.EventType.MOUSE_UP, this.onClick.bind(this));    
+        this.node.on(Node.EventType.TOUCH_END, this.onClick.bind(this));
     }
 
     onDestroy() {
-        this.node.off(Node.EventType.MOUSE_UP, this.onClick.bind(this));
-    }
-
-    getGroupID(): string {
-        if (!this.color) throw 'Color was not init!';
-        return Color[this.color];
-    }   
-
-    getCellCoordinates(): GridCellCoordinates {
-        return this._cellCoords;
+        this.node.off(Node.EventType.TOUCH_END, this.onClick.bind(this));
     }
 
     positionAtCell(

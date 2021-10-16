@@ -34,7 +34,7 @@ export class GameplayBoosted extends GameplayBase {
     }
 
     protected checkCurrentBooster(): void {
-        const currBooster = this.boosterManager.getCurrentBooster();
+        const currBooster = this.boosterManager.currentBooster;
         if (!currBooster || !this.taskMng.isComplete()) return;
 
         currBooster === 'shuffle' && this._applyShuffle();
@@ -44,7 +44,7 @@ export class GameplayBoosted extends GameplayBase {
     protected onTileClick(
         sender: ITile
     ): void {
-        TileBase.lastClickCoords = sender.getCellCoordinates();
+        TileBase.lastClickCoords = sender.сellCoordinates;
         super.onTileClick(sender);
     }
 
@@ -55,7 +55,7 @@ export class GameplayBoosted extends GameplayBase {
     }
 
     protected onStepEnd(): void {
-        const lastBooster = this.boosterManager.getCurrentBooster();
+        const lastBooster = this.boosterManager.currentBooster;
         this.boosterManager.dropBoosterStatus();
         super.onStepEnd();
         if (lastBooster || this.gameFlowMng.isStepFinal()) return;

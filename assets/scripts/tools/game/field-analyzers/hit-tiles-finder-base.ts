@@ -34,7 +34,7 @@ export class HitTilesFinderBase
     ): T[] {
         const itemAtPoint = this.gamefield[col][row];
         const itemSelector = select || ((otherItem: T) => 
-            itemAtPoint.getGroupID() === otherItem.getGroupID());
+            itemAtPoint.groupID === otherItem.groupID);
         this._selectItem = itemSelector;
 
         const itemsGroup: T[] = [];

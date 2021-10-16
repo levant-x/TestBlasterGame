@@ -67,7 +67,7 @@ export abstract class GameplayBase extends GamefieldContext {
     protected onTileSpawn(
         newTile: ITile
     ): void {
-        const { col } = newTile.getCellCoordinates();
+        const { col } = newTile.сellCoordinates;
         if (this.gamefield.length < col + 1) this.gamefield.push([]);
         if (TileBase.is1stSeeding) this.gamefield[col].push(newTile);
         else this._replaceHitTileWithNew(newTile, col);

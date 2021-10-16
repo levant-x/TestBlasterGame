@@ -86,17 +86,17 @@ export type BoosterInfo = {
 export type BooleanGetter = () => boolean;
 
 export interface IClassifyable {
-    getGroupID(): number | string;
+    readonly groupID: number | string;
 }
 
 export interface ITile extends Component, IClassifyable {
     readonly node: Node
+    readonly сellCoordinates: GridCellCoordinates;  
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
     moveToCellAsync(
         gridCoordinates: GridCellCoordinates,
         simultaneously?: boolean,
     ): BooleanGetter;
-    getCellCoordinates(): GridCellCoordinates;  
     destroyHitAsync(): BooleanGetter; 
 }
 
@@ -152,8 +152,8 @@ export interface IModal {
 
 export interface IScore {
     updateRate: number;
+    readonly points: number;
     gainPoints(deltaPoints: number): Task;
-    getPoints(): number;
     reset(): void;
 }
 
@@ -166,7 +166,7 @@ export interface IBooster extends Pick<Component, 'node'> {
 }
 
 export interface IBoostNotifier {    
-    getCurrentBooster(): BoosterType | null;
+    readonly currentBooster: BoosterType | null;
 }
 
 export interface IBoosterManager extends IBoostNotifier {

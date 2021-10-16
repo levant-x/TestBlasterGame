@@ -28,11 +28,11 @@ export class StepFlow implements IStepFlow {
         clickedTile: ITile
     ): ITile[] {
         const selectorCbck = (other: IClassifyable) => (
-            other.getGroupID() === clickedTile.getGroupID());
+            other.groupID === clickedTile.groupID);
         const tilesFinder = this.hitTilesFinder;
 
         const collect = tilesFinder.collectItemsGroup.bind(tilesFinder);
-        const clickedCrds = clickedTile.getCellCoordinates();
+        const clickedCrds = clickedTile.сellCoordinates;
         const hitTiles = collect([clickedCrds], selectorCbck);
         return hitTiles as ITile[];
     }
@@ -43,7 +43,7 @@ export class StepFlow implements IStepFlow {
         if (!hitTiles) throw 'Invalid tiles array';
 
         this.hitTilesCrds = hitTiles
-            .map(hitTile => hitTile.getCellCoordinates());
+            .map(hitTile => hitTile.сellCoordinates);
         const massDestroyTask = new Task();        
         hitTiles.forEach(tile => massDestroyTask
             .bundleWith(tile.destroyHitAsync()));

@@ -14,7 +14,7 @@ export class GameFlowBoosted extends GameFlow {
     isStepValid(
         hitTiles: ITile[]
     ): boolean {
-        const currBooster = this.boostNotifier.getCurrentBooster();
+        const currBooster = this.boostNotifier.currentBooster;
         if (!currBooster) return super.isStepValid(hitTiles);
         return BOOSTERS_ALLOWING_STEP.includes(currBooster);
     }

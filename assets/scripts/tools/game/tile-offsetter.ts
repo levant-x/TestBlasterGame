@@ -35,7 +35,7 @@ export class TileOffsetter extends GamefieldContext {
     private _getTileOffsetTask(
         { tile, rowToSettleTo }: TileOffsetInfo
     ): BooleanGetter {
-        const { col, row } = tile.getCellCoordinates();
+        const { col, row } = tile.сellCoordinates;
         GamefieldContext.swapItems({ col, row }, {
             col, row: rowToSettleTo,
         })

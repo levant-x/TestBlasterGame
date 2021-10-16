@@ -18,6 +18,10 @@ export class UI extends Component implements IScore, ISteps {
     @property
     updateRate: number = 0.15;
 
+    get points() {
+        return this._currValue;
+    }
+
     update(dt: number) {
         this._updateLbl(this.stepsNum, this.stepsNumLabel);
         if (this._currValue === this._trgValue) return;
@@ -26,19 +30,15 @@ export class UI extends Component implements IScore, ISteps {
         else this._updateScore();
     }
 
-    public gainPoints(
+    gainPoints(
         deltaPoints: number
     ): Task {
         this._trgValue += deltaPoints;
         const taskStatus = this._wasScoreUpdated.bind(this);
         return new Task().bundleWith(taskStatus);
     }
-
-    public getPoints() {
-        return this._currValue;
-    }
-
-    public reset(): void {
+    
+    reset(): void {
         this._currValue = this._trgValue = 0;
     }
 

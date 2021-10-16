@@ -25,7 +25,7 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
         itemsGroup: T[]
     ): void {
         const currBooster = 
-            this._boostNotifier.getCurrentBooster();
+            this._boostNotifier.currentBooster;
         if (!currBooster) {
             super.runItemsCollect(crds, itemsGroup);
             return;

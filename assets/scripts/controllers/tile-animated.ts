@@ -22,7 +22,7 @@ export class TileAnimated extends TileBase {
         this._hasMoveCompleted = false; 
         this._gridNewCrds = gridNewCoords;
 
-        const { row } = this.getCellCoordinates();
+        const { row } = this.сellCoordinates;
         const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
         const durCfg = CONFIG.TILES_OFFSET_DURATION_SEC;
         const shfSpdupFactor = CONFIG.TILES_SHUFFLE_SPEEDUP;

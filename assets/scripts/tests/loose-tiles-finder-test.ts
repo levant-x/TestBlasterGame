@@ -153,7 +153,7 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
     private _extractTileCellCoords(node: Node) {
         const tile = node.getComponent(TileBase);
         if (!tile) throw 'Node does not contain Tile component';
-        return tile?.getCellCoordinates();
+        return tile?.сellCoordinates;
     }
 
     private _assertCountMatch(expected: number, actual: number) {
@@ -164,7 +164,7 @@ export class LooseTilesFinderTest extends LooseTilesFinder {
     private _assertTilesCollected = (
         looseTile: TileOffsetInfo
     ): void => {
-        const { row, col } = looseTile.tile.getCellCoordinates();
+        const { row, col } = looseTile.tile.сellCoordinates;
         const trgRowIntended = this._currPattern?.pointsToOffset[col][row];
         if (!trgRowIntended) throw `Wrong tile collected: ${looseTile}`;
         const passed = trgRowIntended === looseTile.rowToSettleTo;

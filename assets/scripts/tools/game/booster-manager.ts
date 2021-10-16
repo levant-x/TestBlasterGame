@@ -32,7 +32,7 @@ export class BoosterManager implements IBoosterManager {
     @injectValueByKey('config')
     private _cfg: LevelConfig;
 
-    getCurrentBooster(): BoosterType | null {
+    get currentBooster(): BoosterType | null {
         return this._currBooster;
     }
 
