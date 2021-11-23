@@ -10,6 +10,7 @@ import { injectable } from "../../decorators";
 import { Task } from "../common/task";
 import { pickRandomItem } from "../common/array-tools";
 import { scanGrid } from "./field-analyzers/range-scanners.ts";
+import { CONFIG } from "../../config";
 
 @injectable('TileSpawner')
 export class TileSpawner implements ITileSpawner {
@@ -40,10 +41,12 @@ export class TileSpawner implements ITileSpawner {
     ): Task {
         const newTile = this.spawnObjAtCell({
             col: finalCoords.col,
-            row: fieldHeight + 1,
+            row: fieldHeight + CONFIG.TILES_FALL_SIZE_FR_DELAY,
         });
-        const tileMoveTask = newTile.moveToCellAsync(finalCoords);
-        return new Task().bundleWith(tileMoveTask);
+        const tileMoveProcess = newTile.moveToCellAsync(finalCoords);
+        const tileMoveTask = new Task().bundleWith(tileMoveProcess);
+        tileMoveTask.item = newTile;
+        return tileMoveTask;
     }
 
     protected spawnObjAtCell(

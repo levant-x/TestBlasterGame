@@ -4,7 +4,9 @@ import { BooleanGetter } from '../../types';
 import { ObservableCollection } from './observable-collection';
 
 export class Task extends ObservableCollection<BooleanGetter> {
-    public isComplete() {
+    item?: any;
+
+    isComplete() {
         return this.getStatus(this.items);
     }
 }

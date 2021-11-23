@@ -57,9 +57,9 @@ export class TileBase extends Component implements ITile {
     positionAtCell(
         coords: GridCellCoordinates
     ): void {
-        const cellAbsPos = this.getCellAbsPosition(coords);
+        const cellAbsPos = TileBase.getCellAbsPosition(coords);
         this.node.setPosition(cellAbsPos);
-        this.setCellCrds(coords);
+        this.cellCrds = coords;
     }
 
     moveToCellAsync(
@@ -72,35 +72,35 @@ export class TileBase extends Component implements ITile {
     destroyHitAsync(): BooleanGetter {
         this.node.destroy();
         return () => !this.isValid;
-    }    
+    }  
+
+    static getCellAbsPosition(
+        { row, col }: GridCellCoordinates
+    ): Vec3 {
+        const cellPosInGrid = new Vec3(col, row).multiply(TileBase._size);    
+        const cellAbsPos = Vec3
+            .clone(<Vec3>TileBase._layoutOrigin)
+            .add(cellPosInGrid);
+        return cellAbsPos;
+    }  
 
     protected onClick(): void {
         TileBase.onClick?.(this);
     }
 
-    protected setCellCrds(
+    protected set cellCrds(
         crds: GridCellCoordinates
-    ): void {
+    ) {
         this._cellCoords = {...crds};
     }
 
     protected setGreetingAnimationToPlay() {
-        const anim = this.node.getComponent(Animation) as Animation;
+        const anim = <Animation>this.node.getComponent(Animation);
         anim.playOnLoad = true;
     }
 
-    protected getCellAbsPosition(
-        { row, col }: GridCellCoordinates
-    ): Vec3 {
-        const cellPosInGrid = new Vec3(col, row).multiply(TileBase._size);    
-        const cellAbsPos = Vec3
-            .clone(TileBase._layoutOrigin as Vec3)
-            .add(cellPosInGrid);
-        return cellAbsPos;
-    }
-
     private _computeSizeParams(): void {
-        const size = this.getComponent(UITransform)?.contentSize as Size;
+        const size = <Size>this.getComponent(UITransform)?.contentSize;
         const { width, height } = size;    
         const minDim = Math.min(width, height);
 
@@ -112,8 +112,7 @@ export class TileBase extends Component implements ITile {
     }
 
     private _setupColor(): void {
-        const { name } = this.node;
-        const colorFromName = name.replace('tile-', '');
-        this.color = colorFromName as unknown as Color;
+        const colorFromName =this.node.name.replace('tile-', '');
+        this.color = <Color>(colorFromName as unknown);
     }
 }

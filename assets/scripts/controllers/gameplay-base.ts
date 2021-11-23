@@ -85,7 +85,7 @@ export abstract class GameplayBase extends GamefieldContext {
         hitTiles: ITile[]
     ): void {
         if (!this.gameFlowMng.isStepValid(hitTiles)) return; 
-        const destroyTilesTask = this.stepFlowMng.destroyHitTiles(hitTiles);
+        const destroyTilesTask = this.stepFlowMng.destroyHitTilesAsync(hitTiles);
         const onDestroy = this.onHitTilesDestroy.bind(this);
 
         this.taskMng.bundleWith(destroyTilesTask, onDestroy);            
@@ -94,13 +94,13 @@ export abstract class GameplayBase extends GamefieldContext {
     }
 
     protected onHitTilesDestroy() {
-        const offsetTask = this.stepFlowMng.offsetLooseTiles();        
+        const offsetTask = this.stepFlowMng.offsetLooseTilesAsync();        
         const bundle = this.taskMng.bundleWith.bind(this.taskMng);
         bundle(offsetTask, this.onLooseTilesOffset.bind(this));
     }
 
     protected onLooseTilesOffset() {
-        const respawnTask = this.stepFlowMng.spawnNewTiles();
+        const respawnTask = this.stepFlowMng.spawnNewTilesAsync();
         const updUITask = this.updateUITask;
         const onRespawn = this.onStepEnd.bind(this);
         this.taskMng.bundleWith(respawnTask).bundleWith(updUITask, onRespawn);
@@ -114,13 +114,10 @@ export abstract class GameplayBase extends GamefieldContext {
     private _replaceHitTileWithNew(
         newTile: ITile, 
         col: number
-    ): void {
-        const colItems = this.gamefield[col];
-        const lowestEmptyCell = colItems.find(tile => !tile.isValid);
-        if (!lowestEmptyCell) throw 'Excessive tile spawned';
-        
-        const rowIndex = colItems.indexOf(lowestEmptyCell);
-        this.gamefield[col][rowIndex] = newTile;
+    ): void {        
+        const row = this.getIileRespawnPointer(col);        
+        this.gamefield[col][row] = newTile;
+        this.tileRespawnPointer = { col, row: row + 1 };
     } 
 
     private _setupCfgValues(): void {

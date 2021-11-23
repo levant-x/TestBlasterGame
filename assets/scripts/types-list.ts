@@ -7,7 +7,6 @@ enum _types {
     'GameFlowBoosted',
     'HitTilesFinderBase',
     'HitTilesFinderMultichoice',
-    'LooseTilesFinder',
     'StepFlow',
     'StepFlowBoosted',
     'StepInspector',

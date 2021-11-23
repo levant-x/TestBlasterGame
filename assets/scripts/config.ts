@@ -11,7 +11,6 @@ const DI_MAPPING = {
     IStepInspector: ModuleType.StepInspector,
     IItemsGroupAnalyzer: ModuleType.HitTilesFinderMultichoice,
     IItemsGapAnalyzer: ModuleType.HitTilesFinderMultichoice,
-    LooseTilesFinder: ModuleType.LooseTilesFinder,
     TileOffsetter: ModuleType.TileOffsetter,
     TileAsyncRespawner: ModuleType.TileAsyncRespawner,
     TileShuffler: ModuleType.TileShuffler,
@@ -35,7 +34,8 @@ const LEVEL_SYS_CFG_PATH = 'level-sys-config';
 const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
 const TILES_OFFSET_DURATION_SEC = 0.2;
 const TILES_SHUFFLE_SPEEDUP = 3;
-const TILES_1ST_FALL_SPEEDUP = 1.7;
+const TILES_1ST_FALL_SPEEDUP = .5;
+const TILES_FALL_SIZE_FR_DELAY = 0.15;
 const FLOW_DELAY_SEC = 1.5;
 const BOOSTER_NAME_TMPL = 'booster-panel-';
 const SUPERTILE_APPEAR_PROBAB = 7 / 10;
@@ -46,6 +46,7 @@ export const CONFIG = {
     TILES_1ST_FALL_SPEEDUP,
     TILES_OFFSET_DURATION_SEC,   
     TILES_SHUFFLE_SPEEDUP,
+    TILES_FALL_SIZE_FR_DELAY,
     FLOW_DELAY_SEC,
     BOOSTER_NAME_TMPL,
     SUPERTILE_APPEAR_PROBAB,

@@ -23,13 +23,14 @@ export class TileAnimated extends TileBase {
         this._gridNewCrds = gridNewCoords;
 
         const { row } = this.сellCoordinates;
-        const cellAbsPosition = this.getCellAbsPosition(gridNewCoords);
+        const cellAbsPosition = 
+            TileBase.getCellAbsPosition(gridNewCoords);
+
         const durCfg = CONFIG.TILES_OFFSET_DURATION_SEC;
         const shfSpdupFactor = CONFIG.TILES_SHUFFLE_SPEEDUP;
 
         const moveDurBasic = simultaneously ? durCfg * shfSpdupFactor : 
             (row - gridNewCoords.row) * durCfg;
-
         const moveDurFinite = this._toFallInSpawn ?
             moveDurBasic / CONFIG.TILES_1ST_FALL_SPEEDUP : moveDurBasic;
 
@@ -53,8 +54,8 @@ export class TileAnimated extends TileBase {
 
     private _onMoveCompleted() {
         this._hasMoveCompleted = true; 
-        const newCrds = this._gridNewCrds as GridCellCoordinates;
-        this.setCellCrds(newCrds);
+        const newCrds = <GridCellCoordinates>this._gridNewCrds;
+        this.cellCrds = newCrds;
         this._gridNewCrds = undefined;
     }
 }

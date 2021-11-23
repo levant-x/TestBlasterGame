@@ -4,15 +4,21 @@ import { removeFromArray } from '../common/array-tools';
 import { Task } from '../common/task';
 import { TaskManager } from '../common/task-manager';
 import { 
-    Demand4NewTilesInfo, 
-    GridCellCoordinates, 
+    BooleanGetter,
+    StepResultByColsInfo, 
+    ITile, 
     ITileSpawner, 
 } from '../../types';
 import { inject, injectable, injectValueByKey } from '../../decorators';
+import { TileBase } from '../../controllers/tile-base';
+import { CONFIG } from '../../config';
 
 @injectable('TileAsyncRespawner')
 export class TileAsyncRespawner {
     private _taskMngrs: TaskManager[] = [];   
+    private _stepRslInfoByCol: StepResultByColsInfo;
+    private _lastTilesByCol: Record<number, ITile | null>;
+    private _penultRowY: number;
 
     @inject('ITileSpawner')
     private _spawner: ITileSpawner;
@@ -20,19 +26,38 @@ export class TileAsyncRespawner {
     private _height: number;
 
     respawnAsync(
-        emptyCellsInfo: Demand4NewTilesInfo[]
+        stepResultInfo: StepResultByColsInfo
     ): Task {
         this._taskMngrs = [];
-        emptyCellsInfo.forEach(this._createColMng.bind(this));
+        this._lastTilesByCol = {};
+        this._stepRslInfoByCol = stepResultInfo;        
+
+        const { colsIndex } = stepResultInfo;
+        this._initRespawn();
+
+        for (let i = 0; i < colsIndex.length; i++) 
+            this._createColMng(+colsIndex[i]);
         return new Task().bundleWith(this._checkStatus.bind(this));
     }
 
+    private _initRespawn(): void {
+        const spawnerBaseCbck = this._spawner.onTileSpawn;
+        this._spawner.onTileSpawn = tile => {
+            spawnerBaseCbck?.(tile);
+            this._lastTilesByCol[tile.сellCoordinates.col] = tile;
+        };
+        this._penultRowY = TileBase.getCellAbsPosition({
+            row: this._height - CONFIG.TILES_FALL_SIZE_FR_DELAY,
+            col: 0,
+        }).y;        
+    }
+
     private _createColMng(
-        infoItem: Demand4NewTilesInfo
+        col: number
     ): void {
         const taskMng = TaskManager.create();
         this._taskMngrs.push(taskMng);
-        this._setupTask_SpawnNewTiles.bind(this)(infoItem, taskMng);
+        this._setupTask_SpawnNewTiles4Col(col, taskMng);
     }
 
     private _checkStatus(): boolean {
@@ -40,30 +65,38 @@ export class TileAsyncRespawner {
         return !this._taskMngrs.length;
     }
 
-    private _setupTask_SpawnNewTiles(
-        demandInfo: Demand4NewTilesInfo,
-        taskMng: TaskManager,
+    private _setupTask_SpawnNewTiles4Col(
+        col: number,
+        colTaskMng: TaskManager,
     ): void {
-        if (!demandInfo.tiles2Spawn) {
-            removeFromArray(this._taskMngrs, taskMng);
+        const colInfo = this._stepRslInfoByCol.colsInfo[col];
+        if (!colInfo.tiles2Spawn) {
+            removeFromArray(this._taskMngrs, colTaskMng);
             return;
         }
-        const crds = this._updateDemand4TileInfo
-            .bind(this)(demandInfo);
-        const recursionCbck = () => this
-            ._setupTask_SpawnNewTiles(demandInfo, taskMng);
-            
-        taskMng.bundleWith(this._spawner
-            .spawnNewTile(crds, this._height
-        ), recursionCbck);
+        const row = this._height - colInfo.tiles2Spawn;
+        this._lastTilesByCol[col] = null;
+        const onTileSpawned = () => this
+            ._setupTask_SpawnNewTiles4Col(col, colTaskMng);
+        const passTopRow = this._hasTilePassedTopRow.bind(this);
+
+        const spawnTileTask = this._spawner
+            .spawnNewTile({ row, col }, this._height);     
+        const fillColTask = colInfo.tiles2Spawn > 1 ?
+            new Task().bundleWith(passTopRow(col)) :
+            spawnTileTask;        
+
+        colTaskMng.bundleWith(fillColTask, onTileSpawned);        
+        colInfo.tiles2Spawn--;
     }
-    
-    private _updateDemand4TileInfo(
-        infoItem: Demand4NewTilesInfo
-    ): GridCellCoordinates {
-        const { col, lowestRow: row } = infoItem;
-        infoItem.tiles2Spawn--;
-        infoItem.lowestRow++;
-        return { row, col };
+
+    private _hasTilePassedTopRow(
+        col: number
+    ): BooleanGetter {        
+        return () => {
+            const lastTile = this._lastTilesByCol[col];
+            if (!lastTile) return false;
+            return lastTile.node.position.y <= this._penultRowY;
+        };
     }
 }

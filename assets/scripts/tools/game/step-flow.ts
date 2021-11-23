@@ -1,6 +1,6 @@
 import { _decorator } from 'cc';
 import { 
-    GridCellCoordinates, 
+    StepResultByColsInfo,
     IClassifyable, 
     IItemsGapAnalyzer, 
     IItemsGroupAnalyzer, 
@@ -14,7 +14,9 @@ import { TileOffsetter } from './tile-offsetter';
 
 @injectable('StepFlow')
 export class StepFlow implements IStepFlow {
-    protected hitTilesCrds: GridCellCoordinates[] = [];
+    private _hitTiles: ITile[];
+    private _stepRslInfo: StepResultByColsInfo;
+
     @inject('IItemsGroupAnalyzer')
     protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;
     @inject('IItemsGapAnalyzer')
@@ -33,32 +35,33 @@ export class StepFlow implements IStepFlow {
 
         const collect = tilesFinder.collectItemsGroup.bind(tilesFinder);
         const clickedCrds = clickedTile.сellCoordinates;
-        const hitTiles = collect([clickedCrds], selectorCbck);
-        return hitTiles as ITile[];
+        this._hitTiles = <ITile[]>collect([clickedCrds], selectorCbck);
+        return this._hitTiles;
     }
 
-    destroyHitTiles(
+    destroyHitTilesAsync(
         hitTiles?: ITile[]
     ): Task {
         if (!hitTiles) throw 'Invalid tiles array';
 
-        this.hitTilesCrds = hitTiles
-            .map(hitTile => hitTile.сellCoordinates);
+        this._stepRslInfo = this.tilesGapFinder
+            .getStepResultByColsInfo(this._hitTiles);
         const massDestroyTask = new Task();        
-        hitTiles.forEach(tile => massDestroyTask
-            .bundleWith(tile.destroyHitAsync()));
+
+        for (let i = 0; i < hitTiles.length; i++) {
+            const hitTile = hitTiles[i];
+            massDestroyTask.bundleWith(hitTile.destroyHitAsync());
+        }
         return massDestroyTask;
     }
 
-    offsetLooseTiles(): Task {
+    offsetLooseTilesAsync(): Task {
         const offsetter = this.tileOffsetter;
-        const offset = offsetter.getTaskOffsetLooseTiles;
-        return offset.bind(offsetter)(this.hitTilesCrds);
+        const offset = offsetter.offsetLooseTilesAsync;
+        return offset.bind(offsetter)(this._stepRslInfo);
     }
 
-    spawnNewTiles(): Task {
-        const empCellsInfo = this.tilesGapFinder
-            .getEmptyCellsGroupedByColumn();
-        return this.asyncRespawner.respawnAsync(empCellsInfo);
+    spawnNewTilesAsync(): Task {
+        return this.asyncRespawner.respawnAsync(this._stepRslInfo);
     }
 }

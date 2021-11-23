@@ -1,10 +1,10 @@
-import { Component } from 'cc';
 import { 
-    Demand4NewTilesInfo, 
+    StepResultByColsInfo, 
     GridCellCoordinates, 
     IClassifyable, 
     IItemsGapAnalyzer, 
     IItemsGroupAnalyzer,
+    ITile,
 } from '../../../types';
 import { injectable } from '../../../decorators';
 import { GamefieldContext } from '../gamefield-context';
@@ -13,14 +13,15 @@ type ItemSelector<T> = (item: T) => boolean;
 type GCCAlias = GridCellCoordinates;
 type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
+
 export type ItemType = T;
 
 @injectable('HitTilesFinderBase')
-export class HitTilesFinderBase
-    extends GamefieldContext 
+export class HitTilesFinderBase extends GamefieldContext 
     implements IItemsGroupAnalyzer<T>, IItemsGapAnalyzer {
 
     private _selectItem: ItemSelector<T>;
+    private _lookedUpCellsIndexes: number[];
     private _coordsSearchSwitchers: GCSwitcher[] = [
         coords => ({...coords, col: coords.col + 1}),
         coords => ({...coords, col: coords.col - 1}),
@@ -29,75 +30,112 @@ export class HitTilesFinderBase
     ];
 
     collectItemsGroup(
-        [{ col, row }]: GridCellCoordinates[], 
+        [crds]: GridCellCoordinates[], 
         select?: ItemSelector<T>
     ): T[] {
-        const itemAtPoint = this.gamefield[col][row];
+        const itemAtPoint = this.gamefield[crds.col][crds.row];
         const itemSelector = select || ((otherItem: T) => 
             itemAtPoint.groupID === otherItem.groupID);
         this._selectItem = itemSelector;
 
-        const itemsGroup: T[] = [];
-        this.runItemsCollect({ col, row }, itemsGroup);
+        const startItemIndex = GamefieldContext.get().linear(crds);
+        this._lookedUpCellsIndexes = [startItemIndex];
+
+        const itemsGroup: T[] = [];        
+        this.runItemsCollect(crds, itemsGroup);
         return itemsGroup;
     }
 
-    getEmptyCellsGroupedByColumn() {
-        const colsToEmptyCellsMap = this.gamefield
-            .map(this._extractEmptyCellsInfo)
-            .filter(infoItem => infoItem.tiles2Spawn > 0);
-        return colsToEmptyCellsMap;
+    getStepResultByColsInfo(
+        hitTiles: ITile[]
+    ): StepResultByColsInfo {  
+        const stepRslInfo: StepResultByColsInfo = {
+            colsIndex: [],
+            colsInfo: {},
+        };
+        for (let i = 0; i < hitTiles.length; i++) 
+            this._analyzeHitTile(hitTiles[i], stepRslInfo);
+        return stepRslInfo;
     }
 
     protected runItemsCollect(
-        crds: GridCellCoordinates, 
+        crds: GCCAlias, 
         itemsGroup: T[],
     ): void {
         this._collectItems(crds, itemsGroup);
     }
 
     private _collectItems(
-        crds: GridCellCoordinates, 
+        crds: GCCAlias, 
         items: T[]
     ): void {
-        if (!this._areGridCellCoordsValid(crds)) return;
         const { row, col } = crds;
-        const itemAtPoint = this.gamefield[col][row] as unknown as T;
+        const itemAtPoint = <T>this.gamefield[col][row];  
 
-        const itemFits = this._selectItem(itemAtPoint) &&
-            !items.includes(itemAtPoint);
-        if (!itemFits) return; 
+        const itemFits = this._selectItem(itemAtPoint);
+        if (itemFits) items.push(itemAtPoint);
+        else return;
 
-        items.push(itemAtPoint);
-        const switchers = this._coordsSearchSwitchers;   
-        const collect = this._collectItems.bind(this);
-        switchers.forEach(around => collect(around(crds), items))     
+        const switchers = Object.entries(this._coordsSearchSwitchers);
+        for (const [_, offset] of switchers) {
+            const newCrds = offset(crds);
+            
+            if (!this._toUseOffset(newCrds)) continue;            
+            this._collectItems(newCrds, items);
+        }
     }
 
-    private _extractEmptyCellsInfo = (
-        rows: Component[], 
-        col: number
-    ): Demand4NewTilesInfo => ({
-        col,   
-        lowestRow : this._findLowestEmptyRow(rows),
-        tiles2Spawn: rows.reduce((acc, tile) => (
-            tile.isValid ? acc : acc + 1
-        ), 0)
-    })
+    private _toUseOffset(
+        crds: GCCAlias
+    ): boolean {
+        if (!this._areGridCellCoordsValid(crds)) return false;
 
-    private _findLowestEmptyRow(
-        rows: Component[]
-    ): number {
-        const hitTile = rows.find(tile => !tile.isValid);
-        if (!hitTile) return 0;
-        return rows.indexOf(hitTile);
+        const cellIndex = GamefieldContext.get().linear(crds);
+        const lookedUp = this._lookedUpCellsIndexes.includes(cellIndex);
+
+        !lookedUp && this._lookedUpCellsIndexes.push(cellIndex);
+        return !lookedUp;
     }
 
     private _areGridCellCoordsValid(
-        { col, row }: GridCellCoordinates
+        { col, row }: GCCAlias
     ): boolean {
         const areCoordsValid = col >= 0 && col < this.width &&
             row >= 0 && row < this.height;
         return areCoordsValid;
+    }
+
+    private _analyzeHitTile(
+        hitTile: ITile,
+        stepRslInfo: StepResultByColsInfo,
+    ): void {
+        const colInfo = this._initInfoItem(
+            hitTile.сellCoordinates.col, stepRslInfo);
+        const { row, col } = hitTile.сellCoordinates;
+
+        if (row < colInfo.lowestRow) colInfo.lowestRow = row;
+        if (row > colInfo.highestRow) colInfo.highestRow = row;
+
+        colInfo.tiles2Spawn++;
+        this.tileRespawnPointer = { 
+            row: this.height - colInfo.tiles2Spawn, 
+            col,
+        };
+    }
+
+    private _initInfoItem(
+        col: number,
+        stepRslInfo: StepResultByColsInfo,
+    ) {
+        const colInfo = stepRslInfo.colsInfo[col] || {
+            tiles2Spawn: 0,
+            highestRow: 0,
+            lowestRow: this.height,
+        };
+        if (!stepRslInfo.colsInfo[col]) {
+            stepRslInfo.colsInfo[col] = colInfo;
+            stepRslInfo.colsIndex.push(col);
+        }
+        return colInfo;
     }
 }

@@ -12,8 +12,9 @@ type GamefieldParams = Pick<
  the initCtx. Index the gameField the way [col][row]
  */
 export class GamefieldContext extends Component {   
-    private static _instances = [] as GamefieldContext[];
+    private static _instances: GamefieldContext[] = [];
     private static _body: ITile[][] = []; 
+    private static _colRespawnPointers: number[];
     private static _w = 0;
     private static _h = 0;
 
@@ -28,14 +29,12 @@ export class GamefieldContext extends Component {
     }
     
     static get() {
-        const getDecartPoint = 
-            GamefieldContext._getDecartPoint;    
-        type n = number;    
+        const getDecartPoint = GamefieldContext._getDecartPoint;    
         return {
             totalLength: GamefieldContext._getTotalLength(),
             linear: GamefieldContext._getLinearPoint,
-            row: (point: n) => getDecartPoint(point, 'row'),
-            col: (point: n) => getDecartPoint(point, 'col'),
+            row: (point: number) => getDecartPoint(point, 'row'),
+            col: (point: number) => getDecartPoint(point, 'col'),
         };
     }
 
@@ -56,9 +55,23 @@ export class GamefieldContext extends Component {
         GamefieldContext._body = [];
         GamefieldContext._h = fieldHeight;
         GamefieldContext._w = fieldWidth;
+
+        GamefieldContext._colRespawnPointers = new Array(fieldHeight);;
         GamefieldContext._instances.forEach(ctxItem => {
             ctxItem._initThisCtxFromStaticOne();
         });
+    }
+
+    protected getIileRespawnPointer(
+        col: number
+    ): number {
+        return GamefieldContext._colRespawnPointers[col];
+    }
+
+    protected set tileRespawnPointer(
+        { row, col }: GridCellCoordinates
+    ) {
+        GamefieldContext._colRespawnPointers[col] = row;
     }
 
     private _initThisCtxFromStaticOne() {

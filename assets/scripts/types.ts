@@ -1,4 +1,4 @@
-import { Component, Node, Prefab } from "cc";
+import { Component, Node, Prefab, Vec3 } from "cc";
 import { Menu } from "./controllers/ui/menu";
 import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
@@ -9,7 +9,6 @@ export enum ModuleType {
     'GameFlow',
     'HitTilesFinderBase',
     'HitTilesFinderMultichoice',
-    'LooseTilesFinder',
     'StepFlow',
     'StepInspector',
     'TileAsyncRespawner',
@@ -67,10 +66,13 @@ export type TileOffsetInfo = {
     tile: ITile;
 }
 
-export type Demand4NewTilesInfo = {
-    col: number;
-    lowestRow: number;
-    tiles2Spawn: number;
+export type StepResultByColsInfo = {
+    colsIndex: number[],
+    colsInfo: Record<number, {
+        lowestRow: number;
+        highestRow: number;
+        tiles2Spawn: number;
+    }>
 }
 
 export type EmptyCellsCount = {
@@ -102,9 +104,9 @@ export interface ITile extends Component, IClassifyable {
 
 export interface IStepFlow {
     detectHitTiles(clickedTile: ITile): ITile[];
-    destroyHitTiles(hitTiles?: ITile[]): Task;
-    offsetLooseTiles(): Task;
-    spawnNewTiles(): Task;
+    destroyHitTilesAsync(hitTiles?: ITile[]): Task;
+    offsetLooseTilesAsync(): Task;
+    spawnNewTilesAsync(): Task;
 }
 
 export interface IGameStatus {
@@ -141,7 +143,9 @@ export interface IItemsGroupAnalyzer<T, R = undefined> {
 }
 
 export interface IItemsGapAnalyzer {
-    getEmptyCellsGroupedByColumn(): Demand4NewTilesInfo[];
+    getStepResultByColsInfo(
+        hitTiles: ITile[]
+    ): StepResultByColsInfo;
 }
 
 export interface IModal {
