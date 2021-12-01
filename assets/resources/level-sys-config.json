@@ -2,13 +2,14 @@
     "glossary": {
         "fieldWidth": "N",
         "fieldHeight": "M",
-        "tileColorsAvail": "C",
+        "tileColorsTotal": "C",
         "tilesetVolToDstr": "K",
-        "shufflesAvail": "S",
-        "bombsAvail": "B",
-        "bombExplRadius": "R",
         "targetScore": "X",
-        "stepsAvail": "Y"
+        "stepsTotal": "Y",
+        "bombsTotal": "B",
+        "bombExplRadius": "R",
+        "shufflesTotal": "S",
+        "supertileChance": "P"
     },
     "levelConfigs": [
         {
@@ -20,18 +21,20 @@
             "Y": "100",
             "S": "3",
             "B": "3",
-            "R": "1"
+            "R": "1",
+            "P": ".7"
         },
         {
             "N": "10",
             "M": "10",
             "C": "5",
-            "K": "6",
+            "K": "8",
             "X": "50",
             "Y": "80",
             "S": "2",
             "B": "1",
-            "R": "2"
+            "R": "2",
+            "P": ".7"
         }
     ]
 }

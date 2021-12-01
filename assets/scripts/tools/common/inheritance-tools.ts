@@ -7,7 +7,7 @@ export function getRootName(
 ): string {
     const { name } = target.prototype?.constructor || 
         target.constructor;    
-    debugger
+
     if (closestRoot && name !== 'dependency') return name;
     else if (!target.__proto__ ||
         closestRoot && name !== 'dependency' ||

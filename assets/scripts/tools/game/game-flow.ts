@@ -64,7 +64,7 @@ export class GameFlow implements IGameFlow {
 
     runStepResult(): void {
         const points = this.uiManager.points;
-        const { targetScore, stepsAvail } = this._lvlInfo.config;
+        const { targetScore, stepsTotal: stepsAvail } = this._lvlInfo.config;
         if (points >= targetScore) this._completeLevel();
         else this._endGameIfLost(points, stepsAvail);
     }
@@ -80,7 +80,7 @@ export class GameFlow implements IGameFlow {
     }
 
     private _setupUI(): void {
-        const { stepsAvail } = this._lvlInfo.config;
+        const { stepsTotal: stepsAvail } = this._lvlInfo.config;
         this.uiManager.stepsNum = stepsAvail;
         this.uiManager.reset();
     }

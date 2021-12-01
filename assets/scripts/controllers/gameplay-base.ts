@@ -57,7 +57,7 @@ export abstract class GameplayBase extends GamefieldContext {
     protected init() {
         this._setupCfgValues();
         this._setupTileSpawner();
-        TileBase.onClick = this.onTileClick.bind(this);    
+        TileBase.onClick = this.onTileClick.bind(this); 
         
         this.gameFlowMng.menu = this.menu;   
         this.gameFlowMng.uiManager = this.uiMng;  
@@ -76,10 +76,14 @@ export abstract class GameplayBase extends GamefieldContext {
     protected onTileClick(
         sender: ITile
     ): void {
-        if (!this.taskMng.isComplete()) return;
+        if (!this.isStepPossible()) return;
         const hitTiles = this.stepFlowMng.detectHitTiles(sender);
         this.onHitTilesDetect(hitTiles);
     }    
+
+    protected isStepPossible(): boolean {
+        return this.taskMng.isComplete();
+    }
 
     protected onHitTilesDetect(
         hitTiles: ITile[]
@@ -94,16 +98,18 @@ export abstract class GameplayBase extends GamefieldContext {
     }
 
     protected onHitTilesDestroy() {
-        const offsetTask = this.stepFlowMng.offsetLooseTilesAsync();        
+        const offsetTask = this.stepFlowMng.offsetLooseTilesAsync();  
+        const respawnTask = this.stepFlowMng.spawnNewTilesAsync();  
         const bundle = this.taskMng.bundleWith.bind(this.taskMng);
-        bundle(offsetTask, this.onLooseTilesOffset.bind(this));
+
+        bundle(offsetTask);
+        bundle(respawnTask, this.onLooseTilesOffset.bind(this));
     }
 
     protected onLooseTilesOffset() {
-        const respawnTask = this.stepFlowMng.spawnNewTilesAsync();
         const updUITask = this.updateUITask;
-        const onRespawn = this.onStepEnd.bind(this);
-        this.taskMng.bundleWith(respawnTask).bundleWith(updUITask, onRespawn);
+        const onStepEnd = this.onStepEnd.bind(this);
+        this.taskMng.bundleWith(updUITask, onStepEnd);
     }
 
     /**Checks step result by default */
@@ -123,6 +129,7 @@ export abstract class GameplayBase extends GamefieldContext {
     private _setupCfgValues(): void {
         const { config } = this.levelInfo;
         this.initContext(config);
+        
         dispatchValue('fieldHeight', config.fieldHeight);
         dispatchValue('config', config);
     }
@@ -130,6 +137,7 @@ export abstract class GameplayBase extends GamefieldContext {
     private _setupTileSpawner(): void {
         this.tileSpawner.colsNum = this.width;
         this.tileSpawner.rowsNum = this.height;
+
         this.tileSpawner.prefabs = this.tilePrefabs;
         this.tileSpawner.targetNode = this.mask;
         this.tileSpawner.onTileSpawn = this.onTileSpawn.bind(this);

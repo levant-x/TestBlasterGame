@@ -9,12 +9,12 @@ import {
 import { injectable } from '../../../decorators';
 import { GamefieldContext } from '../gamefield-context';
 
-type ItemSelector<T> = (item: T) => boolean;
 type GCCAlias = GridCellCoordinates;
 type GCSwitcher = (coords: GCCAlias) => GCCAlias;
 type T = IClassifyable;
 
 export type ItemType = T;
+export type ItemSelector<T> = (item: T) => boolean;
 
 @injectable('HitTilesFinderBase')
 export class HitTilesFinderBase extends GamefieldContext 
@@ -58,6 +58,7 @@ export class HitTilesFinderBase extends GamefieldContext
         return stepRslInfo;
     }
 
+    /**Collects items the normal wave way */
     protected runItemsCollect(
         crds: GCCAlias, 
         itemsGroup: T[],

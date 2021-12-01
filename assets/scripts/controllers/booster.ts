@@ -1,55 +1,98 @@
 
 import { _decorator, Component, Label, Button } from 'cc';
 import { CONFIG } from '../config';
-import { inject, injectable } from '../decorators';
+import { injectable, injectValueByKey } from '../decorators';
 import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
-import { BoosterType, IBooster, IBoosterManager } from '../types';
+import { BooleanGetter, BoosterType, IBooster, LevelInfo } from '../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Booster')
 @injectable()
 export class Booster extends Component implements IBooster {
+    /**Count itself or grop probability */
     private _count = 0;
     private _type: BoosterType;
 
-    @inject('IBoosterManager')
-    private _boostersMng: IBoosterManager;
-
-    protected toUseUI = true;
+    private static _current?: IBooster;
+    private static _instances: Record<string, IBooster>;    
 
     @property(Label)
-    protected numLabel: Label;
+    protected numLabel?: Label;
     @property(Button)
-    protected button: Button;
+    protected button?: Button;
+    @property(String)
+    protected pathToValue: string;
+    @property(Boolean)
+    protected hasProbability = false;
+    @injectValueByKey('stepCooldown')
+    protected isCooldownMoment: BooleanGetter;
+
+    get type(): BoosterType {
+        return this._type;
+    }
+
+    static get current(): IBooster | undefined {
+        return Booster._current;
+    }
+
+    static tryApply(
+        type: BoosterType
+    ): boolean {
+        if (!Booster._instances[type]) throw 'Unknown booster type';
+        return Booster._instances[type].tryApply();
+    }
 
     start() {
-        if (!this._boostersMng) throw 'Booster manager not set';
-        loadLevelInfoAsync(() => this._init());
+        if (!Booster._instances) Booster._instances = {};
+        loadLevelInfoAsync(lvlInfo => this._init(lvlInfo));
+    }
+
+    onDestroy() {
+        Booster._instances = {};
     }
     
     tryApply(): boolean {
-        if (!this._count) return false;
-        this.toUseUI && this._updateCnt(this._count - 1);
-        if (!this._count) 
-            this.button.interactable = false;
+        if (!this._count || this.isCooldownMoment() ||
+            Booster.current) return false;
+        if (this.hasProbability) return this._drawLots();
+
+        this._count--;
+        this._updateUI();
+
+        Booster._current = this;
         return true;
     }
-
-    onClick(): void {
-        this._boostersMng.tryApplyBooster(this._type);
+    
+    drop(): void {
+        Booster._current = undefined;
     }
 
-    private _init() {
-        const mng = this._boostersMng;
-        const { type, count } = mng.registerBooster(this);
-        this._type = type;
-        this.toUseUI && this._updateCnt(count);
-    }
-
-    private _updateCnt(
-        count: number
+    private _init(
+        lvlInfo: LevelInfo
     ): void {
-        this._count = count;
+        this._detectType();
+        this._count = +lvlInfo.config[this.pathToValue];
+        this._updateUI();
+    }
+
+    private _detectType(): void {
+        const { name } = this.node;
+        const typeFromName = name.replace(CONFIG.BOOSTER_NAME_TMPL, '');
+        this._type = <BoosterType>typeFromName;
+        Booster._instances[this._type] = this;   
+    }
+
+    private _updateUI(): void {
+        if (!this._count && this.button) 
+            this.button.interactable = false;
+            
+        if (!this.numLabel) return;
         this.numLabel.string = this._count.toString();
+    }
+
+    private _drawLots(): boolean {
+        const probability = this._count;
+        const fortune = Math.random();
+        return fortune <= probability;  
     }
 }

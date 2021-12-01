@@ -1,5 +1,6 @@
-import { inject, injectable } from "../../decorators";
-import { BoosterType, IBoostNotifier, ITile } from "../../types";
+import { Booster } from "../../controllers/booster";
+import { injectable } from "../../decorators";
+import { BoosterType, ITile } from "../../types";
 import { GameFlow } from "./game-flow";
 
 const BOOSTERS_ALLOWING_STEP: BoosterType[] = [
@@ -8,13 +9,10 @@ const BOOSTERS_ALLOWING_STEP: BoosterType[] = [
 
 @injectable('GameFlowBoosted')
 export class GameFlowBoosted extends GameFlow {
-    @inject('IBoostNotifier')
-    protected boostNotifier: IBoostNotifier;
-
     isStepValid(
         hitTiles: ITile[]
     ): boolean {
-        const currBooster = this.boostNotifier.currentBooster;
+        const currBooster = Booster.current?.type;
         if (!currBooster) return super.isStepValid(hitTiles);
         return BOOSTERS_ALLOWING_STEP.includes(currBooster);
     }

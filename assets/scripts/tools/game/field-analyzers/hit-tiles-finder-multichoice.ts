@@ -1,7 +1,8 @@
-import { inject, injectable, injectValueByKey } from "../../../decorators";
+import { Booster } from "../../../controllers/booster";
+import { injectable, injectValueByKey } from "../../../decorators";
 import { 
     GridCellCoordinates, 
-    IBoostNotifier, 
+    ISupertile, 
     LevelConfig, 
 } from "../../../types";
 import { pickRandomItem } from "../../common/array-tools";
@@ -15,8 +16,12 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
     private _startPointCrds: GridCellCoordinates;
     private _itemsGroup: T[];
 
-    @inject('IBoostNotifier')
-    private _boostNotifier: IBoostNotifier;
+    private sptileOutcomes = [
+        () => this._applyBomb(),
+        () => this._destroyRow(),            
+        () => this._destroyCol(),
+    ];
+
     @injectValueByKey('config')
     private _cfg: LevelConfig;
 
@@ -24,22 +29,28 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
         crds: GridCellCoordinates,
         itemsGroup: T[]
     ): void {
-        const currBooster = 
-            this._boostNotifier.currentBooster;
-        if (!currBooster) {
-            super.runItemsCollect(crds, itemsGroup);
-            return;
-        }
-
+        const currBooster = Booster.current?.type;
         this._startPointCrds = crds;
         this._itemsGroup = itemsGroup;
-        currBooster === 'bomb' && this._applyBomb();
-        currBooster === 'supertile' && this._applySupertile();
+
+        if (currBooster === 'bomb') {
+            this._applyBomb();
+            return;
+        }
+        const { col, row } = crds;
+        const tileAtStartPoint = this.gamefield[col][row];    
+        const { isSuper } = tileAtStartPoint as unknown as ISupertile;
+
+        if (isSuper) {
+            this._applySupertile();
+            return;
+        }
+        super.runItemsCollect(crds, itemsGroup);
     }
 
     private _applyBomb(): void {
         const r = this._cfg.bombExplRadius;
-        const { y, x, } = this._getStartPointCrds();
+        const { y, x } = this._getStartPointCrds();
 
         const top = Math.min(y + r, this.height - 1);
         const bottom = Math.max(y - r, 0);
@@ -52,11 +63,7 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
     }   
 
     private _applySupertile(): void {
-        pickRandomItem([
-            () => this._applyBomb(),
-            () => this._destroyRow(),            
-            () => this._destroyCol(),
-        ])();
+        pickRandomItem(this.sptileOutcomes)();
     }
 
     private _destroyRow(): void {
@@ -87,6 +94,7 @@ export class HitTilesFinderMultichoice extends HitTilesFinderBase{
     private _collectItem(
         { row, col, }: GridCellCoordinates,
     ): void {
-        this._itemsGroup.push(this.gamefield[col][row]);
+        const tileAtPoint = this.gamefield[col][row];
+        this._itemsGroup.push(tileAtPoint);
     }
 }

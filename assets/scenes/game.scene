@@ -154,7 +154,7 @@
     "_priority": 1073741824,
     "_fov": 90,
     "_fovAxis": 0,
-    "_orthoHeight": 579.3333333333334,
+    "_orthoHeight": 770.3807947019868,
     "_near": 1,
     "_far": 1000,
     "_color": {
@@ -1551,7 +1551,7 @@
     },
     "component": "",
     "_componentId": "b5ef3Nk0HJB1IbHlohR11jg",
-    "handler": "onClick",
+    "handler": "tryApply",
     "customEventData": ""
   },
   {
@@ -1641,6 +1641,8 @@
     "button": {
       "__id__": 54
     },
+    "pathToValue": "shufflesTotal",
+    "hasProbability": false,
     "_id": "1bogw6MZdOU5RXn+gIdQSP"
   },
   {
@@ -2170,7 +2172,7 @@
     },
     "component": "",
     "_componentId": "b5ef3Nk0HJB1IbHlohR11jg",
-    "handler": "onClick",
+    "handler": "tryApply",
     "customEventData": ""
   },
   {
@@ -2260,6 +2262,8 @@
     "button": {
       "__id__": 79
     },
+    "pathToValue": "bombsTotal",
+    "hasProbability": false,
     "_id": "70sYryKQJFcpDS4OTQFtd/"
   },
   {
@@ -2359,7 +2363,7 @@
     "_id": "72IQjuF8BCupe1Ll0piNiC"
   },
   {
-    "__type__": "c65d0gCmiFJHYZdjCFAyv8Y",
+    "__type__": "b5ef3Nk0HJB1IbHlohR11jg",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -2367,7 +2371,9 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_id": "6awHB7ZHBKOo8oUmNZVP82"
+    "pathToValue": "supertileChance",
+    "hasProbability": true,
+    "_id": "2801u1o3VExKRXPJ0CWbzp"
   },
   {
     "__type__": "cc.UITransform",

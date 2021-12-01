@@ -2,11 +2,12 @@
 import { _decorator } from 'cc';
 import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
+import { dispatchValue } from '../tools/common/di';
 import { Task } from '../tools/common/task';
 import { TileShuffler } from '../tools/game/field-analyzers/tile-shuffler';
-import { GridCellCoordinates, IBoosterManager, ITile } from '../types';
+import { GridCellCoordinates, ISupertile, ITile } from '../types';
+import { Booster } from './booster';
 import { GameplayBase } from './gameplay-base';
-import { TileBase } from './tile-base';
 const { ccclass } = _decorator;
 
 @ccclass('GameplayBoosted')
@@ -14,17 +15,17 @@ const { ccclass } = _decorator;
 export class GameplayBoosted extends GameplayBase {
     @inject('TileShuffler')
     private _tileShuffler: TileShuffler;  
-    @inject('IBoosterManager')
-    protected boosterManager: IBoosterManager; 
+    private _wasSptileJustDrawn = false;
+    private _lastClickCoords: GridCellCoordinates;
 
-    update() {
-        super.update();
-        this.checkCurrentBooster();
+    start() {
+        super.start();
+        const cooldownStatus = () => !this.isStepPossible.bind(this);
+        dispatchValue('stepCooldown', cooldownStatus);
     }
 
     onDestroy() {
-        TileBase.lastClickCoords = undefined;
-        this.boosterManager.dropBoosterStatus();
+        Booster.current?.drop();
         super.onDestroy?.();        
     }
 
@@ -33,18 +34,13 @@ export class GameplayBoosted extends GameplayBase {
         this._checkStepAfterDelay();
     }
 
-    protected checkCurrentBooster(): void {
-        const currBooster = this.boosterManager.currentBooster;
-        if (!currBooster || !this.taskMng.isComplete()) return;
-
-        currBooster === 'shuffle' && this._applyShuffle();
-        currBooster === 'supertile' && this._applySupertile();
-    }
-
     protected onTileClick(
         sender: ITile
     ): void {
-        TileBase.lastClickCoords = sender.сellCoordinates;
+        if (!this.isStepPossible()) return;
+
+        this._lastClickCoords = sender.сellCoordinates;
+        this._tryCreateSptile();
         super.onTileClick(sender);
     }
 
@@ -55,11 +51,20 @@ export class GameplayBoosted extends GameplayBase {
     }
 
     protected onStepEnd(): void {
-        const lastBooster = this.boosterManager.currentBooster;
-        this.boosterManager.dropBoosterStatus();
         super.onStepEnd();
-        if (lastBooster || this.gameFlowMng.isStepFinal()) return;
-        this._tryCreateSupertile();
+        
+        if (this._wasSptileJustDrawn) {            
+            const { col, row } = this._lastClickCoords;            
+            const sptile = <ISupertile>this.gamefield[col][row];
+            sptile.isSuper = true;
+        }
+        this.tryApplyPassiveBoosters();
+        Booster.current?.drop();
+    }
+
+    protected tryApplyPassiveBoosters(): void {
+        const currBooster = Booster.current?.type;
+        currBooster === 'shuffle' && this._applyShuffle();
     }
 
     private _checkStepAfterDelay(): void {        
@@ -68,21 +73,13 @@ export class GameplayBoosted extends GameplayBase {
     }
 
     private _applyShuffle(): void {
-        TileBase.lastClickCoords = undefined;
         const shuffleTask = this._tileShuffler.shuffle();
         const checkStep = this._checkStepAfterDelay.bind(this);
         this.taskMng.bundleWith(shuffleTask, checkStep);
     }
 
-    private _applySupertile(): void {
-        const { row, col, } =  
-            TileBase.lastClickCoords as GridCellCoordinates;
-        const supertile = this.gamefield[col][row];
-        super.onTileClick(supertile);
-    }
-
-    private _tryCreateSupertile(): void {
-        if (!TileBase.lastClickCoords) return;
-        this.boosterManager.tryApplyBooster('supertile');
+    private _tryCreateSptile(): void {
+        if (this._wasSptileJustDrawn) this._wasSptileJustDrawn = false;
+        else this._wasSptileJustDrawn = Booster.tryApply('supertile');
     }
 }

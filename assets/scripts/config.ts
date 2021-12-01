@@ -3,9 +3,7 @@ import { _decorator, resources, JsonAsset, __private, Vec3 } from 'cc';
 import { LevelConfig, LevelInfo, LevelSystemConfig, ModuleType } from './types';
 
 const DI_MAPPING = {
-    IBoosterManager: ModuleType.BoosterManager,
-    IBoostNotifier: ModuleType.BoosterManager,
-    IGameFlow: ModuleType.GameFlowBoosted,
+    IGameFlow: ModuleType.GameFlow,
     IStepFlow: ModuleType.StepFlow,
     ITileSpawner: ModuleType.TileSpawner,
     IStepInspector: ModuleType.StepInspector,
@@ -18,7 +16,7 @@ const DI_MAPPING = {
 
 export type DependencyKey = keyof typeof DI_MAPPING;
 
-export type ValueDispatchKey = 'fieldHeight' | 'config';
+export type ValueDispatchKey = 'fieldHeight' | 'config' | 'stepCooldown';
     
 export type RangeX = {
     left: number;
@@ -33,7 +31,7 @@ export type RangeY = {
 const LEVEL_SYS_CFG_PATH = 'level-sys-config';
 const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
 const TILES_OFFSET_DURATION_SEC = 0.2;
-const TILES_SHUFFLE_SPEEDUP = 3;
+const TILES_SHUFFLE_SPEEDUP = .2;
 const TILES_1ST_FALL_SPEEDUP = .5;
 const TILES_FALL_SIZE_FR_DELAY = 0.15;
 const FLOW_DELAY_SEC = 1.5;

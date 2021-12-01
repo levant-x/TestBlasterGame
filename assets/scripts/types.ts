@@ -4,7 +4,6 @@ import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
 
 export enum ModuleType {
-    'BoosterManager',
     'GameFlowBoosted',
     'GameFlow',
     'HitTilesFinderBase',
@@ -21,12 +20,13 @@ export type LevelConfig = {
     fieldWidth: number;
     fieldHeight: number;
     targetScore: number;
-    stepsAvail: number;
-    tileColorsAvail: number;
-    shufflesAvail: number;
-    bombsAvail: number;
+    tileColorsTotal: number;
+    shufflesTotal: number;
+    stepsTotal: number;
+    bombsTotal: number;
     bombExplRadius: number;
     tilesetVolToDstr: number;
+    supertileChance: number;
 } & Record<string, number>;
 
 export type LevelSystemConfig = {
@@ -80,11 +80,6 @@ export type EmptyCellsCount = {
     col: number;     
 }
 
-export type BoosterInfo = {
-    type: BoosterType;
-    count: number;
-}
-
 export type BooleanGetter = () => boolean;
 
 export interface IClassifyable {
@@ -100,6 +95,10 @@ export interface ITile extends Component, IClassifyable {
         simultaneously?: boolean,
     ): BooleanGetter;
     destroyHitAsync(): BooleanGetter; 
+}
+
+export interface ISupertile extends ITile {
+    isSuper: boolean;
 }
 
 export interface IStepFlow {
@@ -132,6 +131,7 @@ export interface ITileSpawner {
     spawnNewTile(
         finalCoords: GridCellCoordinates, 
         fieldHeight: number,
+        originElevation?: number,
     ): Task;
 }
 
@@ -166,17 +166,9 @@ export interface ISteps {
 }
 
 export interface IBooster extends Pick<Component, 'node'> {
+    readonly type: BoosterType;
     tryApply(): boolean;
-}
-
-export interface IBoostNotifier {    
-    readonly currentBooster: BoosterType | null;
-}
-
-export interface IBoosterManager extends IBoostNotifier {
-    registerBooster(booster: IBooster): BoosterInfo;
-    tryApplyBooster(type: BoosterType): boolean;
-    dropBoosterStatus(): void;    
+    drop(): void;    
 }
 
 export interface IStepInspector {

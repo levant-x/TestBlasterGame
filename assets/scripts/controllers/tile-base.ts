@@ -28,7 +28,6 @@ export class TileBase extends Component implements ITile {
 
     static onClick: (sender: TileBase) => void;
     static is1stSeeding = true;
-    static lastClickCoords?: GridCellCoordinates;
 
     get сellCoordinates(): GridCellCoordinates {
         return this._cellCoords;

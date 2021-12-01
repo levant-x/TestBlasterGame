@@ -1,7 +1,7 @@
+import { Booster } from "../../controllers/booster";
 import { UI } from "../../controllers/ui/ui";
 import { inject, injectable } from "../../decorators";
 import { 
-    IBoosterManager, 
     IItemsGroupAnalyzer, 
     IStepInspector, 
     ITile, 
@@ -13,8 +13,6 @@ import { GamefieldContext } from "./gamefield-context";
 export class StepInspector implements IStepInspector {
     @inject('IItemsGroupAnalyzer')
     protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;  
-    @inject('IBoosterManager')
-    protected boosterManager: IBoosterManager;
 
     isStepDeadEnd(
         levelInfo: LevelInfo,
@@ -44,9 +42,7 @@ export class StepInspector implements IStepInspector {
     }
 
     private _tryShuffle(): boolean {
-        const mng = this.boosterManager;
-        const applyBooster = mng.tryApplyBooster.bind(mng);
-        const hasAppliedShuffle = applyBooster('shuffle');
+        const hasAppliedShuffle = Booster.tryApply('shuffle');
         return hasAppliedShuffle;
     }
 }

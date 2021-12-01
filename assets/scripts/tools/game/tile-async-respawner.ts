@@ -17,7 +17,6 @@ import { CONFIG } from '../../config';
 export class TileAsyncRespawner {
     private _taskMngrs: TaskManager[] = [];   
     private _stepRslInfoByCol: StepResultByColsInfo;
-    private _lastTilesByCol: Record<number, ITile | null>;
     private _penultRowY: number;
 
     @inject('ITileSpawner')
@@ -29,27 +28,13 @@ export class TileAsyncRespawner {
         stepResultInfo: StepResultByColsInfo
     ): Task {
         this._taskMngrs = [];
-        this._lastTilesByCol = {};
         this._stepRslInfoByCol = stepResultInfo;        
 
         const { colsIndex } = stepResultInfo;
-        this._initRespawn();
 
         for (let i = 0; i < colsIndex.length; i++) 
             this._createColMng(+colsIndex[i]);
         return new Task().bundleWith(this._checkStatus.bind(this));
-    }
-
-    private _initRespawn(): void {
-        const spawnerBaseCbck = this._spawner.onTileSpawn;
-        this._spawner.onTileSpawn = tile => {
-            spawnerBaseCbck?.(tile);
-            this._lastTilesByCol[tile.сellCoordinates.col] = tile;
-        };
-        this._penultRowY = TileBase.getCellAbsPosition({
-            row: this._height - CONFIG.TILES_FALL_SIZE_FR_DELAY,
-            col: 0,
-        }).y;        
     }
 
     private _createColMng(
@@ -69,34 +54,16 @@ export class TileAsyncRespawner {
         col: number,
         colTaskMng: TaskManager,
     ): void {
-        const colInfo = this._stepRslInfoByCol.colsInfo[col];
-        if (!colInfo.tiles2Spawn) {
-            removeFromArray(this._taskMngrs, colTaskMng);
-            return;
+        const { tiles2Spawn } = this._stepRslInfoByCol.colsInfo[col];
+        for (let i = tiles2Spawn; i > 0 ; i--) {
+            
+            const row = this._height - i;
+            const spawnTileTask = this._spawner
+                .spawnNewTile({ row, col }, this._height, tiles2Spawn - i);  
+
+            colTaskMng.bundleWith(spawnTileTask, 
+                () => removeFromArray(this._taskMngrs, colTaskMng)
+            );        
         }
-        const row = this._height - colInfo.tiles2Spawn;
-        this._lastTilesByCol[col] = null;
-        const onTileSpawned = () => this
-            ._setupTask_SpawnNewTiles4Col(col, colTaskMng);
-        const passTopRow = this._hasTilePassedTopRow.bind(this);
-
-        const spawnTileTask = this._spawner
-            .spawnNewTile({ row, col }, this._height);     
-        const fillColTask = colInfo.tiles2Spawn > 1 ?
-            new Task().bundleWith(passTopRow(col)) :
-            spawnTileTask;        
-
-        colTaskMng.bundleWith(fillColTask, onTileSpawned);        
-        colInfo.tiles2Spawn--;
-    }
-
-    private _hasTilePassedTopRow(
-        col: number
-    ): BooleanGetter {        
-        return () => {
-            const lastTile = this._lastTilesByCol[col];
-            if (!lastTile) return false;
-            return lastTile.node.position.y <= this._penultRowY;
-        };
     }
 }
