@@ -24,6 +24,11 @@ export class GameplayBoosted extends GameplayBase {
         dispatchValue('stepCooldown', cooldownStatus);
     }
 
+    update() {
+        super.update();
+        this.tryApplyPassiveBoosters();
+    }
+
     onDestroy() {
         Booster.current?.drop();
         super.onDestroy?.();        
@@ -52,7 +57,7 @@ export class GameplayBoosted extends GameplayBase {
 
     protected onStepEnd(): void {
         super.onStepEnd();
-        
+
         if (this._wasSptileJustDrawn) {            
             const { col, row } = this._lastClickCoords;            
             const sptile = <ISupertile>this.gamefield[col][row];
@@ -76,6 +81,7 @@ export class GameplayBoosted extends GameplayBase {
         const shuffleTask = this._tileShuffler.shuffle();
         const checkStep = this._checkStepAfterDelay.bind(this);
         this.taskMng.bundleWith(shuffleTask, checkStep);
+        Booster.current?.drop();
     }
 
     private _tryCreateSptile(): void {

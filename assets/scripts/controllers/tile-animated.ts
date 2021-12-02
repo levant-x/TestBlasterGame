@@ -10,7 +10,6 @@ export class TileAnimated extends TileBase implements ISupertile {
     private _isSuper = false;    
     private _hasMoveCompleted = false;
     private _gridNewCrds?: GridCellCoordinates;
-    private _toFallInSpawn = true;
 
     get isSuper(): boolean {
         return this._isSuper;
@@ -23,13 +22,9 @@ export class TileAnimated extends TileBase implements ISupertile {
         sprite.color = new Color(r, g, b, a / 2);
     }
 
-    update() {
-        if (this._toFallInSpawn) this._toFallInSpawn = false;
-    }
-
     moveToCellAsync(
         gridNewCoords: GridCellCoordinates,
-        simultaneously = false,
+        fixedTime = false,
     ): BooleanGetter {
         this._hasMoveCompleted = false; 
         this._gridNewCrds = gridNewCoords;
@@ -38,15 +33,13 @@ export class TileAnimated extends TileBase implements ISupertile {
         const cellAbsPosition = 
             TileBase.getCellAbsPosition(gridNewCoords);
 
-        const durCfg = CONFIG.TILES_OFFSET_DURATION_SEC;
-        const shfSpdupFactor = CONFIG.TILES_SHUFFLE_SPEEDUP;
+        const speedCfg = CONFIG.TILES_MOVE_SPEED_UPS;
+        const shfDur = CONFIG.TILES_SHUFFLE_TIME_SEC;
 
-        const moveDurBasic = simultaneously ? durCfg / shfSpdupFactor : 
-            (row - gridNewCoords.row) * durCfg;
-        const moveDurFinite = this._toFallInSpawn ?
-            moveDurBasic / CONFIG.TILES_1ST_FALL_SPEEDUP : moveDurBasic;
+        const moveDur = fixedTime ? shfDur :
+            (row - gridNewCoords.row) / speedCfg;
 
-        this.setupMovement(cellAbsPosition, moveDurFinite);
+        this.setupMovement(cellAbsPosition, moveDur);
         return () => this._hasMoveCompleted;
     }    
 

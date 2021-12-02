@@ -29,25 +29,21 @@ export type RangeY = {
 };
 
 const LEVEL_SYS_CFG_PATH = 'level-sys-config';
-const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
-const TILES_OFFSET_DURATION_SEC = 0.2;
-const TILES_SHUFFLE_SPEEDUP = .2;
-const TILES_1ST_FALL_SPEEDUP = .5;
-const TILES_FALL_SIZE_FR_DELAY = 0.15;
-const FLOW_DELAY_SEC = 1.5;
 const BOOSTER_NAME_TMPL = 'booster-panel-';
-const SUPERTILE_APPEAR_PROBAB = 7 / 10;
+const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
 const MULTIINSTANCE: ModuleType[] = [];
+const TILES_FALL_SIZE_FR_DELAY = .15;
+const TILES_MOVE_SPEED_UPS = 4;
+const TILES_SHUFFLE_TIME_SEC = .8;
+const FLOW_DELAY_SEC = 1.5;
 
 export const CONFIG = {
     LAYOUT_ORIGIN_LEFT_BOTTOM,
-    TILES_1ST_FALL_SPEEDUP,
-    TILES_OFFSET_DURATION_SEC,   
-    TILES_SHUFFLE_SPEEDUP,
+    TILES_MOVE_SPEED_UPS,   
+    TILES_SHUFFLE_TIME_SEC,
     TILES_FALL_SIZE_FR_DELAY,
     FLOW_DELAY_SEC,
     BOOSTER_NAME_TMPL,
-    SUPERTILE_APPEAR_PROBAB,
     loadLevelConfigAsync,
     di: {
         isSingleton,

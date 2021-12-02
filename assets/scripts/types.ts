@@ -92,7 +92,7 @@ export interface ITile extends Component, IClassifyable {
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
     moveToCellAsync(
         gridCoordinates: GridCellCoordinates,
-        simultaneously?: boolean,
+        fixedTime?: boolean,
     ): BooleanGetter;
     destroyHitAsync(): BooleanGetter; 
 }
