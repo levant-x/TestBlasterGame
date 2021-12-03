@@ -173,6 +173,10 @@
     "__prefab": {
       "__id__": 9
     },
+    "superShadow": {
+      "__uuid__": "15a085ce-be3f-4c8b-979e-14a46fb33fa8",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": ""
   },
   {

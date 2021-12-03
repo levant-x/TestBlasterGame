@@ -42,8 +42,7 @@ export class TileSpawner implements ITileSpawner {
     ): Task {
         const newTile = this.spawnObjAtCell({
             col: finalCoords.col,
-            row: fieldHeight + CONFIG.TILES_FALL_SIZE_FR_DELAY +
-            (originElevation ?? 0),
+            row: fieldHeight + (originElevation ?? 0),
         });
         const tileMoveProcess = newTile.moveToCellAsync(finalCoords);
         const tileMoveTask = new Task().bundleWith(tileMoveProcess);

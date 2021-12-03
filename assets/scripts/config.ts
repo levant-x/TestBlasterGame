@@ -32,7 +32,6 @@ const LEVEL_SYS_CFG_PATH = 'level-sys-config';
 const BOOSTER_NAME_TMPL = 'booster-panel-';
 const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
 const MULTIINSTANCE: ModuleType[] = [];
-const TILES_FALL_SIZE_FR_DELAY = .15;
 const TILES_MOVE_SPEED_UPS = 4;
 const TILES_SHUFFLE_TIME_SEC = .8;
 const FLOW_DELAY_SEC = 1.5;
@@ -41,7 +40,6 @@ export const CONFIG = {
     LAYOUT_ORIGIN_LEFT_BOTTOM,
     TILES_MOVE_SPEED_UPS,   
     TILES_SHUFFLE_TIME_SEC,
-    TILES_FALL_SIZE_FR_DELAY,
     FLOW_DELAY_SEC,
     BOOSTER_NAME_TMPL,
     loadLevelConfigAsync,

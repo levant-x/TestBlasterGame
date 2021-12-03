@@ -1,9 +1,9 @@
 
-import { _decorator, Vec3, tween, Sprite, Color } from 'cc';
+import { _decorator, Vec3, tween, Node, Prefab, instantiate } from 'cc';
 import { CONFIG } from '../config';
 import { BooleanGetter, GridCellCoordinates, ISupertile } from '../types';
 import { TileBase } from './tile-base';
-const { ccclass } = _decorator;
+const { ccclass, property } = _decorator;
 
 @ccclass('TileAnimated')
 export class TileAnimated extends TileBase implements ISupertile {
@@ -11,15 +11,19 @@ export class TileAnimated extends TileBase implements ISupertile {
     private _hasMoveCompleted = false;
     private _gridNewCrds?: GridCellCoordinates;
 
+    @property(Prefab)
+    protected superShadow: Node;
+
     get isSuper(): boolean {
         return this._isSuper;
     }
 
     set isSuper(value: boolean) {
         this._isSuper = value;
-        const sprite = <Sprite>this.getComponent(Sprite);
-        const { r, g, b, a } = sprite.color;
-        sprite.color = new Color(r, g, b, a / 2);
+        const shadow = instantiate(this.superShadow);
+        this.node.addChild(shadow);
+        console.log('super');
+        
     }
 
     moveToCellAsync(
