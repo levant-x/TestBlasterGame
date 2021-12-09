@@ -1,8 +1,8 @@
-import { SceneSwitcher } from "../../controllers/scenes-switch/scene-switcher";
-import { TileBase } from "../../controllers/tile-base";
-import { Menu } from "../../controllers/ui/menu";
-import { UI } from "../../controllers/ui/ui";
-import { inject, injectable } from "../../decorators";
+import { SceneSwitcher } from "../../../controllers/scenes-switch/scene-switcher";
+import { TileBase } from "../../../controllers/tile-base";
+import { Menu } from "../../../controllers/ui/menu";
+import { UI } from "../../../controllers/ui/ui";
+import { inject, injectable } from "../../../decorators";
 import { 
     IGameFlow, 
     IStepInspector, 
@@ -10,8 +10,8 @@ import {
     ITileSpawner, 
     LevelInfo, 
     StepResult 
-} from "../../types";
-import { Task } from "../common/task";
+} from "../../../types";
+import { Task } from "../../common/task";
 
 @injectable('GameFlow')
 export class GameFlow implements IGameFlow {

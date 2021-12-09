@@ -3,9 +3,9 @@ import {
     BooleanGetter, 
     ITile, 
     StepResultByColsInfo, 
-} from '../../types';
-import { injectable } from '../../decorators';
-import { Task } from '../common/task';
+} from '../../../types';
+import { injectable } from '../../../decorators';
+import { Task } from '../../common/task';
 import { GamefieldContext } from './gamefield-context';
 
 @injectable('TileOffsetter')

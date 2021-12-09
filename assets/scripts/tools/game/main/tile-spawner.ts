@@ -1,15 +1,15 @@
 import { Node, instantiate, Prefab } from "cc";
-import { TileBase } from "../../controllers/tile-base";
+import { TileBase } from "../../../controllers/tile-base";
 import { 
     GridCellCoordinates, 
     ITile, 
     ITileSpawner,
     TileSpawnCallback,
-} from "../../types";
-import { injectable } from "../../decorators";
-import { Task } from "../common/task";
-import { pickRandomItem } from "../common/array-tools";
-import { scanGrid } from "./field-analyzers/range-scanners.ts";
+} from "../../../types";
+import { injectable } from "../../../decorators";
+import { Task } from "../../common/task";
+import { pickRandomItem } from "../../common/array-tools";
+import { scanGrid } from "../field-analyzers/range-scanners.ts";
 
 @injectable('TileSpawner')
 export class TileSpawner implements ITileSpawner {

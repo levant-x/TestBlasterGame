@@ -4,7 +4,7 @@ import { injectable } from '../../../decorators';
 import { GridCellCoordinates, ITile } from '../../../types';
 import { pickRandomItem, removeFromArray } from '../../common/array-tools';
 import { Task } from '../../common/task';
-import { GamefieldContext } from '../gamefield-context';
+import { GamefieldContext } from '../main/gamefield-context';
 
 @injectable('TileShuffler')
 export class TileShuffler extends GamefieldContext {

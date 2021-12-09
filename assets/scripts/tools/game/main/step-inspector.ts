@@ -1,12 +1,12 @@
-import { Booster } from "../../controllers/booster";
-import { UI } from "../../controllers/ui/ui";
-import { inject, injectable } from "../../decorators";
+import { Booster } from "../../../controllers/booster";
+import { UI } from "../../../controllers/ui/ui";
+import { inject, injectable } from "../../../decorators";
 import { 
     IItemsGroupAnalyzer, 
     IStepInspector, 
     ITile, 
     LevelInfo, 
-} from "../../types";
+} from "../../../types";
 import { GamefieldContext } from "./gamefield-context";
 
 @injectable('StepInspector')

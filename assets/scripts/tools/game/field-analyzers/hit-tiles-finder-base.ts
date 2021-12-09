@@ -8,7 +8,7 @@ import {
     ILocatable2D,
 } from '../../../types';
 import { injectable } from '../../../decorators';
-import { GamefieldContext } from '../gamefield-context';
+import { GamefieldContext } from '../main/gamefield-context';
 
 type GCCAlias = GridCellCoordinates;
 type GCSwitcher = (coords: GCCAlias) => GCCAlias;

@@ -5,7 +5,7 @@ import { dispatchValue } from '../tools/common/di';
 import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
 import { Task } from '../tools/common/task';
 import { TaskManager } from '../tools/common/task-manager';
-import { GamefieldContext } from '../tools/game/gamefield-context';
+import { GamefieldContext } from '../tools/game/main/gamefield-context';
 import { 
     IGameFlow,
     IStepFlow, 

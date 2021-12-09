@@ -6,18 +6,17 @@ import {
     IItemsGroupAnalyzer, 
     IStepFlow, 
     ITile,
-} from '../../types';
-import { inject, injectable } from '../../decorators';
-import { Task } from '../common/task';
+} from '../../../types';
+import { inject, injectable } from '../../../decorators';
+import { Task } from '../../common/task';
 import { TileAsyncRespawner } from './tile-async-respawner';
 import { TileOffsetter } from './tile-offsetter';
-import { ItemType } from './field-analyzers/hit-tiles-finder-base';
+import { ItemType } from '../field-analyzers/hit-tiles-finder-base';
 
 @injectable('StepFlow')
 export class StepFlow implements IStepFlow {
     private _hitTiles: ITile[];
     private _stepRslInfo: StepResultByColsInfo;
-    private _isHitTilesFinderSetup = false;
 
     @inject('IItemsGroupAnalyzer')
     protected hitTilesFinder: IItemsGroupAnalyzer<ItemType>;
@@ -31,8 +30,6 @@ export class StepFlow implements IStepFlow {
     detectHitTiles(
         clickedTile: ITile
     ): ITile[] {
-        !this._isHitTilesFinderSetup && this._setupHitTilesFinder();
-
         const selectorCbck = (other: IClassifyable) => (
             other.groupID === clickedTile.groupID);
         const tilesFinder = this.hitTilesFinder;
@@ -68,9 +65,5 @@ export class StepFlow implements IStepFlow {
 
     spawnNewTilesAsync(): Task {
         return this.asyncRespawner.respawnAsync(this._stepRslInfo);
-    }
-
-    private _setupHitTilesFinder(): void {
-        
     }
 }

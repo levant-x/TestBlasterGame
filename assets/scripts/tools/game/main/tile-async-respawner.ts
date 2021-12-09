@@ -1,10 +1,10 @@
 
 import { _decorator } from 'cc';
-import { removeFromArray } from '../common/array-tools';
-import { Task } from '../common/task';
-import { TaskManager } from '../common/task-manager';
-import { StepResultByColsInfo, ITileSpawner, } from '../../types';
-import { inject, injectable, injectValueByKey } from '../../decorators';
+import { removeFromArray } from '../../common/array-tools';
+import { Task } from '../../common/task';
+import { TaskManager } from '../../common/task-manager';
+import { StepResultByColsInfo, ITileSpawner, } from '../../../types';
+import { inject, injectable, injectValueByKey } from '../../../decorators';
 
 @injectable('TileAsyncRespawner')
 export class TileAsyncRespawner {

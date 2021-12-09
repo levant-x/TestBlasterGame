@@ -1,6 +1,6 @@
 
 import { _decorator, Component } from 'cc';
-import { GridCellCoordinates, ITile, LevelConfig } from '../../types';
+import { GridCellCoordinates, ITile, LevelConfig } from '../../../types';
 
 type GamefieldParams = Pick<
     LevelConfig, 'fieldWidth' | 'fieldHeight'

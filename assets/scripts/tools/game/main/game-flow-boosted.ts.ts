@@ -1,6 +1,6 @@
-import { Booster } from "../../controllers/booster";
-import { injectable } from "../../decorators";
-import { BoosterType, ITile } from "../../types";
+import { Booster } from "../../../controllers/booster";
+import { injectable } from "../../../decorators";
+import { BoosterType, ITile } from "../../../types";
 import { GameFlow } from "./game-flow";
 
 const BOOSTERS_ALLOWING_STEP: BoosterType[] = [
