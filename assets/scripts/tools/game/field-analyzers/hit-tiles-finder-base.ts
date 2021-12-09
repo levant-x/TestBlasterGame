@@ -5,20 +5,21 @@ import {
     IItemsGapAnalyzer, 
     IItemsGroupAnalyzer,
     ITile,
+    ILocatable2D,
 } from '../../../types';
 import { injectable } from '../../../decorators';
 import { GamefieldContext } from '../gamefield-context';
 
 type GCCAlias = GridCellCoordinates;
 type GCSwitcher = (coords: GCCAlias) => GCCAlias;
-type T = IClassifyable;
+type T = IClassifyable & ILocatable2D;
 
 export type ItemType = T;
 export type ItemSelector<T> = (item: T) => boolean;
 
 @injectable('HitTilesFinderBase')
 export class HitTilesFinderBase extends GamefieldContext 
-    implements IItemsGroupAnalyzer<T>, IItemsGapAnalyzer {
+    implements IItemsGroupAnalyzer<T, T>, IItemsGapAnalyzer {
 
     private _selectItem: ItemSelector<T>;
     private _lookedUpCellsIndexes: number[];
@@ -29,22 +30,25 @@ export class HitTilesFinderBase extends GamefieldContext
         coords => ({...coords, row: coords.row - 1}),
     ];
 
+    protected startItem: T;
+    protected collectedItems: T[];
+
     collectItemsGroup(
-        [crds]: GridCellCoordinates[], 
+        [startPointCoords]: GridCellCoordinates[], 
         select?: ItemSelector<T>
     ): T[] {
-        const itemAtPoint = this.gamefield[crds.col][crds.row];
+        this.initFlowState(startPointCoords);
         const itemSelector = select || ((otherItem: T) => 
-            itemAtPoint.groupID === otherItem.groupID);
+            this.startItem.groupID === otherItem.groupID);
         this._selectItem = itemSelector;
 
-        const startItemIndex = GamefieldContext.get.linear(crds);
+        const startItemIndex = 
+            GamefieldContext.get.linear(startPointCoords);
         this._lookedUpCellsIndexes = [startItemIndex];
 
-        const itemsGroup: T[] = [];        
-        this.runItemsCollect(crds, itemsGroup);
-        return itemsGroup;
-    }
+        this.runItemsCollect(startPointCoords);
+        return this.collectedItems;
+    }    
 
     getStepResultByColsInfo(
         hitTiles: ITile[]
@@ -58,31 +62,35 @@ export class HitTilesFinderBase extends GamefieldContext
         return stepRslInfo;
     }
 
+    protected initFlowState(
+        { row, col }: GridCellCoordinates
+    ): void {
+        this.collectedItems = [];  
+        this.startItem = this.gamefield[col][row];
+    }
+
     /**Collects items the normal wave way */
     protected runItemsCollect(
         crds: GCCAlias, 
-        itemsGroup: T[],
     ): void {
-        this._collectItems(crds, itemsGroup);
+        this._collectItems(crds);
     }
 
     private _collectItems(
         crds: GCCAlias, 
-        items: T[]
     ): void {
         const { row, col } = crds;
         const itemAtPoint = <T>this.gamefield[col][row];  
 
         const itemFits = this._selectItem(itemAtPoint);
-        if (itemFits) items.push(itemAtPoint);
+        if (itemFits) this.collectedItems.push(itemAtPoint);
         else return;
 
-        const switchers = Object.entries(this._coordsSearchSwitchers);
-        for (const [_, offset] of switchers) {
+        for (const offset of this._coordsSearchSwitchers) {
             const newCrds = offset(crds);
             
             if (!this._toUseOffset(newCrds)) continue;            
-            this._collectItems(newCrds, items);
+            this._collectItems(newCrds);
         }
     }
 

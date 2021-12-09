@@ -127,11 +127,10 @@ export abstract class GameplayBase extends GamefieldContext {
     } 
 
     private _setupCfgValues(): void {
-        const config = this.levelInfo;
-        this.initContext(config);
-        
+        const config = this.levelInfo;     
         dispatchValue('fieldHeight', config.fieldHeight);
         dispatchValue('config', config);
+        this.initContext(config);
     }
 
     private _setupTileSpawner(): void {

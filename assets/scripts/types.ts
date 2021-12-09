@@ -7,7 +7,7 @@ export enum ModuleType {
     'GameFlowBoosted',
     'GameFlow',
     'HitTilesFinderBase',
-    'HitTilesFinderMultichoice',
+    'HitTilesFinderBoosted',
     'StepFlow',
     'StepInspector',
     'TileAsyncRespawner',
@@ -81,9 +81,13 @@ export interface IClassifyable {
     readonly groupID: number | string;
 }
 
-export interface ITile extends Component, IClassifyable {
-    readonly node: Node
+export interface ILocatable2D {
     readonly сellCoordinates: GridCellCoordinates;  
+}
+
+export interface ITile extends Component, IClassifyable, 
+    ILocatable2D {
+    readonly node: Node
     positionAtCell(gridCoordinates: GridCellCoordinates): void;
     moveToCellAsync(
         gridCoordinates: GridCellCoordinates,

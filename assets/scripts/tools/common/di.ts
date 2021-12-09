@@ -60,7 +60,10 @@ export function dispatchValue<T>(
 
     _values[valueKey].forEach(valInfo => {
         const typeKey = <string | number>_findTypeKey(valInfo.trgCtor);
-        _instances[typeKey].forEach(trg => {
+        const receivers = _instances[typeKey];
+        if (!receivers) throw `Target for standalone value missing`;
+
+        receivers.forEach(trg => {
             trg[(<any>valInfo).propName] = value;
         });
     });
