@@ -4,6 +4,7 @@ import { CONFIG } from '../config';
 import { inject, injectable } from '../decorators';
 import { dispatchValue } from '../tools/common/di';
 import { Task } from '../tools/common/task';
+import { scanVertical } from '../tools/game/field-analyzers/range-scanners.ts';
 import { TileShuffler } from '../tools/game/field-analyzers/tile-shuffler';
 import { GridCellCoordinates, ISupertile, ITile } from '../types';
 import { Booster } from './booster';
@@ -62,6 +63,7 @@ export class GameplayBoosted extends GameplayBase {
             const { col, row } = this._lastClickCoords;            
             const sptile = <ISupertile>this.gamefield[col][row];
             sptile.isSuper = true;
+            this._reorderTilesToShowSptile(sptile);
         }
         this.tryApplyPassiveBoosters();
         Booster.current?.drop();
@@ -87,5 +89,21 @@ export class GameplayBoosted extends GameplayBase {
     private _tryCreateSptile(): void {
         if (this._wasSptileJustDrawn) this._wasSptileJustDrawn = false;
         else this._wasSptileJustDrawn = Booster.tryApply('supertile');
+    }
+
+    private _reorderTilesToShowSptile(
+        sptile: ITile
+    ): void {
+        const itemsCnt = this.mask.children.length || 0;
+        sptile.node.setSiblingIndex(itemsCnt);
+        const { col } = sptile.сellCoordinates;
+
+        const setToTop = (row: number) => this.gamefield[col][row]
+            .node.setSiblingIndex(itemsCnt);
+            
+        scanVertical({
+            top: this.height - 1,
+            bottom: this._lastClickCoords.row + 1, 
+        }, setToTop);
     }
 }

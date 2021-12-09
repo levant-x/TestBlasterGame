@@ -21,7 +21,7 @@ export class StepInspector implements IStepInspector {
         if (uiManager.stepsNum === 0) return true;
 
         const tilesMinVol = levelInfo.tilesetVolToDstr;
-        const { totalLength } = GamefieldContext.get();
+        const { totalLength } = GamefieldContext.get;
 
         for (let i = 0; i < totalLength; i++) 
             if (this.isCellClickable(i, tilesMinVol)) return false;    
@@ -32,8 +32,8 @@ export class StepInspector implements IStepInspector {
         cellIndex: number,
         tilesMinVol: number,
     ): boolean {
-        const col = GamefieldContext.get().col(cellIndex);
-        const row = GamefieldContext.get().row(cellIndex);
+        const col = GamefieldContext.get.col(cellIndex);
+        const row = GamefieldContext.get.row(cellIndex);
         const { hitTilesFinder } = this;
         
         const collect = hitTilesFinder.collectItemsGroup.bind(hitTilesFinder);        

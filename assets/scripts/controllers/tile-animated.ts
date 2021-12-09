@@ -20,8 +20,8 @@ export class TileAnimated extends TileBase implements ISupertile {
 
     set isSuper(value: boolean) {
         this._isSuper = value;
-        const shadow = instantiate(this.superShadow);
-        this.node.addChild(shadow);
+        const shadow = instantiate(this.superShadow);        
+        this.node.addChild(shadow);  
     }
 
     moveToCellAsync(

@@ -38,7 +38,7 @@ export class HitTilesFinderBase extends GamefieldContext
             itemAtPoint.groupID === otherItem.groupID);
         this._selectItem = itemSelector;
 
-        const startItemIndex = GamefieldContext.get().linear(crds);
+        const startItemIndex = GamefieldContext.get.linear(crds);
         this._lookedUpCellsIndexes = [startItemIndex];
 
         const itemsGroup: T[] = [];        
@@ -91,7 +91,7 @@ export class HitTilesFinderBase extends GamefieldContext
     ): boolean {
         if (!this._areGridCellCoordsValid(crds)) return false;
 
-        const cellIndex = GamefieldContext.get().linear(crds);
+        const cellIndex = GamefieldContext.get.linear(crds);
         const lookedUp = this._lookedUpCellsIndexes.includes(cellIndex);
 
         !lookedUp && this._lookedUpCellsIndexes.push(cellIndex);

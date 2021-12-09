@@ -10,7 +10,6 @@ import { injectable } from "../../decorators";
 import { Task } from "../common/task";
 import { pickRandomItem } from "../common/array-tools";
 import { scanGrid } from "./field-analyzers/range-scanners.ts";
-import { CONFIG } from "../../config";
 
 @injectable('TileSpawner')
 export class TileSpawner implements ITileSpawner {

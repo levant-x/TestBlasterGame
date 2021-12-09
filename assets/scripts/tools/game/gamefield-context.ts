@@ -28,7 +28,7 @@ export class GamefieldContext extends Component {
         GamefieldContext._instances.push(this);
     }
     
-    static get() {
+    static get get() {
         const getDecartPoint = GamefieldContext._getDecartPoint;    
         return {
             totalLength: GamefieldContext._getTotalLength(),

@@ -2,12 +2,12 @@
   "ver": "1.1.27",
   "importer": "prefab",
   "imported": true,
-  "uuid": "15a085ce-be3f-4c8b-979e-14a46fb33fa8",
+  "uuid": "744d3855-6387-438f-aa91-07ecb84b372b",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "supertile-mask"
+    "syncNodeName": "supertile-glow"
   }
 }
