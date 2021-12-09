@@ -46,7 +46,6 @@ export class TileSpawner implements ITileSpawner {
         });
         const tileMoveProcess = newTile.moveToCellAsync(finalCoords);
         const tileMoveTask = new Task().bundleWith(tileMoveProcess);
-        tileMoveTask.item = newTile;
         return tileMoveTask;
     }
 

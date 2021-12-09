@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Label, Button } from 'cc';
+import { _decorator, Component, Label, Button, CCString, CCBoolean } from 'cc';
 import { CONFIG } from '../config';
 import { injectable, injectValueByKey } from '../decorators';
 import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
@@ -9,7 +9,7 @@ const { ccclass, property } = _decorator;
 @ccclass('Booster')
 @injectable()
 export class Booster extends Component implements IBooster {
-    /**Count itself or grop probability */
+    /**Self count or drop probability */
     private _count = 0;
     private _type: BoosterType;
 
@@ -20,9 +20,9 @@ export class Booster extends Component implements IBooster {
     protected numLabel?: Label;
     @property(Button)
     protected button?: Button;
-    @property(String)
+    @property(CCString)
     protected pathToValue: string;
-    @property(Boolean)
+    @property(CCBoolean)
     protected hasProbability = false;
     @injectValueByKey('stepCooldown')
     protected isCooldownMoment: BooleanGetter;
@@ -71,7 +71,7 @@ export class Booster extends Component implements IBooster {
         lvlInfo: LevelInfo
     ): void {
         this._detectType();
-        this._count = +lvlInfo.config[this.pathToValue];
+        this._count = +lvlInfo[this.pathToValue];
         this._updateUI();
     }
 
@@ -83,9 +83,7 @@ export class Booster extends Component implements IBooster {
     }
 
     private _updateUI(): void {
-        if (!this._count && this.button) 
-            this.button.interactable = false;
-            
+        if (!this._count && this.button) this.button.interactable = false;
         if (!this.numLabel) return;
         this.numLabel.string = this._count.toString();
     }

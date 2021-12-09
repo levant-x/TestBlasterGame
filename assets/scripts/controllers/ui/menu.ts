@@ -1,6 +1,6 @@
 
 import { _decorator } from 'cc';
-import { IModal, StepResult } from '../../types';
+import { StepResult } from '../../types';
 import { ModalBody } from './modal-body';
 import { ModalOverlay } from './modal-overlay';
 const { ccclass, property } = _decorator;

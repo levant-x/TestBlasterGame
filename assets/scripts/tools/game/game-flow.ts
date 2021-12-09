@@ -26,7 +26,7 @@ export class GameFlow implements IGameFlow {
     uiManager: UI;
     menu: Menu;
 
-    isStepFinal(): boolean {
+    get isStepFinal(): boolean {
         return this._isStepFinal;
     }
 
@@ -58,15 +58,15 @@ export class GameFlow implements IGameFlow {
     isStepValid(
         hitTiles: ITile[]
     ): boolean {
-        const { tilesetVolToDstr } = this._lvlInfo.config;
+        const { tilesetVolToDstr } = this._lvlInfo;
         return hitTiles.length >= tilesetVolToDstr;
     }
 
     runStepResult(): void {
         const points = this.uiManager.points;
-        const { targetScore, stepsTotal: stepsAvail } = this._lvlInfo.config;
+        const { targetScore, stepsTotal } = this._lvlInfo;
         if (points >= targetScore) this._completeLevel();
-        else this._endGameIfLost(points, stepsAvail);
+        else this._endGameIfLost(points, stepsTotal);
     }
 
     protected switchLevel() {
@@ -80,17 +80,13 @@ export class GameFlow implements IGameFlow {
     }
 
     private _setupUI(): void {
-        const { stepsTotal: stepsAvail } = this._lvlInfo.config;
-        this.uiManager.stepsNum = stepsAvail;
+        this.uiManager.stepsNum = this._lvlInfo.stepsTotal;
         this.uiManager.reset();
     }
 
     private _completeLevel(): void {
-        const { current, total } = this._lvlInfo.num;
-        const result: StepResult = current === total - 1 ?
-            'complete' : 'won';
         this._isStepFinal = true;
-        this.menu.show(result);
+        this.menu.show(<StepResult>'won');
     }
 
     private _endGameIfLost(
@@ -103,7 +99,7 @@ export class GameFlow implements IGameFlow {
         if (!this._isStepFinal) return;
 
         this.menu.show({
-            stepResult: 'lost' as StepResult,
+            stepResult: <StepResult>'lost',
             summary: { points, steps, },
         });
     }

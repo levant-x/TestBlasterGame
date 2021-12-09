@@ -1,4 +1,4 @@
-import { Component, Node, Prefab, Vec3 } from "cc";
+import { Component, Node, Prefab } from "cc";
 import { Menu } from "./controllers/ui/menu";
 import { UI } from "./controllers/ui/ui";
 import { Task } from "./tools/common/task";
@@ -16,7 +16,7 @@ export enum ModuleType {
     'TileSpawner'
 }
 
-export type LevelConfig = {
+export type LevelConfig = Record<string, number> & {
     fieldWidth: number;
     fieldHeight: number;
     targetScore: number;
@@ -27,20 +27,15 @@ export type LevelConfig = {
     bombExplRadius: number;
     tilesetVolToDstr: number;
     supertileChance: number;
-} & Record<string, number>;
+};
 
 export type LevelSystemConfig = {
     glossary: Record<string, string>;
-    levelConfigs: LevelConfig[];
+    configShift: Record<string, string>;
+    baseConfig: LevelConfig;
 }
 
-export type LevelInfo = {
-    num: {
-        current: number;
-        total: number;
-    };
-    config: LevelConfig;
-}
+export type LevelInfo = LevelConfig;
 
 export enum Color {
     'blue' = 0,
@@ -50,7 +45,7 @@ export enum Color {
     'yellow' = 4,
 };
 
-export type StepResult  = 'next' | 'complete' | 'won' | 'lost';
+export type StepResult  = 'complete' | 'won' | 'lost';
 
 export type BoosterType = 'shuffle' | 'bomb' | 'supertile';
 
@@ -109,8 +104,8 @@ export interface IStepFlow {
 }
 
 export interface IGameStatus {
+    readonly isStepFinal: boolean;
     isStepValid(hitTiles: ITile[]): boolean;
-    isStepFinal(): boolean;
     runStepResult(): void;    
 }
 

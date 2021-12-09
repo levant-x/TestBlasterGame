@@ -1,6 +1,7 @@
 
-import { _decorator, resources, JsonAsset, __private, Vec3 } from 'cc';
-import { LevelConfig, LevelInfo, LevelSystemConfig, ModuleType } from './types';
+import { _decorator, __private, Vec3 } from 'cc';
+import { loadLevelConfigAsync } from './tools/common/config-reader';
+import { ModuleType } from './types';
 
 const DI_MAPPING = {
     IGameFlow: ModuleType.GameFlow,
@@ -42,7 +43,7 @@ export const CONFIG = {
     TILES_SHUFFLE_TIME_SEC,
     FLOW_DELAY_SEC,
     BOOSTER_NAME_TMPL,
-    loadLevelConfigAsync,
+    loadLevelConfigAsync: () => _loadLvlCfgAsync(),
     di: {
         isSingleton,
         getImplementationInfo,
@@ -64,58 +65,6 @@ function getImplementationInfo(
     return <ModuleType>implemInfo;
 }
 
-function loadLevelConfigAsync(
-    gamelevel: number
-): Promise<LevelInfo> {
-    return new Promise<
-        LevelInfo
-    >(resolve => _loadLvlCnf(gamelevel, resolve));
-}
-
-function _loadLvlCnf(
-    lvlNum: number, 
-    resolve: (cnf: LevelInfo) => void
-): void {
-    resources.load(LEVEL_SYS_CFG_PATH, (
-        er, config: JsonAsset
-    ) => {
-        if (er) throw er;
-        else if (!config) throw 'Config was loaded empty';
-        const cfg = _parseLevelConfig(
-            config.json as LevelSystemConfig, lvlNum);
-        resolve(cfg);
-    });   
-}
-
-function _parseLevelConfig(
-    source: LevelSystemConfig, 
-    level: number,
-): LevelInfo {
-    const keys = Object.keys(source.glossary);
-    const config = {} as LevelConfig;
-    const { levelConfigs, glossary } = source;
-    if (levelConfigs.length <= level) throw 'Invalid gamelevel';
-
-    const cfgItem = source.levelConfigs[level];
-    for (const key of keys) 
-        _parsePropViaGlossary(key, glossary, cfgItem, config);
-    return {
-        config,
-        num: {
-            current: level,
-            total: levelConfigs.length,
-        },
-    } as LevelInfo;
-}
-
-function _parsePropViaGlossary(
-    key: string, 
-    glossary: Record<string, string>,
-    configItemJson: LevelConfig,
-    configObj: LevelConfig, 
-): void {
-    const glossKey = glossary[key];
-    let configEntryVal = +configItemJson[glossKey];
-    if (!configEntryVal) throw `${key} config invalid`;
-    configObj[key] = configEntryVal;
+function _loadLvlCfgAsync(): ReturnType<typeof loadLevelConfigAsync> {
+    return loadLevelConfigAsync(LEVEL_SYS_CFG_PATH);
 }

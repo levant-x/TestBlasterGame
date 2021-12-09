@@ -51,7 +51,7 @@ export abstract class GameplayBase extends GamefieldContext {
     }
         
     update() {
-        this.taskMng.isComplete();
+        this.taskMng.isComplete;
     }
 
     protected init() {
@@ -82,7 +82,7 @@ export abstract class GameplayBase extends GamefieldContext {
     }    
 
     protected isStepPossible(): boolean {
-        return this.taskMng.isComplete();
+        return this.taskMng.isComplete;
     }
 
     protected onHitTilesDetect(
@@ -127,7 +127,7 @@ export abstract class GameplayBase extends GamefieldContext {
     } 
 
     private _setupCfgValues(): void {
-        const { config } = this.levelInfo;
+        const config = this.levelInfo;
         this.initContext(config);
         
         dispatchValue('fieldHeight', config.fieldHeight);

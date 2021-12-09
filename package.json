@@ -1,14 +1,14 @@
 {
-  "name": "TestBlaster",
-  "type": "2d",
-  "uuid": "34898afd-0fc7-450b-bf34-4a38a5325843",
-  "version": "3.2.0",
+  "browserslist": [
+    "defaults"
+  ],
   "creator": {
     "version": "3.2.0"
   },
   "dependencies": {},
-  "browserslist": [
-    "defaults"
-  ],
-  "devDependencies": {}
+  "devDependencies": {},
+  "name": "TestBlaster",
+  "type": "2d",
+  "uuid": "34898afd-0fc7-450b-bf34-4a38a5325843",
+  "version": "3.2.0"
 }

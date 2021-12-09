@@ -5,12 +5,12 @@ import { BooleanGetter } from '../../types';
 export abstract class ObservableCollection<T> {
     protected items: T[] = [];
     
-    public bundleWith(item: T) {
+    bundleWith(item: T) {
         this.items.push(item);
         return this;
     }
 
-    public abstract isComplete(): boolean;
+    abstract get isComplete(): boolean;
 
     protected getStatus(statusGetters: BooleanGetter[]) {
         return statusGetters.every(isTrue => isTrue());

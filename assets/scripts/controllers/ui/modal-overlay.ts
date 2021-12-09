@@ -1,11 +1,5 @@
 
-import { 
-    _decorator, 
-    Component, 
-    UIOpacity, 
-    tween, 
-    Tween 
-} from 'cc';
+import { _decorator, Component, UIOpacity, tween, Tween } from 'cc';
 import { IModal } from '../../types';
 const { property } = _decorator;
 

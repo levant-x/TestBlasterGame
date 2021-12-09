@@ -20,7 +20,7 @@ export class GameplayBoosted extends GameplayBase {
 
     start() {
         super.start();
-        const cooldownStatus = () => !this.isStepPossible.bind(this);
+        const cooldownStatus = () => !this.isStepPossible();
         dispatchValue('stepCooldown', cooldownStatus);
     }
 

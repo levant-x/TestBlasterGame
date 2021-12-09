@@ -22,8 +22,6 @@ export class TileAnimated extends TileBase implements ISupertile {
         this._isSuper = value;
         const shadow = instantiate(this.superShadow);
         this.node.addChild(shadow);
-        console.log('super');
-        
     }
 
     moveToCellAsync(
@@ -50,12 +48,11 @@ export class TileAnimated extends TileBase implements ISupertile {
     protected setupMovement(
         cellAbsPos: Vec3, 
         dur: number,
-        toEaseInOnly: boolean = false,
     ): void {
         tween(this.node)
             .to(dur, { 
                 position: cellAbsPos }, { 
-                easing: toEaseInOnly ? 'sineInOut' :'cubicIn'
+                easing: 'cubicIn',
             })
             .call(this._onMoveCompleted.bind(this))
             .start();

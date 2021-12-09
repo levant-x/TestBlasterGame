@@ -20,7 +20,7 @@ export class StepInspector implements IStepInspector {
     ): boolean {
         if (uiManager.stepsNum === 0) return true;
 
-        const tilesMinVol = levelInfo.config.tilesetVolToDstr;
+        const tilesMinVol = levelInfo.tilesetVolToDstr;
         const { totalLength } = GamefieldContext.get();
 
         for (let i = 0; i < totalLength; i++) 
