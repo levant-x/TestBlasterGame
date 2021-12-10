@@ -34,8 +34,8 @@ export class UI extends Component implements IScore, ISteps {
         deltaPoints: number
     ): Task {
         this._trgValue += deltaPoints;
-        const taskStatus = this._wasScoreUpdated.bind(this);
-        return new Task().bundleWith(taskStatus);
+        const scoreUpdateStatus = this._wasScoreUpdated.bind(this);
+        return new Task(scoreUpdateStatus);
     }
     
     reset(): void {

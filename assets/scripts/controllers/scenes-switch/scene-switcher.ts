@@ -1,23 +1,21 @@
 
 import { _decorator, director, Component, game, Director } from 'cc';
+import { CONFIG } from '../../config';
 import { ConfigStore } from './config-store';
 const { ccclass } = _decorator;
-
-const LOADER_SCENE_NAME = 'scene-switcher';
-const GAME_SCENE_NAME = 'game';
+const { LOADER_SCENE_NAME, GAME_SCENE_NAME } = CONFIG;
 
 @ccclass('SceneSwitcher')
 export class SceneSwitcher extends Component {
     private static _instance: SceneSwitcher;
     private static _currSceneName?: string;
 
-    private _configStore = ConfigStore.get();
+    private _configStore = ConfigStore.get;
 
     onLoad() {
         SceneSwitcher._instance = this;
         game.addPersistRootNode(this.node);
-        const eventKey = Director.EVENT_AFTER_SCENE_LAUNCH;
-        director.on(eventKey, this._onSceneLoaded);
+        director.on(Director.EVENT_AFTER_SCENE_LAUNCH, this._onSceneLoaded);
     }    
     
     static switchLevel(): void {
@@ -39,7 +37,7 @@ export class SceneSwitcher extends Component {
         trgSceneName === GAME_SCENE_NAME && 
             await switcher._configStore.getLevelInfoAsync('next');
             
-        director.loadScene(trgSceneName, (er) => {
+        director.loadScene(trgSceneName, er => {
             if (er) throw er;
         });
     }

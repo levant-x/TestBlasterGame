@@ -1,10 +1,9 @@
 
 import { _decorator } from 'cc';
+import { CONFIG } from '../../config';
 import { removeFromArray } from './array-tools';
 import { ObservableCollection } from './observable-collection';
 import { Task } from './task';
-
-const _CALLBACKS_NUM_2CLEANUP = 50;
 
 export class TaskManager extends ObservableCollection<Task> {      
     private _cbcks: Record<number | string, Function | null> = {};
@@ -24,7 +23,9 @@ export class TaskManager extends ObservableCollection<Task> {
             if (!task.isComplete) return false;
 
         for (const task of [...this.items]) this._clearCompleteTask(task);
-        return true;
+        // in case there may be a callback which would add new task(s) 
+        // to the pool
+        return this.isComplete;
     }
 
     bundleWith(
@@ -51,7 +52,7 @@ export class TaskManager extends ObservableCollection<Task> {
     }
 
     private _cleanupCbcksStore(): void {
-        if (this._cbcksNum <= _CALLBACKS_NUM_2CLEANUP ||
+        if (this._cbcksNum <= CONFIG.CALLBACKS_NUM_2CLEANUP ||
             Object.values(this._cbcks).some(cbck => cbck)) return;
         this._cbcks = {};
         this._cbcksNum = 0;

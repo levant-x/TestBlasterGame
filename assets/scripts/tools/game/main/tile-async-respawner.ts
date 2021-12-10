@@ -25,7 +25,7 @@ export class TileAsyncRespawner {
 
         for (let i = 0; i < colsIndex.length; i++) 
             this._createColMng(+colsIndex[i]);
-        return new Task().bundleWith(this._checkStatus.bind(this));
+        return new Task(this._checkStatus.bind(this));
     }
 
     private _createColMng(

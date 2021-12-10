@@ -53,7 +53,7 @@ export class GameplayBoosted extends GameplayBase {
     protected introduceDelay(): Task {
         let toResume = false;    
         this.scheduleOnce(() => toResume = true, CONFIG.FLOW_DELAY_SEC);
-        return new Task().bundleWith(() => toResume);
+        return new Task(() => toResume);
     }
 
     protected onStepEnd(): void {

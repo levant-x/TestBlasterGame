@@ -9,15 +9,15 @@
     "wrapMode": 1,
     "events": [],
     "enableTrsBlending": false,
-    "_duration": 0.6666666666666666,
+    "_duration": 0.25,
     "_keys": [
       [
         0,
-        0.6666666666666666
+        0.25
       ],
       [
         0,
-        0.6666666666666666
+        0.25
       ]
     ],
     "_stepness": 0,

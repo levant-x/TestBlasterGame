@@ -1,6 +1,6 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "tile-pulsation",
+  "_name": "tile-1st-appear",
   "_objFlags": 0,
   "_native": "",
   "sample": 15,
@@ -77,5 +77,5 @@
       ]
     }
   ],
-  "_hash": 943269517
+  "_hash": 3962547913
 }

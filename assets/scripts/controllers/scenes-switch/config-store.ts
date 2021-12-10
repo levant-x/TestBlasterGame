@@ -2,8 +2,6 @@ import { _decorator } from 'cc';
 import { CONFIG } from '../../config';
 import { LevelInfo } from '../../types';
 
-type TargetLevel = 'current' | 'next';
-
 export class ConfigStore {
     private static _instance = new ConfigStore();
 
@@ -12,24 +10,24 @@ export class ConfigStore {
 
     private constructor() { }
 
-    async getLevelInfoAsync(
-        targetLevel: TargetLevel
-    ): Promise<LevelInfo> {
-        targetLevel === 'next' && this._increaseLevel();
-        if (this._cfg) return this._cfg;
-
-        if (!this._loadTask) 
-            this._loadTask = this._loadLvlInfoAsync();
-        this._cfg = await this._loadTask;
-        return this._cfg;
-    }
-
-    static isConfigLoaded(): boolean {
+    static get isConfigLoaded(): boolean {
         return this._instance._cfg ? true : false;
     }
 
-    static get(): ConfigStore {     
+    static get get(): ConfigStore {     
         return this._instance;
+    }
+
+    async getLevelInfoAsync(
+        targetLevel: 'current' | 'next'
+    ): Promise<LevelInfo> {
+        
+        targetLevel === 'next' && this._increaseLevel();
+        if (this._cfg) return this._cfg;
+
+        if (!this._loadTask) this._loadTask = this._loadLvlInfoAsync();
+        this._cfg = await this._loadTask;
+        return this._cfg;
     }
 
     private _increaseLevel(): void {

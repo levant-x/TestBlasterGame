@@ -5,10 +5,10 @@ import { Task } from "./task";
 export function loadLevelInfoAsync(
     onLoad?: (levelInfo: LevelInfo) => void,
 ): Task {
-    const isCfgLoaded = () => ConfigStore.isConfigLoaded();
+    const isCfgLoaded = () => ConfigStore.isConfigLoaded;
     const wait4ConfigTask = new Task()
         .bundleWith(isCfgLoaded);
-    ConfigStore.get().getLevelInfoAsync('current')
+    ConfigStore.get.getLevelInfoAsync('current')
         .then(lvlInfo => onLoad?.(lvlInfo));
     return wait4ConfigTask;
 }

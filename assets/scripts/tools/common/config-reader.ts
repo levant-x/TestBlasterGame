@@ -115,11 +115,11 @@ function _parseValueShiftPrecision(
     formula: string,
     precision: string
 ): string {
-    const precType = precision.substr(0, 3);
+    const precType = precision.substring(0, 3);
     const exprTmpl = _PRECISIONS[precType];
     if (!exprTmpl) throw `Unknown precision type ${precType}`;
 
-    const precValue = +precision.substr(3);
+    const precValue = +precision.substring(3);
     const precWrap = exprTmpl(precValue);
     formula = formula.replace(_ARGS, '');
     

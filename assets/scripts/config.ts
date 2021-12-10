@@ -29,21 +29,20 @@ export type RangeY = {
     bottom: number;
 };
 
-const LEVEL_SYS_CFG_PATH = 'level-sys-config';
-const BOOSTER_NAME_TMPL = 'booster-panel-';
-const LAYOUT_ORIGIN_LEFT_BOTTOM: Vec3 = new Vec3(-385, -380);
-const MULTIINSTANCE: ModuleType[] = [];
-const TILES_MOVE_SPEED_UPS = 4;
-const TILES_SHUFFLE_TIME_SEC = .8;
-const FLOW_DELAY_SEC = 1.5;
+const _LEVEL_SYS_CFG_PATH = 'level-sys-config';
+const _MULTIINSTANCE: ModuleType[] = [];
 
 export const CONFIG = {
-    LAYOUT_ORIGIN_LEFT_BOTTOM,
-    TILES_MOVE_SPEED_UPS,   
-    TILES_SHUFFLE_TIME_SEC,
-    FLOW_DELAY_SEC,
-    BOOSTER_NAME_TMPL,
+    LOADER_SCENE_NAME: 'scene-switcher',
+    GAME_SCENE_NAME: 'game',
+    LAYOUT_ORIGIN_LEFT_BOTTOM: new Vec3(-385, -380),
+    BOOSTER_NAME_TMPL: 'booster-panel-',
     loadLevelConfigAsync: () => _loadLvlCfgAsync(),
+    TILES_MOVE_SPEED_UPS: 4,   
+    TILES_SHUFFLE_TIME_SEC: .8,
+    // TILES_DESTROY_TIME_SEC: .6,
+    CALLBACKS_NUM_2CLEANUP: 50,
+    FLOW_DELAY_SEC: 1.5,
     di: {
         isSingleton,
         getImplementationInfo,
@@ -53,7 +52,7 @@ export const CONFIG = {
 function isSingleton(
     dependency: ModuleType
 ): boolean {
-    return !MULTIINSTANCE.includes(dependency);
+    return !_MULTIINSTANCE.includes(dependency);
 }
 
 function getImplementationInfo(
@@ -66,5 +65,5 @@ function getImplementationInfo(
 }
 
 function _loadLvlCfgAsync(): ReturnType<typeof loadLevelConfigAsync> {
-    return loadLevelConfigAsync(LEVEL_SYS_CFG_PATH);
+    return loadLevelConfigAsync(_LEVEL_SYS_CFG_PATH);
 }
