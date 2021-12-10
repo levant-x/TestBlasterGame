@@ -36,8 +36,8 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -77.406,
-      "y": 226.473,
+      "x": 0,
+      "y": 0,
       "z": 0
     },
     "_lrot": {
@@ -148,12 +148,12 @@
     "playOnLoad": false,
     "_clips": [
       {
-        "__uuid__": "a289276d-42af-4368-9f1e-73de04d820a2",
+        "__uuid__": "0a835f69-b072-4759-9981-1aacfd866e85",
         "__expectedType__": "cc.AnimationClip"
       }
     ],
     "_defaultClip": {
-      "__uuid__": "a289276d-42af-4368-9f1e-73de04d820a2",
+      "__uuid__": "0a835f69-b072-4759-9981-1aacfd866e85",
       "__expectedType__": "cc.AnimationClip"
     },
     "_id": ""

@@ -2,12 +2,12 @@
   "ver": "1.0.11",
   "importer": "animation-clip",
   "imported": true,
-  "uuid": "a289276d-42af-4368-9f1e-73de04d820a2",
+  "uuid": "f35b6bb3-1030-4929-a0eb-7d933a53149c",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "name": "tile-pulsation"
+    "name": "tile-destroy"
   }
 }
