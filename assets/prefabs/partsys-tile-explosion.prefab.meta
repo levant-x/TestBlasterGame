@@ -2,12 +2,12 @@
   "ver": "1.1.27",
   "importer": "prefab",
   "imported": true,
-  "uuid": "5531ff93-24ab-4d77-ab71-c513fd22a632",
+  "uuid": "47b50f96-4755-4e62-8cb9-77cd82523e1f",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "tile-explosion"
+    "syncNodeName": "partsys-tile-explosion"
   }
 }

@@ -1,7 +1,7 @@
 
 import {
     _decorator, 
-    Component, Node, 
+    Component,  
     Prefab, 
     ParticleSystem2D, 
     AnimationClip 
@@ -13,9 +13,9 @@ export class TileAccessories extends Component {
     private static _instance?: TileAccessories;
 
     @property(Prefab)
-    supertileGlow: Node;
+    supertileGlow: Prefab;
     @property(Prefab)
-    destroyParticleEffect: ParticleSystem2D;
+    destroyParticleEffect: Prefab;
     @property(AnimationClip)
     destroyAnimation: AnimationClip;
 

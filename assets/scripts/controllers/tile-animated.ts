@@ -1,5 +1,5 @@
 
-import { _decorator, Vec3, tween, instantiate, Prefab, Animation } from 'cc';
+import { _decorator, Vec3, tween, instantiate, Prefab, Animation, ParticleSystem2D, ParticleSystem } from 'cc';
 import { CONFIG } from '../config';
 import { TileAccessories } from '../controllers/tile-accessories';
 import { Task } from '../tools/common/task';
@@ -13,7 +13,6 @@ export class TileAnimated extends TileBase implements ISupertile {
     private _isSuper = false;    
     private _hasMoveCompleted = false;
     private _newPositionCoords?: GridCellCoordinates;
-    private _taskMng?: TaskManager;
 
     get isSuper(): boolean {
         return this._isSuper;
@@ -43,15 +42,17 @@ export class TileAnimated extends TileBase implements ISupertile {
     }    
 
     destroyHitAsync(): BooleanGetter { 
-        this._taskMng = TaskManager.create();       
-        const setTask = this._taskMng.bundleWith.bind(this._taskMng);
-        const disappearStatus = this._setupDestroyAnimation();
+        const taskMng = TaskManager.create();       
+        const setTask = taskMng.bundleWith.bind(taskMng);
 
-        setTask(new Task(disappearStatus), () => {
-            setTask(new Task(super.destroyHitAsync()));
-        });
-        const destroyStatus = () => 
-            this._taskMng ? this._taskMng.isComplete : true;
+        const hasDisappeared = this._setupDestroyAnimation();
+        const hasExploded = this._setupDestroyExplosion();
+
+        const effectsStatus = () => hasDisappeared() && hasExploded();
+        const destroyStatus = () => taskMng ? taskMng.isComplete : true; 
+        const destroy = () => setTask(new Task(super.destroyHitAsync()));
+
+        setTask(new Task(effectsStatus), destroy);
         return destroyStatus;
     }
 
@@ -96,5 +97,17 @@ export class TileAnimated extends TileBase implements ISupertile {
 
         const animState = animation.getState(clip.name);
         return () => !animState.isPlaying;
+    }
+
+    private _setupDestroyExplosion(): BooleanGetter {
+        const psEffectPref = TileAccessories.get.destroyParticleEffect;
+        const psEffectNode = instantiate(psEffectPref);
+
+        this.node.parent?.addChild(psEffectNode);
+        psEffectNode.position = this.node.position;
+
+        const psEffect = <ParticleSystem2D>psEffectNode
+            .getComponent(ParticleSystem2D);
+        return () => !psEffect.active;
     }
 }

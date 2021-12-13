@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "tile-explosion",
+    "_name": "partsys-tile-explosion",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -32,7 +32,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": -1
+      "z": 0
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -105,16 +105,16 @@
       "b": 255,
       "a": 255
     },
-    "duration": 1.4,
+    "duration": 0.8,
     "emissionRate": 500,
-    "life": 1,
-    "lifeVar": 0.2,
+    "life": 0.8,
+    "lifeVar": 0,
     "angle": 0,
     "angleVar": 360,
-    "startSize": 5,
-    "startSizeVar": 5,
-    "endSize": 35,
-    "endSizeVar": 2,
+    "startSize": 25,
+    "startSizeVar": 35,
+    "endSize": 0,
+    "endSizeVar": 0,
     "startSpin": 0,
     "startSpinVar": 0,
     "endSpin": 0,
@@ -126,26 +126,26 @@
     },
     "posVar": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 35,
+      "y": 35
     },
-    "emitterMode": 1,
+    "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
       "x": 0,
       "y": 0
     },
-    "speed": 0,
-    "speedVar": 50,
+    "speed": 10,
+    "speedVar": 10,
     "tangentialAccel": 0,
     "tangentialAccelVar": 0,
-    "radialAccel": 10,
-    "radialAccelVar": 10,
+    "radialAccel": 0,
+    "radialAccelVar": 0,
     "rotationIsDir": false,
-    "startRadius": 40,
-    "startRadiusVar": 35,
-    "endRadius": 40,
-    "endRadiusVar": 20,
+    "startRadius": 400,
+    "startRadiusVar": 200,
+    "endRadius": 300,
+    "endRadiusVar": 400,
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": true,
@@ -157,20 +157,20 @@
       "__uuid__": "3a3ce83e-d838-4348-99bd-607a164f3764@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_totalParticles": 80,
+    "_totalParticles": 7,
     "_startColor": {
       "__type__": "cc.Color",
-      "r": 82,
-      "g": 183,
-      "b": 250,
+      "r": 255,
+      "g": 194,
+      "b": 0,
       "a": 255
     },
     "_startColorVar": {
       "__type__": "cc.Color",
-      "r": 42,
-      "g": 93,
+      "r": 15,
+      "g": 44,
       "b": 255,
-      "a": 255
+      "a": 100
     },
     "_endColor": {
       "__type__": "cc.Color",
@@ -181,10 +181,10 @@
     },
     "_endColorVar": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 0
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
     },
     "_positionType": 0,
     "_id": ""
@@ -201,6 +201,6 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "09A6v3dKZOWod1o10Z0Mp+"
+    "fileId": "96El1JAh9NHJfbrJ/9xx8Y"
   }
 ]
