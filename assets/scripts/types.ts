@@ -155,8 +155,9 @@ export interface IModal {
 
 export interface IScore {
     updateRate: number;
-    readonly points: number;
-    gainPoints(deltaPoints: number): Task;
+    targetScore: number;
+    readonly value: number;
+    gainPoints(deltaValue: number): Task;
     reset(): void;
 }
 

@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Label } from 'cc';
+import { _decorator, Component, Label, ProgressBar } from 'cc';
 import { Task } from '../../tools/common/task';
 import { IScore, ISteps } from '../../types';
 const { ccclass, property } = _decorator;
@@ -7,60 +7,66 @@ const { ccclass, property } = _decorator;
 @ccclass('UI')
 export class UI extends Component implements IScore, ISteps {
     private _currValue = 0;
-    private _trgValue = 0;
+    private _currDisplayedValue = 0;
     private _dt = 0;
 
-    public stepsNum = 0;
     @property(Label)
-    pointsNumLabel?: Label;
+    protected pointsNumLabel: Label;
     @property(Label)
-    stepsNumLabel?: Label;    
+    protected stepsNumLabel: Label;    
+    @property(ProgressBar)
+    protected scoreProgBar: ProgressBar;
+
     @property
     updateRate: number = 0.15;
+    targetScore: number;
+    stepsNum = 0;
 
-    get points() {
-        return this._currValue;
+    get value(): number {
+        return this._currDisplayedValue;
     }
 
     update(dt: number) {
         this._updateLbl(this.stepsNum, this.stepsNumLabel);
-        if (this._currValue === this._trgValue) return;
+        if (this._currDisplayedValue === this._currValue) return;
+
         this._dt += dt;
         if (this._dt < this.updateRate) return;
         else this._updateScore();
     }
 
     gainPoints(
-        deltaPoints: number
+        deltaValue: number
     ): Task {
-        this._trgValue += deltaPoints;
+        this._currValue += deltaValue;
+        this._updateScoreProgBar();
         const scoreUpdateStatus = this._wasScoreUpdated.bind(this);
         return new Task(scoreUpdateStatus);
     }
     
     reset(): void {
-        this._currValue = this._trgValue = 0;
+        this._currDisplayedValue = this._currValue = 0;
     }
 
-    private _wasScoreUpdated() {
-        return this._currValue === this._trgValue;
+    private _wasScoreUpdated(): boolean {
+        return this._currDisplayedValue === this._currValue;
     }
 
-    private _updateScore() {
-        if (!this.pointsNumLabel) return;
+    private _updateScore(): void {
         this._dt = 0;
-        this._currValue++;
-        this._updateLbl(this._currValue, this.pointsNumLabel);
+        this._currDisplayedValue++;
+        this._updateLbl(this._currDisplayedValue, this.pointsNumLabel);
     }
 
     private _updateLbl(
         val: any, 
-        lbl?: Label, 
+        lbl: Label, 
     ): void {
-        if (!lbl) {
-            console.warn('Text label undefined');    
-            return;
-        }    
         lbl.string = val.toString();
+    }
+
+    private _updateScoreProgBar(): void {
+        const { targetScore, _currValue } = this;
+        this.scoreProgBar.progress = _currValue / targetScore; 
     }
 }
