@@ -1,10 +1,10 @@
 
 import { _decorator, Vec3, tween, instantiate, Prefab, Animation, ParticleSystem2D, ParticleSystem } from 'cc';
-import { CONFIG } from '../config';
-import { TileAccessories } from '../controllers/tile-accessories';
-import { Task } from '../tools/common/task';
-import { TaskManager } from '../tools/common/task-manager';
-import { BooleanGetter, GridCellCoordinates, ISupertile } from '../types';
+import { CONFIG } from '../../config';
+import { TileAccessories } from './tile-accessories';
+import { Task } from '../../tools/common/task';
+import { TaskManager } from '../../tools/common/task-manager';
+import { BooleanGetter, GridCellCoordinates, ISupertile } from '../../types';
 import { TileBase } from './tile-base';
 const { ccclass, property } = _decorator;
 

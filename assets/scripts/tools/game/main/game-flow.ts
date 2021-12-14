@@ -1,5 +1,5 @@
 import { SceneSwitcher } from "../../../controllers/scenes-switch/scene-switcher";
-import { TileBase } from "../../../controllers/tile-base";
+import { TileBase } from "../../../controllers/main/tile-base";
 import { Menu } from "../../../controllers/ui/menu";
 import { UI } from "../../../controllers/ui/ui";
 import { inject, injectable } from "../../../decorators";

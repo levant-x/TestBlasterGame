@@ -1,12 +1,12 @@
 
 import { _decorator } from 'cc';
-import { CONFIG } from '../config';
-import { inject, injectable } from '../decorators';
-import { dispatchValue } from '../tools/common/di';
-import { Task } from '../tools/common/task';
-import { scanVertical } from '../tools/game/field-analyzers/range-scanners.ts';
-import { TileShuffler } from '../tools/game/field-analyzers/tile-shuffler';
-import { GridCellCoordinates, ISupertile, ITile } from '../types';
+import { CONFIG } from '../../config';
+import { inject, injectable } from '../../decorators';
+import { dispatchValue } from '../../tools/common/di';
+import { Task } from '../../tools/common/task';
+import { scanVertical } from '../../tools/game/field-analyzers/range-scanners.ts';
+import { TileShuffler } from '../../tools/game/field-analyzers/tile-shuffler';
+import { GridCellCoordinates, ISupertile, ITile } from '../../types';
 import { Booster } from './booster';
 import { GameplayBase } from './gameplay-base';
 const { ccclass } = _decorator;

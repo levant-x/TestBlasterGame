@@ -1,6 +1,6 @@
 
 import { _decorator } from 'cc';
-import { GameplayBase } from '../controllers/gameplay-base';
+import { GameplayBase } from '../controllers/main/gameplay-base';
 const { ccclass } = _decorator;
 
 @ccclass('Gameplay Test')

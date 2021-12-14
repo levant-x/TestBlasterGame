@@ -1,11 +1,5 @@
 
-import {
-    _decorator, 
-    Component,  
-    Prefab, 
-    ParticleSystem2D, 
-    AnimationClip 
-} from 'cc';
+import { _decorator, Component, Prefab, AnimationClip } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('TileAccessories')

@@ -1,4 +1,4 @@
-import { Booster } from "../../../controllers/booster";
+import { Booster } from "../../../controllers/main/booster";
 import { UI } from "../../../controllers/ui/ui";
 import { inject, injectable } from "../../../decorators";
 import { 
@@ -21,7 +21,7 @@ export class StepInspector implements IStepInspector {
         if (uiManager.stepsNum === 0) return true;
 
         const tilesMinVol = levelInfo.tilesetVolToDstr;
-        const { totalLength } = GamefieldContext.get;
+        const { totalLength } = GamefieldContext.calc;
 
         for (let i = 0; i < totalLength; i++) 
             if (this.isCellClickable(i, tilesMinVol)) return false;    
@@ -32,8 +32,8 @@ export class StepInspector implements IStepInspector {
         cellIndex: number,
         tilesMinVol: number,
     ): boolean {
-        const col = GamefieldContext.get.col(cellIndex);
-        const row = GamefieldContext.get.row(cellIndex);
+        const col = GamefieldContext.calc.col(cellIndex);
+        const row = GamefieldContext.calc.row(cellIndex);
         const { hitTilesFinder } = this;
         
         const collect = hitTilesFinder.collectItemsGroup.bind(hitTilesFinder);        

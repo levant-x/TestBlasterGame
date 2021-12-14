@@ -8,6 +8,7 @@ const { ccclass, property } = _decorator;
 export class UI extends Component implements IScore, ISteps {
     private _currValue = 0;
     private _currDisplayedValue = 0;
+    private _trgScore = 0;
     private _dt = 0;
 
     @property(Label)
@@ -19,8 +20,16 @@ export class UI extends Component implements IScore, ISteps {
 
     @property
     updateRate: number = 0.15;
-    targetScore: number;
     stepsNum = 0;
+
+    get targetScore(): number {
+        return this._trgScore;
+    }
+
+    set targetScore(val: number) {
+        this._trgScore = val;
+        this._updateScoreProgBar();
+    }
 
     get value(): number {
         return this._currDisplayedValue;

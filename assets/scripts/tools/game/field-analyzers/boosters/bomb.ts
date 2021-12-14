@@ -1,4 +1,4 @@
-import { Booster } from "../../../../controllers/booster";
+import { Booster } from "../../../../controllers/main/booster";
 import { LevelConfig } from "../../../../types";
 import { HitTilesFinderWrappable } from "../hit-tiles-finder-wrappable";
 import { scanGrid } from "../range-scanners.ts";

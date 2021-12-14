@@ -8,13 +8,8 @@ import {
     Node, 
     Animation 
 } from 'cc';
-import { CONFIG } from '../config';
-import { 
-    BooleanGetter, 
-    Color, 
-    GridCellCoordinates, 
-    ITile 
-} from '../types';
+import { CONFIG } from '../../config';
+import { BooleanGetter, Color, GridCellCoordinates, ITile } from '../../types';
 const { ccclass } = _decorator;
 
 @ccclass('Tile-base')
@@ -41,8 +36,7 @@ export class TileBase extends Component implements ITile {
     onLoad() {
         this._setupColor();
         if (TileBase.is1stSeeding) this.setGreetingAnimationToPlay();    
-        if (TileBase._size !== Vec3.ZERO) return;   
-        this._computeSizeParams();    
+        TileBase._size === Vec3.ZERO && this._computeSizeParams();
     } 
 
     start() {

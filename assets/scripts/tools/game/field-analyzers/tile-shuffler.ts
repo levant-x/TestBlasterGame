@@ -14,7 +14,7 @@ export class TileShuffler extends GamefieldContext {
     shuffle() {     
         this._cellIndexes = [];
         this._shuffleTask = new Task();   
-        const { totalLength } = GamefieldContext.get;
+        const { totalLength } = GamefieldContext.calc;
         this._cellIndexes = new Array(totalLength);
         
         for (let i = 0; i < totalLength; i++) this._cellIndexes[i] = i;
@@ -49,7 +49,7 @@ export class TileShuffler extends GamefieldContext {
     private _getDecartCrds(
         index: number
     ): GridCellCoordinates {
-        const { row, col } = GamefieldContext.get;   
+        const { row, col } = GamefieldContext.calc;   
         const r = row(index);
         const c = col(index);
         return { row: r, col: c };
@@ -59,7 +59,7 @@ export class TileShuffler extends GamefieldContext {
         tile: ITile,
         newCrds: GridCellCoordinates,
     ): void {
-        const { linear } = GamefieldContext.get;
+        const { linear } = GamefieldContext.calc;
         const linearIndex = linear(newCrds);
         tile.node.setSiblingIndex(linearIndex);
     }

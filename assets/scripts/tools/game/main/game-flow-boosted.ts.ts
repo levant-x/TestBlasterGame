@@ -1,4 +1,4 @@
-import { Booster } from "../../../controllers/booster";
+import { Booster } from "../../../controllers/main/booster";
 import { injectable } from "../../../decorators";
 import { BoosterType, ITile } from "../../../types";
 import { GameFlow } from "./game-flow";

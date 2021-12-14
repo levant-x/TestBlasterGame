@@ -43,7 +43,7 @@ export class HitTilesFinderBase extends GamefieldContext
         this._selectItem = itemSelector;
 
         const startItemIndex = 
-            GamefieldContext.get.linear(startPointCoords);
+            GamefieldContext.calc.linear(startPointCoords);
         this._lookedUpCellsIndexes = [startItemIndex];
 
         this.runItemsCollect(startPointCoords);
@@ -99,7 +99,7 @@ export class HitTilesFinderBase extends GamefieldContext
     ): boolean {
         if (!this._areGridCellCoordsValid(crds)) return false;
 
-        const cellIndex = GamefieldContext.get.linear(crds);
+        const cellIndex = GamefieldContext.calc.linear(crds);
         const lookedUp = this._lookedUpCellsIndexes.includes(cellIndex);
 
         !lookedUp && this._lookedUpCellsIndexes.push(cellIndex);

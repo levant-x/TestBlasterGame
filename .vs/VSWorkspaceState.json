@@ -3,7 +3,10 @@
     "",
     "\\assets",
     "\\assets\\scripts",
-    "\\assets\\scripts\\controllers"
+    "\\assets\\scripts\\tools",
+    "\\assets\\scripts\\tools\\game",
+    "\\assets\\scripts\\tools\\game\\main"
   ],
+  "SelectedNode": "\\assets\\scripts\\tools\\game\\main\\step-inspector.ts",
   "PreviewInSolutionExplorer": false
 }

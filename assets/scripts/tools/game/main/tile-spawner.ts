@@ -1,5 +1,5 @@
 import { Node, instantiate, Prefab } from "cc";
-import { TileBase } from "../../../controllers/tile-base";
+import { TileBase } from "../../../controllers/main/tile-base";
 import { 
     GridCellCoordinates, 
     ITile, 

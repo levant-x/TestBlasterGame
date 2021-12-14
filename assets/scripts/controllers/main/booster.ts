@@ -1,9 +1,9 @@
 
 import { _decorator, Component, Label, Button, CCString, CCBoolean } from 'cc';
-import { CONFIG } from '../config';
-import { injectable, injectValueByKey } from '../decorators';
-import { loadLevelInfoAsync } from '../tools/common/load-level-info-task';
-import { BooleanGetter, BoosterType, IBooster, LevelInfo } from '../types';
+import { CONFIG } from '../../config';
+import { injectable, injectValueByKey } from '../../decorators';
+import { loadLevelInfoAsync } from '../../tools/common/load-level-info-task';
+import { BooleanGetter, BoosterType, IBooster, LevelInfo } from '../../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Booster')
