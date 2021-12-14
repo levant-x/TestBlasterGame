@@ -61,13 +61,9 @@ function _loadLvlCnfFromFile(
 
 function _shiftLevelConfig(): void {
     _n++;    
-    console.log(`Switched to level ${_n}, prop keys are ${_PROP_KEYS_2SHIFT},
-        shifters are ${_cfgShift}`);
-
     for (const propKey of _PROP_KEYS_2SHIFT) {       
         const fn = _cfgShift[propKey];
         _lastLvlCfg[propKey] = fn(_1stLvlCfg, _lastLvlCfg, _n);
-        console.log(_n, propKey, _lastLvlCfg[propKey]);        
     }
 }
 
@@ -88,14 +84,10 @@ function _parsePropViaGlossary(
 ): void {
     const formulaKey = glossary[key];
     if (!baseConfig[formulaKey]) throw `${key} config invalid`;
-
-    console.log('reading formula key for param ' + key);
     
     _1stLvlCfg[key] = +baseConfig[formulaKey];
     const valueShifterTxt = configShift[formulaKey];
     if (!valueShifterTxt) return;
-
-    console.log('reading shifter fn for param ' + key);
 
     const shifterFn = _parseValueShiftFormula(valueShifterTxt, glossary);   
     _PROP_KEYS_2SHIFT.push(key);
@@ -107,8 +99,6 @@ function _parseValueShiftFormula(
     glossary: Record<string, string>,  
 ): Function {
     let [formula, precision] = valueShifter.split(' @');
-    console.log('formula & precision are ', formula, precision);
-    
 
     for (const [key, val] of Object.entries(glossary)) {
         formula = _replaceAll(formula, `${val}1`, `_1st.${key}`);
@@ -116,7 +106,6 @@ function _parseValueShiftFormula(
     }
     for (const [key, val] of Object.entries(_FUNCTIONS)) 
         formula = _replaceAll(formula, key, val);
-    console.log('new formula is ', formula); 
     formula = _VAL_SHIFTER_ENTRY.replace('FN', formula);   
 
     if (precision) 
