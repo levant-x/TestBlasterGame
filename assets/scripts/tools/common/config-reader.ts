@@ -1,5 +1,6 @@
 import { JsonAsset, resources } from 'cc';
-import { LevelConfig, LevelInfo, LevelSystemConfig } from '../../types';
+import { CONFIG } from '../../config';
+import { LevelConfig, LevelSystemConfig } from '../../types';
 
 type ConfigShiftInfo = Record<string, Function>;
 
@@ -9,6 +10,15 @@ const _PROP_KEYS_2SHIFT: string[] = [];
 
 const _PRECISIONS: Record<string, (val: any) => string> = {
     'MUL': val => `r = Math.round(r / ${val}) * ${val};`,
+}
+
+const _FUNCTIONS: Record<string, string> = {
+    'pi': 'Math.PI',
+    'ran': 'Math.random',
+    'rnd': 'Math.round',
+    'flr': 'Math.floor',
+    'sin': 'Math.sin',
+    'cos': 'Math.cos',
 }
 
 let _1stLvlCfg: LevelConfig, _lastLvlCfg: LevelConfig;
@@ -23,10 +33,9 @@ let _n = 1;
  * PRECISION is an adjustment to the result (place at the end). Current options are
  * MUL-multiplicity
  */
-export function loadLevelConfigAsync(
-    path: string,
-): Promise<LevelInfo> {
-    return new Promise<LevelInfo>(resolve => {
+export function loadLevelConfigAsync(): Promise<LevelConfig> {
+    const path = CONFIG.LEVEL_SYS_CFG_PATH;
+    return new Promise<LevelConfig>(resolve => {
 
         if (_lastLvlCfg) {
             _shiftLevelConfig();
@@ -37,12 +46,12 @@ export function loadLevelConfigAsync(
 
 function _loadLvlCnfFromFile(
     path: string,
-    resolve: (cnf: LevelInfo) => void
+    resolve: (cnf: LevelConfig) => void
 ): void {
     resources.load(path, (
         er, config: JsonAsset
     ) => {
-        if (er) throw er;
+        if (er) throw `Error when loading config: ${er}`;
         else if (!config) throw 'Config was loaded empty';
 
         _parseLevelConfig(config.json as LevelSystemConfig);
@@ -51,7 +60,10 @@ function _loadLvlCnfFromFile(
 }
 
 function _shiftLevelConfig(): void {
-    _n++;
+    _n++;    
+    console.log(`Switched to level ${_n}, prop keys are ${_PROP_KEYS_2SHIFT},
+        shifters are ${_cfgShift}`);
+
     for (const propKey of _PROP_KEYS_2SHIFT) {       
         const fn = _cfgShift[propKey];
         _lastLvlCfg[propKey] = fn(_1stLvlCfg, _lastLvlCfg, _n);
@@ -75,12 +87,15 @@ function _parsePropViaGlossary(
     { glossary, baseConfig, configShift, }: LevelSystemConfig
 ): void {
     const formulaKey = glossary[key];
-    const configEntryVal = +baseConfig[formulaKey];
-    if (!configEntryVal) throw `${key} config invalid`;
+    if (!baseConfig[formulaKey]) throw `${key} config invalid`;
 
-    _1stLvlCfg[key] = configEntryVal;
+    console.log('reading formula key for param ' + key);
+    
+    _1stLvlCfg[key] = +baseConfig[formulaKey];
     const valueShifterTxt = configShift[formulaKey];
     if (!valueShifterTxt) return;
+
+    console.log('reading shifter fn for param ' + key);
 
     const shifterFn = _parseValueShiftFormula(valueShifterTxt, glossary);   
     _PROP_KEYS_2SHIFT.push(key);
@@ -92,12 +107,18 @@ function _parseValueShiftFormula(
     glossary: Record<string, string>,  
 ): Function {
     let [formula, precision] = valueShifter.split(' @');
+    console.log('formula & precision are ', formula, precision);
+    
 
     for (const [key, val] of Object.entries(glossary)) {
         formula = _replaceAll(formula, `${val}1`, `_1st.${key}`);
         formula = _replaceAll(formula, `${val}#`, `_lst.${key}`);
     }
-    formula = _VAL_SHIFTER_ENTRY.replace('FN', formula);    
+    for (const [key, val] of Object.entries(_FUNCTIONS)) 
+        formula = _replaceAll(formula, key, val);
+    console.log('new formula is ', formula); 
+    formula = _VAL_SHIFTER_ENTRY.replace('FN', formula);   
+
     if (precision) 
         formula = _parseValueShiftPrecision(formula, precision);
     return <Function>eval(formula);

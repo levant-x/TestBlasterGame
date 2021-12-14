@@ -8,14 +8,14 @@ import {
     IStepInspector, 
     ITile, 
     ITileSpawner, 
-    LevelInfo, 
+    LevelConfig, 
     StepResult 
 } from "../../../types";
 import { Task } from "../../common/task";
 
 @injectable('GameFlow')
 export class GameFlow implements IGameFlow {
-    private _lvlInfo: LevelInfo;
+    private _lvlInfo: LevelConfig;
     private _isStepFinal = false;
 
     @inject('ITileSpawner')
@@ -31,7 +31,7 @@ export class GameFlow implements IGameFlow {
     }
 
     setupGameStart(
-        levelInfo: LevelInfo
+        levelInfo: LevelConfig
     ): Task {
         if (!this.menu) throw 'Menu manager missing';
         if (!this.tileSpawner) throw 'Tile spawner missing';

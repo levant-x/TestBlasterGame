@@ -5,7 +5,7 @@ import {
     IItemsGroupAnalyzer, 
     IStepInspector, 
     ITile, 
-    LevelInfo, 
+    LevelConfig, 
 } from "../../../types";
 import { GamefieldContext } from "./gamefield-context";
 
@@ -15,7 +15,7 @@ export class StepInspector implements IStepInspector {
     protected hitTilesFinder: IItemsGroupAnalyzer<ITile>;  
 
     isStepDeadEnd(
-        levelInfo: LevelInfo,
+        levelInfo: LevelConfig,
         uiManager: UI,
     ): boolean {
         if (uiManager.stepsNum === 0) return true;

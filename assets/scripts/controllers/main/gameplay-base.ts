@@ -6,7 +6,7 @@ import { loadLevelInfoAsync } from '../../tools/common/load-level-info-task';
 import { Task } from '../../tools/common/task';
 import { TaskManager } from '../../tools/common/task-manager';
 import { GamefieldContext } from '../../tools/game/main/gamefield-context';
-import { IGameFlow, IStepFlow, ITile, ITileSpawner, LevelInfo, } from '../../types';
+import { IGameFlow, IStepFlow, ITile, ITileSpawner, LevelConfig, } from '../../types';
 import { TileBase } from './tile-base';
 import { Menu } from '../ui/menu';
 import { UI } from '../ui/ui';
@@ -16,7 +16,7 @@ const { ccclass, property } = _decorator;
 @injectable()
 export abstract class GameplayBase extends GamefieldContext {
     protected taskMng = TaskManager.create();
-    protected levelInfo: LevelInfo;
+    protected levelInfo: LevelConfig;
     protected updateUITask: Task;
 
     @property([Prefab])
@@ -36,7 +36,7 @@ export abstract class GameplayBase extends GamefieldContext {
     protected tileSpawner: ITileSpawner;
 
     start() {
-        const onCfgLoad = (lvlInfo: LevelInfo) => {
+        const onCfgLoad = (lvlInfo: LevelConfig) => {
             this.levelInfo = lvlInfo;
             this.init();
         }

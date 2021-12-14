@@ -3,7 +3,7 @@ import { _decorator, Component, Label, Button, CCString, CCBoolean } from 'cc';
 import { CONFIG } from '../../config';
 import { injectable, injectValueByKey } from '../../decorators';
 import { loadLevelInfoAsync } from '../../tools/common/load-level-info-task';
-import { BooleanGetter, BoosterType, IBooster, LevelInfo } from '../../types';
+import { BooleanGetter, BoosterType, IBooster, LevelConfig } from '../../types';
 const { ccclass, property } = _decorator;
 
 @ccclass('Booster')
@@ -68,7 +68,7 @@ export class Booster extends Component implements IBooster {
     }
 
     private _init(
-        lvlInfo: LevelInfo
+        lvlInfo: LevelConfig
     ): void {
         this._detectType();
         this._count = +lvlInfo[this.pathToValue];

@@ -1,6 +1,5 @@
 
 import { _decorator, __private, Vec3 } from 'cc';
-import { loadLevelConfigAsync } from './tools/common/config-reader';
 import { ModuleType } from './types';
 
 const DI_MAPPING = {
@@ -29,15 +28,14 @@ export type RangeY = {
     bottom: number;
 };
 
-const _LEVEL_SYS_CFG_PATH = 'level-sys-config';
 const _MULTIINSTANCE: ModuleType[] = [];
 
 export const CONFIG = {
+    LEVEL_SYS_CFG_PATH: 'level-sys-config',
     LOADER_SCENE_NAME: 'scene-switcher',
     GAME_SCENE_NAME: 'game',
     LAYOUT_ORIGIN_LEFT_BOTTOM: new Vec3(-385, -380),
     BOOSTER_NAME_TMPL: 'booster-panel-',
-    loadLevelConfigAsync: () => _loadLvlCfgAsync(),
     TILES_MOVE_SPEED_UPS: 4,   
     TILES_SHUFFLE_TIME_SEC: .8,
     // TILES_DESTROY_TIME_SEC: .6,
@@ -62,8 +60,4 @@ function getImplementationInfo(
     if (implemInfo === undefined) 
         throw `Dependency for ${dependencyKey} not set`;
     return <ModuleType>implemInfo;
-}
-
-function _loadLvlCfgAsync(): ReturnType<typeof loadLevelConfigAsync> {
-    return loadLevelConfigAsync(_LEVEL_SYS_CFG_PATH);
 }

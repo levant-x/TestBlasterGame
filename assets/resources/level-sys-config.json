@@ -24,10 +24,10 @@
         "P": ".15"
     },
     "configShift": {
-        "X": "X# * (1.1 + Math.random() * 0.2) @MUL5",
-        "Y": "n % 2 === 0 ? Y# : Y# + Math.round(n ** 0.5) @MUL2",
-        "B": "B1 - 1 + Math.floor(X# * Y1 / (X1 * Y#))",
-        "P": "P1 + Math.sin(Math.PI / 7 * ((n - n ** 0.5) / (n * 2.1)))",
-        "S": "S1 + Math.floor(n / 10)"
+        "X": "X# * (1.1 + ran() * 0.2) @MUL5",
+        "Y": "n % 2 === 0 ? Y# : Y# + rnd(n ** 0.5) @MUL2",
+        "B": "B1 - 1 + flr(X# * Y1 / (X1 * Y#))",
+        "P": "P1 + sin(pi / 7 * ((n - n ** 0.5) / (n * 2.1)))",
+        "S": "S1 + flr(n / 10)"
     }
 }

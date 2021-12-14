@@ -1,12 +1,12 @@
 import { _decorator } from 'cc';
-import { CONFIG } from '../../config';
-import { LevelInfo } from '../../types';
+import { loadLevelConfigAsync } from '../../tools/common/config-reader';
+import { LevelConfig } from '../../types';
 
 export class ConfigStore {
     private static _instance = new ConfigStore();
 
-    private _cfg?: LevelInfo;
-    private _loadTask?: Promise<LevelInfo>;
+    private _cfg?: LevelConfig;
+    private _loadTask?: Promise<LevelConfig>;
 
     private constructor() { }
 
@@ -20,7 +20,7 @@ export class ConfigStore {
 
     async getLevelInfoAsync(
         targetLevel: 'current' | 'next'
-    ): Promise<LevelInfo> {
+    ): Promise<LevelConfig> {
         
         targetLevel === 'next' && this._increaseLevel();
         if (this._cfg) return this._cfg;
@@ -34,8 +34,8 @@ export class ConfigStore {
         this._cfg = this._loadTask = undefined;
     }
 
-    private async _loadLvlInfoAsync(): Promise<LevelInfo> {
-        const lvlInfo = await CONFIG.loadLevelConfigAsync(); 
+    private async _loadLvlInfoAsync(): Promise<LevelConfig> {
+        const lvlInfo = await loadLevelConfigAsync(); 
         return lvlInfo;
     }
 }

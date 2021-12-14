@@ -35,8 +35,6 @@ export type LevelSystemConfig = {
     baseConfig: LevelConfig;
 }
 
-export type LevelInfo = LevelConfig;
-
 export enum Color {
     'blue' = 0,
     'green' = 1,
@@ -116,7 +114,7 @@ export interface IGameStatus {
 export interface IGameFlow extends IGameStatus {
     uiManager: UI;
     menu: Menu;
-    setupGameStart(levelInfo: LevelInfo): Task;
+    setupGameStart(levelInfo: LevelConfig): Task;
     updateUI(pointsNum: number): Task;    
 }
 
@@ -173,7 +171,7 @@ export interface IBooster extends Pick<Component, 'node'> {
 
 export interface IStepInspector {
     isStepDeadEnd(
-        levelInfo: LevelInfo, 
+        levelInfo: LevelConfig, 
         uiManager: UI
     ): boolean;
 }
