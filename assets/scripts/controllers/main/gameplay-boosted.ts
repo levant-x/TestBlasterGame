@@ -82,6 +82,8 @@ export class GameplayBoosted extends GameplayBase {
     private _applyShuffle(): void {
         const shuffleTask = this._tileShuffler.shuffle();
         const checkStep = this._checkStepAfterDelay.bind(this);
+
+        this._wasSptileJustDrawn = false;
         this.taskMng.bundleWith(shuffleTask, checkStep);
         Booster.current?.drop();
     }
